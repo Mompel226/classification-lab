@@ -891,30 +891,13 @@ svg.lit .kl--all.is-on{opacity:1}
 .an-in:nth-child(2){animation-delay:.5s}.an-in:nth-child(3){animation-delay:1s}
 @keyframes intake{0%{transform:translateX(0);opacity:0}30%{opacity:1}100%{transform:translateX(22px);opacity:0}}
 
-/* the feature finder: a photograph with the features to find */
-.finder{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(180px,1fr);gap:14px;align-items:start}
-.finder__stage{position:relative;line-height:0;border-radius:var(--r);overflow:hidden;background:#1B2226}
-.finder__stage img{width:100%;height:auto;display:block}
+/* the feature finder: a photograph beside the list of features to find */
+.finder{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(190px,1fr);gap:14px;align-items:start}
+.finder__stage{position:relative;line-height:0;border-radius:var(--r);overflow:visible;background:#1B2226}
+.finder__stage img{width:100%;height:auto;display:block;border-radius:var(--r)}
 .finder__credit{font-size:11px;color:var(--grey);margin:6px 0 0;line-height:1.4}
 .finder__credit a{color:inherit}
-.spot{position:absolute;width:26px;height:26px;transform:translate(-50%,-50%);border-radius:50%;border:2px solid #fff;
-  background:rgba(20,87,43,.75);color:#fff;font:700 12px/1 var(--font);display:grid;place-items:center;cursor:pointer;padding:0;
-  box-shadow:0 0 0 0 rgba(255,255,255,.6);animation:pulse 2s ease-out infinite}
-.spot:hover{background:var(--green)}
-@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(255,255,255,.65)}70%{box-shadow:0 0 0 12px rgba(255,255,255,0)}100%{box-shadow:0 0 0 0 rgba(255,255,255,0)}}
-.spot.is-found{animation:none;background:#fff;color:var(--green);border-color:var(--green)}
-.spot__lab{position:absolute;left:50%;top:calc(100% + 6px);transform:translateX(-50%);white-space:nowrap;font:700 12px/1 var(--font);
-  color:#fff;background:rgba(20,25,20,.86);padding:4px 9px;border-radius:var(--r-pill);pointer-events:none}
-.spot.is-found .spot__lab{background:var(--green)}
-.spot--top .spot__lab{top:auto;bottom:calc(100% + 6px)}
 .finder__list{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:6px}
-.finder__item{display:flex;gap:9px;align-items:flex-start;font-size:14px;line-height:1.4;padding:8px 10px;border:1px solid var(--edge);border-radius:var(--r);background:#fff;transition:.15s}
-.finder__item b{color:var(--green)}
-.finder__item small{display:block;color:var(--grey);font-size:12.5px}
-.finder__item .n{flex:none;width:20px;height:20px;border-radius:50%;background:var(--edge-2);color:var(--grey);font-size:11px;font-weight:700;display:grid;place-items:center}
-.finder__item.is-found{border-color:#A9D6BA;background:var(--ok-tint)}
-.finder__item.is-found .n{background:var(--ok);color:#fff}
-.finder__item.is-found .n::before{content:"✓"}
 @media (max-width:620px){ .finder{grid-template-columns:1fr} }
 
 /* a DNA alignment, the way MEGA shows one */
@@ -999,31 +982,9 @@ svg.lit .kl--all.is-on{opacity:1}
 .kingdoms__open .kd__eg{margin:8px 0 0;font-size:13px;color:var(--grey)}
 @media (max-width:620px){ .kingdoms{grid-template-columns:repeat(3,1fr)} }
 
-/* two drawings of one specimen: the one that scores, and the one that does not */
-.drawpair{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-.dp__half{border:1px solid var(--edge);border-radius:var(--r);background:#fff;padding:8px;position:relative}
-.dp__half svg{width:100%;height:auto;display:block}
-.dp__lab{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:700;margin:6px 2px 2px}
+/* the verdict lines above a drawing */
+.dp__lab{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:700;margin:2px 2px 4px}
 .dp__lab--good{color:var(--ok)} .dp__lab--bad{color:var(--bad)}
-.dp__stage{position:relative;line-height:0}
-.fault{position:absolute;width:24px;height:24px;transform:translate(-50%,-50%);border-radius:50%;border:2px solid #fff;background:var(--bad);color:#fff;
-  font:700 12px/1 var(--font);display:grid;place-items:center;cursor:pointer;padding:0;animation:pulse 2s ease-out infinite}
-.fault.is-found{animation:none;background:#fff;color:var(--bad);border-color:var(--bad)}
-.dp__found{margin:8px 0 0;padding:0;list-style:none;font-size:13.5px;line-height:1.45;display:flex;flex-direction:column;gap:5px}
-.dp__found li{padding:6px 10px;border-radius:var(--r-sm);border:1px solid var(--edge);background:var(--card-2);color:var(--grey)}
-.dp__found li.is-found{border-color:#E3B4AC;background:var(--bad-tint);color:#3C3C3C}
-.dp__found li b{color:var(--bad)}
-.dp__found li .n{display:inline-grid;place-items:center;width:18px;height:18px;border-radius:50%;background:var(--edge-2);color:var(--grey);font-size:11px;font-weight:700;margin-right:6px}
-.dp__found li.is-found .n{background:var(--bad);color:#fff}
-.dp__rules{margin:10px 0 0;padding:0;list-style:none;font-size:13px;display:grid;grid-template-columns:1fr 1fr;gap:4px 12px;color:#3C3C3C}
-.dp__rules li{padding-left:18px;position:relative}
-.dp__rules li::before{content:"✓";position:absolute;left:0;color:var(--ok);font-weight:700}
-.draw-good{stroke:#1A1A1A;fill:none;stroke-width:1.4;stroke-linecap:round;stroke-linejoin:round}
-.draw-good text,.draw-bad text{font-family:"Comic Sans MS","Segoe Print","Bradley Hand",cursive;font-size:11px;fill:#1A1A1A;stroke:none}
-.draw-bad{stroke:#2B2B2B;fill:none;stroke-width:1.1;stroke-linecap:round;stroke-linejoin:round}
-.draw-bad .sketchy{stroke-width:.9;opacity:.75}
-.draw-bad .shade{stroke-width:.7;opacity:.55}
-@media (max-width:620px){ .drawpair{grid-template-columns:1fr} }
 
 /* a comparison table inside Learn */
 .ctable{overflow-x:auto;margin:12px 0 4px}
@@ -1071,3 +1032,65 @@ svg.lit .kl--all.is-on{opacity:1}
 .qshow .dna th{background:#fff}
 .svgbox{border:1px solid var(--edge);border-radius:var(--r);background:#fff;padding:8px;max-width:420px}
 .svgbox svg{width:100%;height:auto;display:block}
+
+/* ---------- pins named in a column, joined by ruled lines ----------
+   The finder and the drawings share this. A pin on the picture carries only a number; its
+   name sits in the list beside or beneath the picture, and a found pin is joined to its
+   entry by a ruled line, so nothing is ever written on the picture and no two labels can
+   land on each other. */
+.pins{position:relative}
+.pins__lines{position:absolute;left:0;top:0;pointer-events:none;overflow:visible;z-index:3}
+.pins__halo{stroke:#fff;stroke-width:4;stroke-linecap:round;opacity:.9}
+.pins__line{stroke:#14572B;stroke-width:1.6;stroke-linecap:round}
+.pin{position:absolute;width:26px;height:26px;transform:translate(-50%,-50%);border-radius:50%;border:2px solid #fff;z-index:4;
+  background:rgba(20,87,43,.8);color:#fff;font:700 12px/1 var(--font);display:grid;place-items:center;cursor:pointer;padding:0;
+  box-shadow:0 0 0 0 rgba(255,255,255,.6);animation:pulse 2s ease-out infinite}
+.pin:hover{background:var(--green)}
+.pin.is-found{animation:none;background:#fff;color:var(--green);border-color:var(--green)}
+.pin--fault{background:rgba(176,58,46,.85)}
+.pin--fault:hover{background:var(--bad)}
+.pin--fault.is-found{background:#fff;color:var(--bad);border-color:var(--bad)}
+.pins__item{display:flex;gap:9px;align-items:flex-start;font-size:14px;line-height:1.4;padding:8px 10px;border:1px solid var(--edge);border-radius:var(--r);background:#fff;transition:.15s;cursor:pointer}
+.pins__item b{color:var(--green)}
+.pins__item small{display:block;color:var(--grey);font-size:12.5px}
+.pins__item .n{flex:none;width:20px;height:20px;border-radius:50%;background:var(--edge-2);color:var(--grey);font-size:11px;font-weight:700;display:grid;place-items:center}
+.pins__item.is-found{border-color:#A9D6BA;background:var(--ok-tint)}
+.pins__item.is-found .n{background:var(--ok);color:#fff}
+.dp2__half.pins .pins__item b{color:var(--bad)}
+.dp2__half.pins .pins__item.is-found{border-color:#E3B4AC;background:var(--bad-tint)}
+.dp2__half.pins .pins__item.is-found .n{background:var(--bad)}
+.dp2__half.pins .pins__line{stroke:var(--bad)}
+.finder__tools{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:8px}
+.finder__tools .finder__credit{margin:0}
+@media (max-width:620px){ .finder .pins__lines{display:none} }
+
+/* the labelled diagram under a photograph */
+.diag__wrap{margin-top:12px;border:1px solid var(--edge);border-radius:var(--r);background:#fff;padding:0 12px 10px}
+.diag__wrap summary{cursor:pointer;font-size:12.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--green);padding:10px 0;list-style:none}
+.diag__wrap summary::-webkit-details-marker{display:none}
+.diag__wrap summary::before{content:"▸ "} .diag__wrap[open] summary::before{content:"▾ "}
+.diag{margin:0}
+.diag__svg{width:100%;max-width:560px;height:auto;display:block;margin:0 auto;font-family:var(--font)}
+.diag figcaption{font-size:13px;color:#3C3C3C;line-height:1.45;margin-top:6px}
+.diag__head{fill:#E1EFF2;stroke:#1A1A1A;stroke-width:1.3}
+.diag__thorax{fill:#FBF3E3;stroke:#1A1A1A;stroke-width:1.3}
+.diag__abd{fill:#F1EBF8;stroke:#1A1A1A;stroke-width:1.3}
+.diag__seg{fill:none;stroke:#1A1A1A;stroke-width:1}
+.diag__eye{fill:#1A1A1A;stroke:none}
+.diag__wing path{fill:rgba(200,225,240,.35);stroke:#1A1A1A;stroke-width:1}
+.diag__legs path,.diag__ant path,.diag__claw path{fill:none;stroke:#1A1A1A;stroke-width:1.4;stroke-linecap:round;stroke-linejoin:round}
+.diag__claw path{fill:#FBF3E3}
+.diag__legs circle,.diag__ant circle{fill:#1A1A1A}
+.diag__lead{stroke:#14572B;stroke-width:.9}
+.diag__lab{font-size:10.5px;fill:#14572B;font-weight:600}
+.diag__title{font-size:11px;fill:#3C3C3C;font-style:italic}
+
+/* two real drawings, side by side */
+.drawphotos{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start}
+.dp2__half{border:1px solid var(--edge);border-radius:var(--r);background:#fff;padding:10px;position:relative}
+.dp2__stage{margin:6px 0 8px}
+.dp2__list{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:6px}
+.dp2__fixes{margin:6px 0 0;padding:0;list-style:none;display:flex;flex-direction:column;gap:5px;font-size:13.5px;line-height:1.45}
+.dp2__fixes li{padding:6px 10px 6px 26px;position:relative;border:1px solid #A9D6BA;background:var(--ok-tint);border-radius:var(--r-sm)}
+.dp2__fixes li::before{content:"✓";position:absolute;left:9px;top:6px;color:var(--ok);font-weight:700}
+@media (max-width:620px){ .drawphotos{grid-template-columns:1fr} }

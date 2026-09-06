@@ -37,6 +37,26 @@ From [PhyloPic](https://www.phylopic.org), CC0 or Public Domain Mark, copied in 
 `labs-shared/tree/silhouettes/` and inlined into `index.html`. The full table, with contributors and links,
 is in the hub's `assets/CREDITS.md`; the credits also print in the "How to use" panel from `js/tree.js`.
 
+## The closer photographs for the feature finders
+
+A group's portrait on the tree is not always close enough to name its parts on, so the finders
+use their own photographs, chosen for a plain background and every feature in view. All Wikimedia
+Commons, CC BY 4.0, shown full frame at 900 and 1400 px wide.
+
+| File | Source | Photographer |
+|---|---|---|
+| `finder-insects-*` | [Vespula vulgaris 211655890.jpg](https://commons.wikimedia.org/wiki/File:Vespula_vulgaris_211655890.jpg) — a common wasp on white | bemma |
+| `finder-arachnids-*` | [Araneus diadematus 103883689.jpg](https://commons.wikimedia.org/wiki/File:Araneus_diadematus_103883689.jpg) — a garden spider on blue cloth | Joe Holt |
+| `finder-crustaceans-*` | [Four-toothed shore crab, Paragrapsus quadridentatus](https://commons.wikimedia.org/wiki/File:Four-toothed-shore-crab-paragrapsus-quadridentatus-live-collection-specimen-389835-large.jpg) — dorsal view on black | Michael Marmach, Museums Victoria |
+| `finder-myriapods-*` | [Scolopendra canidens.png](https://commons.wikimedia.org/wiki/File:Scolopendra_canidens.png) — a centipede on white | Denis Potanin |
+| `finder-mammals-*` | [Rode vos - red fox - Vulpes vulpes 8.jpg](https://commons.wikimedia.org/wiki/File:Rode_vos_-_red_fox_-_Vulpes_vulpes_8.jpg) — a red fox, close | BouketenCate |
+| `finder-fish-*` | [Perca fluviatilis 148981408.jpg](https://commons.wikimedia.org/wiki/File:Perca_fluviatilis_148981408.jpg) — a perch, side on | Enrico Tomschke |
+| `finder-monocots-*` | [Iris leaves with glittering rain drops…](https://commons.wikimedia.org/wiki/File:Iris_leaves_with_glittering_rain_drops_in_morning_sunlight_Dnipro_2026-06-10_by_baby-bear.org_Natalka-Ukraine.jpg) — parallel veins | Natalka Ukraine |
+| `finder-dicots-*` | [Leaf veining.jpg](https://commons.wikimedia.org/wiki/File:Leaf_veining.jpg) — a midrib and its net of veins | Kateryna Martyniuk |
+
 ## The drawings
 
-The leaf and beetle drawing pairs, the MRS GREN animations and the tab icon are original to this lab (`js/learn.js`).
+`orange-bad-*` and `orange-good-*` are Dr Mompel's own photographs of an orange slice drawn twice,
+from his whole-class feedback on biological drawing (Y11 Plants, "WCF - Bio Drawing Improvement"):
+the first attempt with its faults, and the same slice drawn to the rules. The four labelled diagrams
+of arthropod body plans (`js/learn.js`, `Learn.DIAGRAMS`) and the MRS GREN animations are original to this lab.

@@ -30,20 +30,20 @@ skill and his assessed arthropod drawing).
 | Widget | What the student does |
 |---|---|
 | MRS GREN letters | opens each characteristic: an animation, the definition with its key words underlined, and the first word to remember |
-| Feature finder | finds the numbered features on a real photograph of the group — feathers, cephalothorax, fronds |
+| Feature finder | finds the numbered pins on a close photograph of the group; a found feature is named in the column beside the picture and joined to its pin by a ruled line, so nothing is written over the animal; the four arthropod groups also carry a labelled diagram of the body plan |
 | DNA alignment | a MEGA-style viewer: show identical bases as dots, mark the differences, count them, rank the relatives |
 | Key runner | runs a dichotomous key one step at a time on a pictured specimen, beside the same key printed |
 | Name builder | types a genus and species and watches the four rules check themselves |
 | Kingdom cards | opens a kingdom, which lights on the tree, and shows its four cell questions |
-| Drawing pairs | a leaf and a beetle each drawn twice: click the six faults on the one that would not score |
+| Drawings, twice | Dr Mompel's own photographs of an orange slice drawn badly and then well: click the seven faults on the first, read what the second did instead |
 
 **61 questions** across nine kinds: fill the gaps, multiple choice, put in order, match up, sort into
 groups, drag & drop, and two new to this lab — **tick the grid** (Am I alive? · which group has what) and
 **find it on the picture** (click the features on a photograph, or the faults on a drawing). A question can
-show a DNA alignment, a printed key or a drawing beside its prompt.
+show a DNA alignment or a printed key beside its prompt.
 
 Every photograph is public domain, CC0 or CC BY, credited under the picture and in
-`assets/photos/CREDITS.md`. The silhouettes are PhyloPic, CC0.
+`assets/photos/CREDITS.md`; the two drawings are his. The silhouettes are PhyloPic, CC0.
 
 Progress is saved in the browser. **Reset** clears it.
 
