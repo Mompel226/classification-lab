@@ -37,12 +37,12 @@
   /* ---------- the seven small animations ---------- */
   var ICON = {
     move: '<svg viewBox="0 0 64 48"><g class="an-swim" fill="#0E4D5C"><path d="M12 24 C22 8 42 8 52 24 C42 40 22 40 12 24Z"/><path d="M50 24 L62 15 L62 33Z"/><circle cx="22" cy="21" r="2.2" fill="#fff"/></g></svg>',
-    resp: '<svg viewBox="0 0 64 48"><circle class="an-cell" cx="32" cy="24" r="15" fill="#E1EFF2" stroke="#0E4D5C" stroke-width="2"/><g fill="#F5A623"><circle class="an-spark" cx="32" cy="24" r="4"/><circle class="an-spark" cx="24" cy="18" r="2.5"/><circle class="an-spark" cx="40" cy="30" r="2.5"/></g><text x="4" y="45" font-size="8" fill="#6B6B6B" font-family="Calibri,sans-serif">glucose + O₂ → energy</text></svg>',
+    resp: '<svg viewBox="0 0 64 48"><circle class="an-cell" cx="32" cy="24" r="15" fill="#E1EFF2" stroke="#0E4D5C" stroke-width="2"/><g fill="#F5A623"><circle class="an-spark" cx="32" cy="24" r="4"/><circle class="an-spark" cx="24" cy="18" r="2.5"/><circle class="an-spark" cx="40" cy="30" r="2.5"/></g></svg>',
     sens: '<svg viewBox="0 0 64 48"><path d="M6 24 C18 6 46 6 58 24 C46 42 18 42 6 24Z" fill="#fff" stroke="#0E4D5C" stroke-width="2"/><circle cx="32" cy="24" r="10" fill="#8AD8FF" stroke="#0E4D5C" stroke-width="1.5"/><circle class="an-pupil" cx="32" cy="24" r="5.5" fill="#0B1F2A"/></svg>',
     grow: '<svg viewBox="0 0 64 48"><path d="M4 44 H60" stroke="#8A5A0E" stroke-width="2"/><path class="an-stem" d="M32 44 C32 34 32 26 32 12" stroke="#3D7A1F" stroke-width="2.5" fill="none"/><g class="an-leaf" fill="#8EE6A2" stroke="#3D7A1F" stroke-width="1.2"><path d="M32 30 C22 30 16 22 18 16 C26 16 32 22 32 30Z"/><path d="M32 22 C42 22 48 14 46 8 C38 8 32 14 32 22Z"/></g></svg>',
     repro: '<svg viewBox="0 0 64 48"><circle class="an-split-l" cx="32" cy="24" r="11" fill="#E1EFF2" stroke="#0E4D5C" stroke-width="2"/><circle class="an-split-r" cx="32" cy="24" r="11" fill="#E1EFF2" stroke="#0E4D5C" stroke-width="2"/><circle class="an-split-l" cx="32" cy="24" r="3.5" fill="#0E4D5C"/><circle class="an-split-r" cx="32" cy="24" r="3.5" fill="#0E4D5C"/></svg>',
-    excr: '<svg viewBox="0 0 64 48"><path d="M20 6 H44 C50 6 50 30 32 30 C14 30 14 6 20 6Z" fill="#E1EFF2" stroke="#0E4D5C" stroke-width="2"/><g class="an-drop" fill="#8AD8FF" stroke="#0B6E8C" stroke-width="1"><path d="M32 30 C28 36 26 38 26 41 A6 6 0 0 0 38 41 C38 38 36 36 32 30Z"/></g><text x="6" y="46" font-size="8" fill="#6B6B6B" font-family="Calibri,sans-serif">waste out</text></svg>',
-    nutr: '<svg viewBox="0 0 64 48"><circle cx="42" cy="24" r="15" fill="#E1EFF2" stroke="#0E4D5C" stroke-width="2"/><g fill="#8A5A0E"><circle class="an-in" cx="8" cy="24" r="3"/><circle class="an-in" cx="8" cy="18" r="2.2"/><circle class="an-in" cx="8" cy="30" r="2.2"/></g><text x="2" y="46" font-size="8" fill="#6B6B6B" font-family="Calibri,sans-serif">materials in</text></svg>'
+    excr: '<svg viewBox="0 0 64 48"><path d="M20 6 H44 C50 6 50 30 32 30 C14 30 14 6 20 6Z" fill="#E1EFF2" stroke="#0E4D5C" stroke-width="2"/><g class="an-drop" fill="#8AD8FF" stroke="#0B6E8C" stroke-width="1"><path d="M32 30 C28 36 26 38 26 41 A6 6 0 0 0 38 41 C38 38 36 36 32 30Z"/></g></svg>',
+    nutr: '<svg viewBox="0 0 64 48"><circle cx="42" cy="24" r="15" fill="#E1EFF2" stroke="#0E4D5C" stroke-width="2"/><g fill="#8A5A0E"><circle class="an-in" cx="8" cy="24" r="3"/><circle class="an-in" cx="8" cy="18" r="2.2"/><circle class="an-in" cx="8" cy="30" r="2.2"/></g></svg>'
   };
 
   /* ---------- letters: MRS GREN ---------- */
@@ -67,7 +67,7 @@
         tiles.forEach(function (x) { x.setAttribute('aria-expanded', 'false'); });
         if (was) { open.hidden = true; return; }
         t.setAttribute('aria-expanded', 'true'); t.classList.add('is-seen'); seen[i] = 1;
-        open.innerHTML = '<span class="lt__ico">' + (ICON[it.icon] || '') + '</span><div>' +
+        open.innerHTML = '<span class="lt__ico">' + (ICON[it.icon] || '') + (it.cap ? '<small>' + esc(it.cap) + '</small>' : '') + '</span><div>' +
           '<p class="lt__def"><b>' + esc(it.word) + '</b> is ' + keyify(it.def, it.key, it.first) + '.</p>' +
           (it.first ? '<p class="lt__firstline">The first word to remember: <b>' + esc(it.first) + '</b>' + (it.firstWhy ? ' — ' + esc(it.firstWhy) : '') + '</p>' : '') +
           (it.eg ? '<p class="lt__firstline">' + esc(it.eg) + '</p>' : '') +
@@ -96,81 +96,146 @@
       base = 'assets/photos/' + spec.group; alt = spec.alt || g.img.alt || g.label; credit = g.img.credit; url = g.img.url;
     }
     var im = new Image();
+    var wh = (global.PHOTO_SIZE || {})[base.replace('assets/photos/', '')];
+    if (wh) { im.width = wh[0]; im.height = wh[1]; }   /* the box is reserved before the picture arrives */
     im.src = base + '-900.jpg';
     im.srcset = base + '-900.jpg 900w, ' + base + '-1400.jpg 1400w';
     im.sizes = '(max-width: 620px) 92vw, 520px';
     im.alt = alt; im.loading = 'lazy'; im.decoding = 'async';
-    return { img: im, credit: (alt && !spec.img ? esc(alt) + ' · ' : '') + (url ? '<a href="' + esc(url) + '" target="_blank" rel="noopener">' + esc(credit) + '</a>' : esc(credit)) };
+    return { img: im, base: base, credit: (alt && !spec.img ? esc(alt) + ' · ' : '') + (url ? '<a href="' + esc(url) + '" target="_blank" rel="noopener">' + esc(credit) + '</a>' : esc(credit)) };
   }
 
   /* ---------- pins on a picture, named in a column, joined by ruled lines ----------
-     Used by the finder and by the drawings. Nothing is written on the picture itself: a
-     pin carries a number, the number's entry sits in the list beside the picture, and
-     when the pin is found a line is ruled from the one to the other — the way a labelled
-     figure is drawn, so no label can sit on the picture or on another label. */
-  function pinned(box, stage, spots, list, opts) {
+     Used by the finder and by the drawings. Nothing is written on the picture: a pin carries a
+     number, its name sits in a column beside the picture at the same height as the pin — the
+     way a labelled figure is drawn — and clicking either rules a line between them. A second
+     click takes the line away. Two lines are never allowed to cross: names are placed level
+     with their pins, kept apart, and swapped if their lines would meet. Beside each found name
+     is a close crop of the feature, for the ones a photograph shows small. */
+  function pinned(box, stage, spotsIn, list, opts) {
     opts = opts || {};
+    var spots = spotsIn.slice().sort(function (a, b) { return a.y - b.y; });   /* numbered top to bottom */
     var lines = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
     lines.setAttribute('class', 'pins__lines'); lines.setAttribute('aria-hidden', 'true');
     box.appendChild(lines);
-    var found = {}, pins = [], items = [];
-    function draw() {
-      var b = box.getBoundingClientRect();
+    var found = {}, pins = [], items = [], zooms = [], Y = [], order = [];
+    function stacked() {
+      var sb = stage.getBoundingClientRect(), lb = list.getBoundingClientRect();
+      return lb.top >= sb.bottom - 4;                 /* the column has dropped under the picture */
+    }
+    function crosses(a, b, c, d) {
+      function ccw(p, q, r) { return (r.y - p.y) * (q.x - p.x) > (q.y - p.y) * (r.x - p.x); }
+      return ccw(a, c, d) !== ccw(b, c, d) && ccw(a, b, c) !== ccw(a, b, d);
+    }
+    function layout() {
+      var sb = stage.getBoundingClientRect(), lb = list.getBoundingClientRect();
+      if (!sb.width || !sb.height || stacked()) {
+        items.forEach(function (li) { li.style.position = ''; li.style.top = ''; });
+        list.style.minHeight = ''; list.classList.remove('is-column'); drawLines(); return;
+      }
+      list.classList.add('is-column');
+      var H = items.map(function (li) { return li.offsetHeight; }), gap = 6;
+      var py = spots.map(function (sp) { return sb.top + sp.y / 100 * sb.height - lb.top; });
+      var px = spots.map(function (sp) { return sb.left + sp.x / 100 * sb.width - lb.left; });
+      order = spots.map(function (sp, i) { return i; }).sort(function (a, b) { return py[a] - py[b]; });
+      function place() {
+        var cur = 0, out = [];
+        order.forEach(function (i) { var want = py[i] - H[i] / 2, y = Math.max(want, cur); out[i] = y; cur = y + H[i] + gap; });
+        return out;
+      }
+      Y = place();
+      for (var pass = 0; pass < 20; pass++) {
+        var swapped = false;
+        for (var k = 0; k < order.length && !swapped; k++) for (var m = k + 1; m < order.length && !swapped; m++) {
+          var i = order[k], j = order[m];
+          if (crosses({ x: px[i], y: py[i] }, { x: 0, y: Y[i] + H[i] / 2 }, { x: px[j], y: py[j] }, { x: 0, y: Y[j] + H[j] / 2 })) {
+            order[k] = j; order[m] = i; swapped = true;
+          }
+        }
+        Y = place();
+        if (!swapped) break;
+      }
+      items.forEach(function (li, i) { li.style.position = 'absolute'; li.style.top = Y[i] + 'px'; });
+      var bottom = Math.max.apply(null, items.map(function (li, i) { return Y[i] + H[i]; }));
+      list.style.minHeight = Math.max(sb.height, bottom) + 'px';
+      drawLines();
+    }
+    function drawLines() {
+      var b = box.getBoundingClientRect(), sb = stage.getBoundingClientRect(), out = '';
       if (!b.width) return;
       lines.setAttribute('viewBox', '0 0 ' + b.width + ' ' + b.height);
       lines.style.width = b.width + 'px'; lines.style.height = b.height + 'px';
-      var out = '';
-      pins.forEach(function (pin, i) {
+      if (!stacked()) pins.forEach(function (pin, i) {
         if (!found[i]) return;
         var a = pin.getBoundingClientRect(), c = items[i].getBoundingClientRect();
         var x1 = a.left + a.width / 2 - b.left, y1 = a.top + a.height / 2 - b.top;
-        var beside = c.left >= a.right - 2;       /* the list is beside the picture, or under it */
-        var x2 = (beside ? c.left : c.left + 14) - b.left, y2 = (beside ? c.top + c.height / 2 : c.top) - b.top;
+        var x2 = c.left - b.left, y2 = c.top + c.height / 2 - b.top;
+        var dx = x2 - x1, dy = y2 - y1, len = Math.sqrt(dx * dx + dy * dy) || 1, r = a.width / 2;
+        x1 += dx / len * r; y1 += dy / len * r;                 /* the line starts at the pin's rim, so the number stays readable */
         out += '<line class="pins__halo" x1="' + x1 + '" y1="' + y1 + '" x2="' + x2 + '" y2="' + y2 + '"/>' +
                '<line class="pins__line" x1="' + x1 + '" y1="' + y1 + '" x2="' + x2 + '" y2="' + y2 + '"/>';
       });
       lines.innerHTML = out;
     }
-    function reveal(i) {
-      if (found[i]) return;
-      found[i] = 1;
-      pins[i].classList.add('is-found'); items[i].classList.add('is-found');
-      draw();
-      if (Object.keys(found).length === spots.length && opts.onDone) opts.onDone();
+    function zoomInto(i) {
+      var z = zooms[i], sb = stage.getBoundingClientRect(); if (!z || !opts.zoom || !sb.width) return;
+      var mag = 2.6, w = 64;
+      z.style.backgroundImage = 'url("' + opts.zoom + '")';
+      z.style.backgroundSize = (mag * sb.width) + 'px auto';
+      z.style.backgroundPosition = (-(spots[i].x / 100 * mag * sb.width - w / 2)) + 'px ' + (-(spots[i].y / 100 * mag * sb.height - w / 2)) + 'px';
     }
-    spots.forEach(function (s, i) {
+    function toggle(i, on) {
+      var now = on == null ? !found[i] : !!on;
+      if (now === !!found[i]) return;
+      if (now) { found[i] = 1; zoomInto(i); } else delete found[i];
+      pins[i].classList.toggle('is-found', now); items[i].classList.toggle('is-found', now);
+      pins[i].setAttribute('aria-pressed', now ? 'true' : 'false');
+      layout();
+      if (opts.onChange) opts.onChange(Object.keys(found).length, spots.length);
+    }
+    spots.forEach(function (sp, i) {
       var pin = h('button', 'pin' + (opts.pinClass ? ' ' + opts.pinClass : ''), String(i + 1)); pin.type = 'button';
-      pin.style.left = s.x + '%'; pin.style.top = s.y + '%';
-      pin.setAttribute('aria-label', (opts.pinWord || 'Spot') + ' ' + (i + 1));
-      pin.addEventListener('click', function () { reveal(i); });
+      pin.style.left = sp.x + '%'; pin.style.top = sp.y + '%';
+      pin.setAttribute('aria-label', (opts.pinWord || 'Spot') + ' ' + (i + 1) + ': ' + sp.label); pin.setAttribute('aria-pressed', 'false');
+      pin.addEventListener('click', function () { toggle(i); });
       stage.appendChild(pin); pins.push(pin);
-      var li = h('li', 'pins__item', '<span class="n">' + (i + 1) + '</span><span class="pins__txt"><b>' + esc(s.label) + '</b>' + (s.note ? '<small>' + esc(s.note) + '</small>' : '') + '</span>');
+      var li = h('li', 'pins__item', '<span class="n">' + (i + 1) + '</span><span class="pins__txt"><b>' + esc(sp.label) + '</b>' + (sp.note ? '<small>' + esc(sp.note) + '</small>' : '') + '</span>' + (opts.zoom ? '<span class="pins__zoom" aria-hidden="true"></span>' : ''));
       li.setAttribute('role', 'button'); li.tabIndex = 0;
-      li.addEventListener('click', function () { reveal(i); });
-      li.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); reveal(i); } });
-      list.appendChild(li); items.push(li);
+      li.addEventListener('click', function () { toggle(i); });
+      li.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(i); } });
+      list.appendChild(li); items.push(li); zooms.push(li.querySelector('.pins__zoom'));
     });
-    var im = stage.querySelector('img'); if (im) im.addEventListener('load', draw);
-    window.addEventListener('resize', draw);
-    return { reveal: reveal, draw: draw, all: function () { spots.forEach(function (s, i) { reveal(i); }); } };
+    var im = stage.querySelector('img');
+    if (im) { im.addEventListener('load', layout); if (im.complete) setTimeout(layout, 0); }
+    window.addEventListener('resize', layout);
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(layout);
+    setTimeout(layout, 50);
+    return { toggle: toggle, layout: layout, count: function () { return Object.keys(found).length; },
+             all: function (on) { spots.forEach(function (sp, i) { toggle(i, on); }); } };
   }
 
   /* ---------- finder: find the features on a photograph ---------- */
   function finder(spec) {
     var box = h('div', 'widget'); if (spec.group) box.setAttribute('data-group', spec.group);
     var g = GROUP[spec.group] || {};
-    box.appendChild(head(spec.title || ('Find the features: ' + (g.label || '')), spec.ask || 'Click each numbered pin on the photograph, or a feature in the list. A line is ruled from the pin to its name, the way a labelled figure is drawn.', 'Click the pins'));
+    box.appendChild(head(spec.title || ('Find the features: ' + (g.label || '')), spec.ask || 'Click a numbered pin on the photograph, or its name beside it, and a line is ruled between them — the way a labelled figure is drawn. Click again to take the line away. The small picture beside a name is a close-up of that feature.', 'Click the pins'));
     var wrap = h('div', 'finder pins');
     var stage = h('div', 'finder__stage');
     var pic = picture(spec); if (pic) stage.appendChild(pic.img);
     var list = h('ul', 'finder__list');
     var left = h('div', 'finder__left'); left.appendChild(stage);
+    var done = null;
     var ctl = pinned(wrap, stage, spec.spots, list, {
-      onDone: function () { if (!box.querySelector('.widget__done')) box.appendChild(h('p', 'widget__done', spec.done || ('All ' + spec.spots.length + ' found. Those are the features that put it in this group.'))); }
+      zoom: pic ? pic.base + '-1400.jpg' : null,
+      onChange: function (n, total) {
+        all.textContent = n === total ? 'Hide every label' : 'Show every label';
+        if (n === total && !done) { done = h('p', 'widget__done', spec.done || ('All ' + total + ' found. Those are the features that put it in this group.')); box.appendChild(done); }
+        if (n < total && done) { done.remove(); done = null; }
+      }
     });
     var tools = h('div', 'finder__tools');
     var all = h('button', 'wbtn wbtn--quiet', 'Show every label'); all.type = 'button';
-    all.addEventListener('click', function () { ctl.all(); });
+    all.addEventListener('click', function () { ctl.all(ctl.count() < spec.spots.length); });
     tools.appendChild(all);
     if (pic && pic.credit) tools.appendChild(h('p', 'finder__credit', pic.credit));
     left.appendChild(tools);
@@ -181,9 +246,54 @@
       var dg = DIAGRAMS[spec.diagram];
       var dwrap = h('details', 'diag__wrap'); dwrap.open = true;
       dwrap.innerHTML = '<summary>The same body plan as a labelled diagram</summary>';
-      var fig = h('figure', 'diag', dg.svg + '<figcaption>' + esc(dg.caption) + '</figcaption>');
+      var fig = h('figure', 'diag', dg.svg +
+        (/grey label/.test(dg.caption) ? '<p class="diag__key"><b>Green</b> — a word you need for 0610. <i>Grey</i> — not needed; it is there only so the picture makes sense.</p>' : '') +
+        '<figcaption>' + esc(dg.caption) + '</figcaption>');
       dwrap.appendChild(fig); box.appendChild(dwrap);
     }
+    if (spec.note) box.appendChild(h('p', 'widget__note', spec.note));
+    return box;
+  }
+
+  /* ---------- drawphotos: two real drawings of one specimen ---------- */
+  function drawphotos(spec) {
+    var box = h('div', 'widget');
+    box.appendChild(head(spec.title || 'One specimen, drawn twice', spec.ask || 'Both are real drawings of the same slice. Find every fault on the first — click the pins, or the faults beside it — then see what the second did instead.', 'Find the faults'));
+    /* the one that loses marks: pins on it, its faults in a column beside it */
+    var bad = h('div', 'dp2__block');
+    bad.appendChild(h('div', 'dp__lab dp__lab--bad', '✗ ' + esc(spec.bad.title || 'This one loses marks') + ' — ' + spec.faults.length + ' faults to find'));
+    var wrap = h('div', 'finder pins');
+    var stage = h('div', 'finder__stage');
+    var pic = picture(spec.bad); if (pic) stage.appendChild(pic.img);
+    var list = h('ul', 'finder__list');
+    var left = h('div', 'finder__left'); left.appendChild(stage);
+    var done = null;
+    var ctl = pinned(wrap, stage, spec.faults, list, { pinClass: 'pin--fault', pinWord: 'Fault', zoom: pic ? pic.base + '-1400.jpg' : null,
+      onChange: function (n, total) {
+        all.textContent = n === total ? 'Hide the faults' : 'Show every fault';
+        if (n === total && !done) { done = h('p', 'widget__done', 'All ' + total + ' faults found. Each one is a mark lost on the criteria: ' + esc(spec.criteria || 'S, O, L, D1, D2') + '.'); bad.appendChild(done); }
+        if (n < total && done) { done.remove(); done = null; }
+      } });
+    var tools = h('div', 'finder__tools');
+    var all = h('button', 'wbtn wbtn--quiet', 'Show every fault'); all.type = 'button';
+    all.addEventListener('click', function () { ctl.all(ctl.count() < spec.faults.length); });
+    tools.appendChild(all);
+    if (pic && pic.credit) tools.appendChild(h('p', 'finder__credit', pic.credit));
+    left.appendChild(tools);
+    wrap.appendChild(left); wrap.appendChild(list); bad.appendChild(wrap);
+    /* the one that scores, with what it did instead */
+    var good = h('div', 'dp2__block');
+    good.appendChild(h('div', 'dp__lab dp__lab--good', '✓ ' + esc(spec.good.title || 'This one scores')));
+    var gwrap = h('div', 'finder');
+    var gstage = h('div', 'finder__stage');
+    var gpic = picture(spec.good);
+    if (gpic) { gstage.appendChild(gpic.img); gpic.img.style.cursor = 'zoom-in'; gpic.img.addEventListener('click', function () { if (global.LabLightbox) global.LabLightbox(gpic.img.currentSrc || gpic.img.src, spec.good.title || 'The drawing that scores', 'Drawing', gpic.credit); }); }
+    var gleft = h('div', 'finder__left'); gleft.appendChild(gstage);
+    if (gpic && gpic.credit) gleft.appendChild(h('p', 'finder__credit', gpic.credit));
+    gwrap.appendChild(gleft);
+    gwrap.appendChild(h('ul', 'dp2__fixes', (spec.fixes || []).map(function (f) { return '<li>' + esc(f) + '</li>'; }).join('')));
+    good.appendChild(gwrap);
+    box.appendChild(bad); box.appendChild(good);
     if (spec.note) box.appendChild(h('p', 'widget__note', spec.note));
     return box;
   }
@@ -428,8 +538,11 @@
   }
   function both(d, cx) { return '<path d="' + d + '"/><path d="' + mir(d, cx) + '"/>'; }
   function joints(pts, cx) { cx = cx || MX; return pts.map(function (p) { return '<circle cx="' + p[0] + '" cy="' + p[1] + '" r="1.7"/><circle cx="' + (2 * cx - p[0]) + '" cy="' + p[1] + '" r="1.7"/>'; }).join(''); }
-  function lab(x1, y1, x2, y2, text, anchor) {
-    return '<line class="diag__lead" x1="' + x1 + '" y1="' + y1 + '" x2="' + x2 + '" y2="' + y2 + '"/><text class="diag__lab" x="' + (x2 + (anchor === 'end' ? -4 : 4)) + '" y="' + (y2 + 3.5) + '"' + (anchor ? ' text-anchor="' + anchor + '"' : '') + '>' + text + '</text>';
+  /* a label the syllabus does not ask a candidate to produce is drawn in grey, and the
+     caption says so: the diagram completes the picture without adding to what must be learnt */
+  function lab(x1, y1, x2, y2, text, anchor, extra) {
+    if (anchor === 'extra') { extra = true; anchor = null; }
+    return '<line class="diag__lead' + (extra ? ' diag__lead--extra' : '') + '" x1="' + x1 + '" y1="' + y1 + '" x2="' + x2 + '" y2="' + y2 + '"/><text class="diag__lab' + (extra ? ' diag__lab--extra' : '') + '" x="' + (x2 + (anchor === 'end' ? -4 : 4)) + '" y="' + (y2 + 3.5) + '"' + (anchor ? ' text-anchor="' + anchor + '"' : '') + '>' + text + '</text>';
   }
   function segs21() { var s = ''; for (var i = 0; i < 21; i++) s += '<rect class="' + (i % 2 ? 'diag__thorax' : 'diag__abd') + '" x="' + (66 + 13 * i) + '" y="92" width="13" height="26" rx="2"/>'; return s; }
   function legs20() { var s = ''; for (var i = 0; i < 20; i++) { var x = 72.5 + 13 * i; s += '<path d="M' + x + ' 92 L' + (x - 3.5) + ' 76 L' + (x + 4.5) + ' 62"/><path d="M' + x + ' 118 L' + (x - 3.5) + ' 134 L' + (x + 4.5) + ' 148"/>'; } return s; }
@@ -449,7 +562,7 @@
         lab(186, 8, 300, 12, 'antenna — one pair') + lab(171, 46, 300, 40, 'compound eye') + lab(172, 58, 300, 62, 'head') + lab(172, 68, 300, 90, 'thorax — legs and wings attach here') +
         lab(270, 140, 300, 150, 'forewing') + lab(236, 168, 300, 176, 'hindwing') + lab(216, 166, 300, 210, 'jointed leg — three pairs') + lab(182, 200, 300, 244, 'abdomen') +
         '<text class="diag__title" x="8" y="280">A generalised insect, from above</text></svg>' },
-    arachnid: { caption: 'A spider, from above: two body parts — the cephalothorax and the abdomen — four pairs of jointed legs, simple eyes, a pair of pedipalps, and no antennae or wings.',
+    arachnid: { caption: 'A spider, from above: two body parts — the cephalothorax and the abdomen — four pairs of jointed legs, simple eyes, and no antennae or wings. The grey labels are there to complete the picture; 0610 does not ask for them.',
       svg: '<svg viewBox="0 0 520 290" class="diag__svg" role="img" aria-label="A labelled diagram of a spider from above">' +
         '<g class="diag__legs">' + both('M176 92 L208 64 L240 52 L262 26') + both('M178 104 L214 100 L246 108 L272 96') + both('M178 116 L210 124 L236 144 L250 166') + both('M176 128 L204 152 L222 190 L228 224') +
         joints([[208, 64], [240, 52], [214, 100], [246, 108], [210, 124], [236, 144], [204, 152], [222, 190]]) + '</g>' +
@@ -458,10 +571,10 @@
         '<ellipse class="diag__head" cx="150" cy="108" rx="27" ry="32"/>' +
         '<g class="diag__eye"><circle cx="140" cy="84" r="2"/><circle cx="147" cy="82" r="2"/><circle cx="153" cy="82" r="2"/><circle cx="160" cy="84" r="2"/><circle cx="137" cy="90" r="1.8"/><circle cx="163" cy="90" r="1.8"/><circle cx="144" cy="76" r="1.8"/><circle cx="156" cy="76" r="1.8"/></g>' +
         '<ellipse class="diag__abd" cx="150" cy="200" rx="42" ry="54"/><circle class="diag__seg" cx="146" cy="252" r="2.5"/><circle class="diag__seg" cx="154" cy="252" r="2.5"/>' +
-        lab(184, 46, 300, 40, 'pedipalp — a feeler, not a leg') + lab(161, 84, 300, 66, 'simple eyes — eight') + lab(170, 134, 300, 130, 'cephalothorax — head and thorax in one') +
-        lab(236, 144, 300, 160, 'jointed leg — four pairs') + lab(188, 200, 300, 200, 'abdomen') + lab(154, 254, 300, 250, 'spinnerets') +
+        lab(184, 46, 300, 40, 'pedipalp — a feeler, not a leg', 'extra') + lab(161, 84, 300, 66, 'simple eyes — eight') + lab(170, 134, 300, 130, 'cephalothorax — head and thorax in one') +
+        lab(236, 144, 300, 160, 'jointed leg — four pairs') + lab(188, 200, 300, 200, 'abdomen') + lab(154, 254, 300, 250, 'spinnerets', 'extra') +
         '<text class="diag__title" x="8" y="280">A spider, from above</text></svg>' },
-    crustacean: { caption: 'A crab, from above: a hard carapace over a two-part body (the abdomen is folded underneath), five pairs of legs of which the first is a claw, eyes on stalks, and two pairs of antennae.',
+    crustacean: { caption: 'A crab, from above: a hard exoskeleton over a two-part body (the abdomen is folded underneath), five pairs of legs of which the first is a claw, and two pairs of antennae. The grey label is there to complete the picture; 0610 does not ask for it.',
       svg: '<svg viewBox="0 0 560 290" class="diag__svg" role="img" aria-label="A labelled diagram of a crab from above">' +
         '<g class="diag__legs">' + both('M236 136 L268 130 L292 146 L306 172', 170) + both('M236 152 L270 154 L294 174 L304 202', 170) + both('M234 168 L266 178 L286 204 L292 232', 170) + both('M228 184 L256 200 L270 228 L272 256', 170) +
         joints([[268, 130], [292, 146], [270, 154], [294, 174], [266, 178], [286, 204], [256, 200], [270, 228]], 170) +
@@ -470,17 +583,17 @@
         '<g class="diag__ant">' + both('M164 74 L160 60', 170) + both('M196 80 L210 56', 170) + '</g>' +
         '<path class="diag__head" d="M104 150 C104 104 130 74 170 72 C210 74 236 104 236 150 C236 186 210 208 170 208 C130 208 104 186 104 150 Z"/>' +
         '<g class="diag__legs">' + both('M152 76 L148 62', 170) + '</g><circle class="diag__eye" cx="147" cy="58" r="4"/><circle class="diag__eye" cx="193" cy="58" r="4"/>' +
-        lab(210, 56, 340, 30, 'antennae — two pairs, one short') + lab(196, 58, 340, 52, 'eye on a stalk') + lab(326, 84, 340, 96, 'claw — the first pair of legs') +
-        lab(220, 100, 340, 124, 'carapace — exoskeleton over the body') + lab(294, 174, 340, 180, 'walking legs — four more pairs') + lab(170, 206, 340, 232, 'the abdomen is folded under the body') +
+        lab(210, 56, 340, 30, 'antennae — two pairs, one short') + lab(196, 58, 340, 52, 'eye on a stalk', 'extra') + lab(326, 84, 340, 96, 'claw — the first pair of legs') +
+        lab(220, 100, 340, 124, 'exoskeleton over the body') + lab(294, 174, 340, 180, 'walking legs — four more pairs') + lab(170, 206, 340, 232, 'the abdomen is folded under the body') +
         '<text class="diag__title" x="8" y="280">A crab, from above</text></svg>' },
-    myriapod: { caption: 'A centipede, from above: a head with one pair of antennae and a pair of poison claws beneath it, then a trunk of many similar segments with one pair of jointed legs on each (a millipede has two pairs). The last pair of legs is longer.',
+    myriapod: { caption: 'A centipede, from above: a head with one pair of antennae, then many similar segments with one pair of jointed legs on each (a millipede has two pairs). The grey labels are there to complete the picture; 0610 does not ask for them.',
       svg: '<svg viewBox="0 0 450 210" class="diag__svg" role="img" aria-label="A labelled diagram of a centipede from above">' +
         '<g class="diag__legs">' + legs20() + '<path d="M332 105 L364 90 L392 96"/><path d="M332 105 L364 120 L392 114"/></g>' +
         '<g class="diag__ant"><path d="M34 99 L18 84 L8 66"/><path d="M34 111 L18 126 L8 144"/><circle cx="18" cy="84" r="1.7"/><circle cx="18" cy="126" r="1.7"/></g>' +
         '<g class="diag__claw"><path d="M36 96 C28 90 22 96 26 104"/><path d="M36 114 C28 120 22 114 26 106"/></g>' + segs21() +
         '<ellipse class="diag__head" cx="48" cy="105" rx="16" ry="13"/><g class="diag__eye"><circle cx="40" cy="99" r="1.4"/><circle cx="43" cy="96" r="1.4"/><circle cx="46" cy="94" r="1.4"/></g>' +
         lab(8, 66, 8, 44, 'one pair of antennae') + lab(48, 92, 48, 62, 'head') + lab(150, 92, 150, 44, 'a segment') + lab(247, 62, 247, 44, 'a pair of legs on every segment') +
-        lab(26, 106, 26, 170, 'poison claws, under the head') + lab(392, 114, 392, 170, 'last pair of legs, longer', 'end') +
+        lab(26, 106, 26, 170, 'poison claws, under the head', 'extra') + lab(392, 114, 392, 170, 'last pair of legs, longer', 'end', true) +
         '<text class="diag__title" x="8" y="202">A centipede, from above</text></svg>' }
   };
   function svgFor(name) { return DIAGRAMS[name] ? DIAGRAMS[name].svg : ''; }
