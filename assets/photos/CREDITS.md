@@ -51,6 +51,7 @@ Commons, CC BY 4.0, shown full frame at 900 and 1400 px wide.
 | `finder-myriapods-*` | [Scolopendra canidens.png](https://commons.wikimedia.org/wiki/File:Scolopendra_canidens.png) — a centipede on white | Denis Potanin |
 | `finder-mammals-*` | [Rode vos - red fox - Vulpes vulpes 8.jpg](https://commons.wikimedia.org/wiki/File:Rode_vos_-_red_fox_-_Vulpes_vulpes_8.jpg) — a red fox, close | BouketenCate |
 | `finder-fish-*` | [Perca fluviatilis 148981408.jpg](https://commons.wikimedia.org/wiki/File:Perca_fluviatilis_148981408.jpg) — a perch, side on | Enrico Tomschke |
+| `finder-ferns-*` | [Polypodium glycyrrhiza 6878343.jpg](https://commons.wikimedia.org/wiki/File:Polypodium_glycyrrhiza_6878343.jpg) — the underside of a fern frond, with its spore cases | Alex Abair |
 | `finder-monocots-*` | [Iris leaves with glittering rain drops…](https://commons.wikimedia.org/wiki/File:Iris_leaves_with_glittering_rain_drops_in_morning_sunlight_Dnipro_2026-06-10_by_baby-bear.org_Natalka-Ukraine.jpg) — parallel veins | Natalka Ukraine |
 | `finder-dicots-*` | [Leaf veining.jpg](https://commons.wikimedia.org/wiki/File:Leaf_veining.jpg) — a midrib and its net of veins | Kateryna Martyniuk |
 
