@@ -51,7 +51,7 @@
     naming:  ['species','genus','genera','binomial system','binomial','binomial name','binomial names','scientific name','scientific names',
               'classification','classification system','classification systems','classify','classified','classifying',
               'dichotomous key','dichotomous keys','kingdom','kingdoms','taxonomy','taxon','taxa','phylum','phyla','class','order','family',
-              'evolutionary relationships','evolutionary relationship','common ancestor','ancestor','ancestry','linnaeus','dna','base sequence','base sequences','bases',
+              'evolutionary relationships','evolutionary relationship','common ancestor','ancestor','ancestry','linnaeus','carl linnaeus','carolus linnaeus','dna','base sequence','base sequences','bases',
               'five kingdoms','fertile offspring','interbreed'],
     plain:   ['cell wall','cell walls','nucleus','nuclei','chloroplast','chloroplasts','cellulose','chitin','photosynthesis','morphology','anatomy',
               'autotrophic nutrition','heterotrophic nutrition','saprotrophic nutrition','parasitic nutrition','autotrophic','heterotrophic','saprotrophic','autotroph','autotrophs','heterotroph','heterotrophs',
@@ -96,6 +96,20 @@
     ['plasmids', 'prokaryotes', 'Small extra rings of DNA in a bacterium: <b>plasmids</b>. The main DNA is one circle, free in the cytoplasm.'],
     ['protein coat', 'viruses', 'A virus is genetic material inside a <b>protein coat</b>, and nothing else. No cytoplasm, no membrane, no cell.']
   ].forEach(function (e) { var p = pic(e[1], e[2]); if (p) PEEK[e[0]] = p; });
+
+  /* The people. A scientist named in the text is clickable: their portrait, what they did,
+     and why it still shows up in the names students write. */
+  var WHO = {
+    'linnaeus': ['linnaeus-900.jpg',
+      '<b>Carl Linnaeus</b> (1707–1778), Swedish botanist and physician — the <b>Father of Taxonomy</b>. ' +
+      'In <i>Systema Naturae</i> he set out the two-part naming system every biologist still uses, and the nested groups ' +
+      'from kingdom down to species. He described about 12,000 species himself, and sent students round the world to bring back more. ' +
+      'That is why you meet an <b>L.</b> after some names — <i>Bellis perennis</i> L., the daisy: the letter says Linnaeus was the ' +
+      'first to describe and name it. The name is the two words; the letter after it only records who named them.',
+      'Portrait by Alexander Roslin, 1775 · public domain · Wikimedia Commons']
+  };
+  Object.keys(WHO).forEach(function (k) { PEEK[k] = WHO[k]; });
+  PEEK['carl linnaeus'] = WHO['linnaeus']; PEEK['carolus linnaeus'] = WHO['linnaeus'];
 
   var JUMP = {};
   function jump(list, st) { list.forEach(function (w) { JUMP[w] = st; }); }

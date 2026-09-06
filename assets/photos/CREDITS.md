@@ -54,6 +54,12 @@ Commons, CC BY 4.0, shown full frame at 900 and 1400 px wide.
 | `finder-monocots-*` | [Iris leaves with glittering rain drops…](https://commons.wikimedia.org/wiki/File:Iris_leaves_with_glittering_rain_drops_in_morning_sunlight_Dnipro_2026-06-10_by_baby-bear.org_Natalka-Ukraine.jpg) — parallel veins | Natalka Ukraine |
 | `finder-dicots-*` | [Leaf veining.jpg](https://commons.wikimedia.org/wiki/File:Leaf_veining.jpg) — a midrib and its net of veins | Kateryna Martyniuk |
 
+## The people
+
+| File | Source | Licence |
+|---|---|---|
+| `linnaeus-900.jpg` | [Carl von Linné](https://commons.wikimedia.org/wiki/File:Carl_von_Linn%C3%A9.jpg), painted by Alexander Roslin, 1775 | Public domain |
+
 ## The drawings
 
 `orange-bad-*` and `orange-good-*` are Dr Mompel's own photographs of an orange slice drawn twice,

@@ -444,7 +444,7 @@
   /* ---------- binomial: build a name, watch the rules ---------- */
   function binomial(spec) {
     var box = h('div', 'widget');
-    box.appendChild(head(spec.title || 'Build a scientific name', spec.ask || 'Type a genus and a species and watch the rules check themselves. Try one of the examples, then break a rule on purpose.', 'Type a name'));
+    box.appendChild(head(spec.title || 'Build a scientific name — and the rules', spec.ask || 'The five rules are here, and they check themselves as you type. Try an example, then break a rule on purpose and watch which one turns red.', 'Type a name'));
     var wrap = h('div', 'binom');
     var gl = h('label', null, 'Genus'), sl = h('label', null, 'species');
     var gi = document.createElement('input'), si = document.createElement('input');
@@ -455,7 +455,12 @@
     var hd = h('div', 'binom__card', '<small>Handwritten</small><span class="binom__hand"></span>');
     var ab = h('div', 'binom__card', '<small>After the first time</small><span class="binom__abbr"></span>');
     out.appendChild(pr); out.appendChild(hd); out.appendChild(ab);
-    var rules = h('ul', 'binom__rules', '<li data-r="two">Two words: the genus, then the species</li><li data-r="cap">The genus starts with a capital letter</li><li data-r="low">The species is all lower case</li><li data-r="ital">Printed in italics, or underlined by hand</li>');
+    var rules = h('ul', 'binom__rules',
+      '<li data-r="two"><b>Two words</b>, in this order: the <span class="binom__g">genus</span>, then the <span class="binom__s">species</span></li>' +
+      '<li data-r="cap">The <span class="binom__g">genus</span> starts with a <b>capital letter</b> — <i>Panthera</i></li>' +
+      '<li data-r="low">The <span class="binom__s">species</span> is <b>all lower case</b> — <i>leo</i>, never <i>Leo</i></li>' +
+      '<li data-r="ital">Printed in <b><i>italics</i></b>; handwritten, <b>underline both words</b></li>' +
+      '<li data-r="abbr">After the first time, shorten the genus to its <b>initial and a full stop</b> — <i>P. leo</i></li>');
     var eg = h('p', 'binom__eg', 'Try: ' + (spec.examples || [['Panthera', 'leo'], ['Panthera', 'pardus'], ['Homo', 'sapiens'], ['Canis', 'lupus']]).map(function (e) { return '<button type="button" data-g="' + esc(e[0]) + '" data-s="' + esc(e[1]) + '">' + esc(e[0]) + ' ' + esc(e[1]) + '</button>'; }).join(' '));
     eg.addEventListener('click', function (e) { var b = e.target.closest('button'); if (!b) return; gi.value = b.getAttribute('data-g'); si.value = b.getAttribute('data-s'); paint(); });
     function paint() {
@@ -467,10 +472,11 @@
       rules.querySelector('[data-r="cap"]').className = g ? (cap ? 'ok' : 'no') : '';
       rules.querySelector('[data-r="low"]').className = s ? (low ? 'ok' : 'no') : '';
       rules.querySelector('[data-r="ital"]').className = g && s ? 'ok' : '';
+      rules.querySelector('[data-r="abbr"]').className = g && s ? 'ok' : '';
       var G = g ? g[0].toUpperCase() + g.slice(1).toLowerCase() : '', S = s.toLowerCase();
-      pr.querySelector('.binom__print').textContent = (G || 'Genus') + ' ' + (S || 'species');
-      hd.querySelector('.binom__hand').innerHTML = '<u>' + esc(G || 'Genus') + '</u> <u>' + esc(S || 'species') + '</u>';
-      ab.querySelector('.binom__abbr').textContent = (G ? G[0] + '.' : 'G.') + ' ' + (S || 'species');
+      pr.querySelector('.binom__print').innerHTML = '<span class="binom__g">' + esc(G || 'Genus') + '</span> <span class="binom__s">' + esc(S || 'species') + '</span>';
+      hd.querySelector('.binom__hand').innerHTML = '<u class="binom__g">' + esc(G || 'Genus') + '</u> <u class="binom__s">' + esc(S || 'species') + '</u>';
+      ab.querySelector('.binom__abbr').innerHTML = '<span class="binom__g">' + esc(G ? G[0] + '.' : 'G.') + '</span> <span class="binom__s">' + esc(S || 'species') + '</span>';
     }
     gi.addEventListener('input', paint); si.addEventListener('input', paint); paint();
     wrap.appendChild(gl); wrap.appendChild(sl); wrap.appendChild(out); wrap.appendChild(rules); wrap.appendChild(eg);
