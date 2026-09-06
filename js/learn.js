@@ -194,12 +194,14 @@
       if (opts.onChange) opts.onChange(Object.keys(found).length, spots.length);
     }
     spots.forEach(function (sp, i) {
-      var pin = h('button', 'pin' + (opts.pinClass ? ' ' + opts.pinClass : ''), String(i + 1)); pin.type = 'button';
+      var pin = h('button', 'pin' + (opts.pinClass ? ' ' + opts.pinClass : '') + (sp.extra ? ' pin--extra' : ''), String(i + 1)); pin.type = 'button';
       pin.style.left = sp.x + '%'; pin.style.top = sp.y + '%';
       pin.setAttribute('aria-label', (opts.pinWord || 'Spot') + ' ' + (i + 1) + ': ' + sp.label); pin.setAttribute('aria-pressed', 'false');
       pin.addEventListener('click', function () { toggle(i); });
       stage.appendChild(pin); pins.push(pin);
-      var li = h('li', 'pins__item', '<span class="n">' + (i + 1) + '</span><span class="pins__txt"><b>' + esc(sp.label) + '</b>' + (sp.note ? '<small>' + esc(sp.note) + '</small>' : '') + '</span>' + (opts.zoom ? '<span class="pins__zoom" aria-hidden="true"></span>' : ''));
+      var li = h('li', 'pins__item' + (sp.extra ? ' pins__item--extra' : ''), '<span class="n">' + (i + 1) + '</span><span class="pins__txt"><b>' + esc(sp.label) + '</b>' +
+        (sp.extra ? '<span class="pins__tag">good to know · not asked in 0610</span>' : '') +
+        (sp.note ? '<small>' + esc(sp.note) + '</small>' : '') + '</span>' + (opts.zoom ? '<span class="pins__zoom" aria-hidden="true"></span>' : ''));
       li.setAttribute('role', 'button'); li.tabIndex = 0;
       li.addEventListener('click', function () { toggle(i); });
       li.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(i); } });
@@ -299,33 +301,6 @@
   }
 
   /* ---------- drawphotos: two real drawings of one specimen ---------- */
-  function drawphotos(spec) {
-    var box = h('div', 'widget');
-    box.appendChild(head(spec.title || 'One specimen, drawn twice', spec.ask || 'Both are real drawings of the same slice. Find every fault on the first — click the pins, or the faults in the list — then see what the second did instead.', 'Find the faults'));
-    var wrap = h('div', 'drawphotos');
-    var bad = h('div', 'dp2__half pins');
-    bad.appendChild(h('div', 'dp__lab dp__lab--bad', '✗ ' + esc(spec.bad.title || 'This one loses marks') + ' — ' + spec.faults.length + ' faults to find'));
-    var stage = h('div', 'finder__stage dp2__stage');
-    var pic = picture(spec.bad); if (pic) stage.appendChild(pic.img);
-    bad.appendChild(stage);
-    var list = h('ul', 'finder__list dp2__list');
-    bad.appendChild(list);
-    if (pic && pic.credit) bad.appendChild(h('p', 'finder__credit', pic.credit));
-    pinned(bad, stage, spec.faults, list, { pinClass: 'pin--fault', pinWord: 'Fault',
-      onDone: function () { if (!box.querySelector('.widget__done')) box.appendChild(h('p', 'widget__done', 'All ' + spec.faults.length + ' faults found. Each one is a mark lost on the criteria: ' + esc(spec.criteria || 'S, O, L, D1, D2') + '.')); } });
-    var good = h('div', 'dp2__half');
-    good.appendChild(h('div', 'dp__lab dp__lab--good', '✓ ' + esc(spec.good.title || 'This one scores')));
-    var gstage = h('div', 'finder__stage dp2__stage');
-    var gpic = picture(spec.good);
-    if (gpic) { gstage.appendChild(gpic.img); gpic.img.style.cursor = 'zoom-in'; gpic.img.addEventListener('click', function () { if (global.LabLightbox) global.LabLightbox(gpic.img.currentSrc || gpic.img.src, spec.good.title || 'The drawing that scores', 'Drawing', gpic.credit); }); }
-    good.appendChild(gstage);
-    good.appendChild(h('ul', 'dp2__fixes', (spec.fixes || []).map(function (f) { return '<li>' + esc(f) + '</li>'; }).join('')));
-    if (gpic && gpic.credit) good.appendChild(h('p', 'finder__credit', gpic.credit));
-    wrap.appendChild(bad); wrap.appendChild(good); box.appendChild(wrap);
-    if (spec.note) box.appendChild(h('p', 'widget__note', spec.note));
-    return box;
-  }
-
   /* ---------- dna: an alignment, the way MEGA shows one ---------- */
   function seqView(spec, opts) {
     opts = opts || {};
