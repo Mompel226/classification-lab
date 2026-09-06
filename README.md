@@ -33,11 +33,11 @@ skill and his assessed arthropod drawing).
 | Feature finder | finds the numbered pins on a close photograph of the group; a found feature is named in the column beside the picture and joined to its pin by a ruled line, so nothing is written over the animal; the four arthropod groups also carry a labelled diagram of the body plan |
 | DNA alignment | a MEGA-style viewer: show identical bases as dots, mark the differences, count them, rank the relatives |
 | Key runner | runs a dichotomous key one step at a time on a pictured specimen, beside the same key printed |
-| Name builder | types a genus and species and watches the four rules check themselves |
+| Name builder | the five rules for writing a scientific name, checking themselves as the student types a genus and species |
 | Kingdom cards | opens a kingdom, which lights on the tree, and shows its four cell questions |
 | Drawings, twice | Dr Mompel's own photographs of an orange slice drawn badly and then well: click the seven faults on the first, read what the second did instead |
 
-**61 questions** across nine kinds: fill the gaps, multiple choice, put in order, match up, sort into
+**64 questions** across nine kinds: fill the gaps, multiple choice, put in order, match up, sort into
 groups, drag & drop, and two new to this lab — **tick the grid** (Am I alive? · which group has what) and
 **find it on the picture** (click the features on a photograph, or the faults on a drawing). A question can
 show a DNA alignment or a printed key beside its prompt.

@@ -959,11 +959,15 @@ svg.lit .kl--all.is-on{opacity:1}
 .binom__hand{font-size:19px;font-family:"Comic Sans MS","Segoe Print","Bradley Hand",cursive}
 .binom__hand u{text-decoration-thickness:1.5px;text-underline-offset:4px}
 .binom__abbr{font-size:19px;font-style:italic}
-.binom__rules{grid-column:1 / -1;margin:6px 0 0;padding:0;list-style:none;display:flex;flex-wrap:wrap;gap:6px 14px;font-size:13px}
-.binom__rules li{padding-left:20px;position:relative;color:var(--grey)}
+.binom__rules{grid-column:1 / -1;margin:8px 0 0;padding:10px 12px;list-style:none;display:flex;flex-direction:column;gap:7px;font-size:14px;
+  border:1.5px solid var(--k-naming);border-radius:var(--r);background:#fff}
+.binom__rules::before{content:"The rules";display:block;font-size:11px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--k-naming);margin-bottom:2px}
+.binom__rules li{padding-left:22px;position:relative;color:#3C3C3C;line-height:1.45}
+.binom__g{color:#0B6E8C;font-weight:700}
+.binom__s{color:#A8461F;font-weight:700}
 .binom__rules li::before{content:"○";position:absolute;left:0;top:0}
-.binom__rules li.ok{color:var(--ok)} .binom__rules li.ok::before{content:"✓"}
-.binom__rules li.no{color:var(--bad)} .binom__rules li.no::before{content:"✗"}
+.binom__rules li.ok{color:var(--ok)} .binom__rules li.ok::before{content:"✓";font-weight:700}
+.binom__rules li.no{color:var(--bad);background:var(--bad-tint);border-radius:4px} .binom__rules li.no::before{content:"✗";font-weight:700}
 .binom__eg{grid-column:1 / -1;font-size:12.5px;color:var(--grey);margin:4px 0 0}
 .binom__eg button{font:inherit;font-size:12.5px;font-style:italic;color:var(--green);background:none;border:none;cursor:pointer;text-decoration:underline;padding:0 4px}
 @media (max-width:620px){ .binom__out{grid-template-columns:1fr} }
