@@ -73,6 +73,11 @@ window.GLOSSARY = [
   "def": "An organ that secretes into the alimentary canal but that food never passes through: the salivary glands, pancreas, liver and gall bladder."
  },
  {
+  "term": "autotrophic nutrition",
+  "def": "Making your own organic substances (food) from simple inorganic ones. In plants and the algae this is photosynthesis: carbon dioxide and water are built into glucose using energy from light. An organism that feeds this way is an autotroph.",
+  "sup": true
+ },
+ {
   "term": "backbone",
   "def": "The column of small bones (vertebrae) along the back of a vertebrate, around the nerve cord."
  },
@@ -163,6 +168,13 @@ window.GLOSSARY = [
  {
   "term": "cephalothorax",
   "def": "The front part of an arachnid’s body: the head and thorax fused into one, carrying the legs."
+ },
+ {
+  "term": "characteristic",
+  "def": "One of the seven processes that every living organism carries out — movement, respiration, sensitivity, growth, reproduction, excretion and nutrition. All living organisms share all seven, so a characteristic never tells one group from another; that is what a feature does.",
+  "also": [
+   "feature"
+  ]
  },
  {
   "term": "chemical digestion",
@@ -362,7 +374,10 @@ window.GLOSSARY = [
  },
  {
   "term": "feature",
-  "def": "Something about an organism itself — its body, its cells, how it reproduces — that can be used to classify it. Habitat and behaviour are not features."
+  "def": "Something an organism has, or does, that can be observed and used to place it in a group — feathers, jointed legs, a cell wall, seeds in a cone. Classification uses features. Habitat and behaviour are not features. Keep it apart from characteristic: the seven characteristics are the processes every living organism carries out.",
+  "also": [
+   "characteristic"
+  ]
  },
  {
   "term": "fern",
@@ -434,6 +449,16 @@ window.GLOSSARY = [
  {
   "term": "hepatocyte",
   "def": "A hepatocyte is a liver cell — the cells that make bile, store glycogen and deal with the absorbed food arriving in the hepatic portal vein.",
+  "ext": true
+ },
+ {
+  "term": "heterotrophic nutrition",
+  "def": "Taking in organic substances made by other organisms, and breaking them down to be absorbed and used. Animals, fungi and many prokaryotes and protoctists feed this way; each is a heterotroph.",
+  "sup": true
+ },
+ {
+  "term": "holozoic nutrition",
+  "def": "The heterotrophic nutrition of most animals: food is taken into the body, digested inside it, and the products absorbed. Fungi do the opposite — they digest outside and absorb after.",
   "ext": true
  },
  {
@@ -651,6 +676,11 @@ window.GLOSSARY = [
   "def": "The alkaline fluid the pancreas secretes into the duodenum; it contains amylase, protease (trypsin) and lipase."
  },
  {
+  "term": "parasitic nutrition",
+  "def": "Heterotrophic nutrition in which an organism (the parasite) feeds on or in a living host, harming it. Plasmodium, which causes malaria, feeds this way.",
+  "ext": true
+ },
+ {
   "term": "partially permeable",
   "def": "Describes a membrane that lets some substances through but not others, usually according to the size of the molecule. The membrane of every cell is partially permeable, and so is the wall of the small intestine."
  },
@@ -678,6 +708,10 @@ window.GLOSSARY = [
  {
   "term": "phloem",
   "def": "The tissue that carries sucrose and amino acids around a plant, from the leaves to wherever they are needed."
+ },
+ {
+  "term": "photosynthesis",
+  "def": "The process by which plants make glucose using energy from light: carbon dioxide + water → glucose + oxygen, with light absorbed by chlorophyll in the chloroplasts. It is how autotrophs feed."
  },
  {
   "term": "physical digestion",

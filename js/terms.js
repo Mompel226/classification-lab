@@ -54,12 +54,13 @@
               'evolutionary relationships','evolutionary relationship','common ancestor','ancestor','ancestry','linnaeus','dna','base sequence','base sequences','bases',
               'five kingdoms','fertile offspring','interbreed'],
     plain:   ['cell wall','cell walls','nucleus','nuclei','chloroplast','chloroplasts','cellulose','chitin','photosynthesis','morphology','anatomy',
+              'autotrophic nutrition','heterotrophic nutrition','saprotrophic nutrition','parasitic nutrition','autotrophic','heterotrophic','saprotrophic','autotroph','autotrophs','heterotroph','heterotrophs',
               'spore','spores','magnification','specimen','specimens','metabolism','dry mass','stimulus','stimuli','organism','organisms',
               'feature','features','characteristic','characteristics','exoskeleton','backbone','antenna','antennae','compound eye','compound eyes',
               'cephalothorax','abdomen','thorax','scales','feathers','fins','gills','lungs','moist skin','lateral line','segment','segments','segmented',
               'jointed legs','jointed limbs','wings','cilia','flagellum','flagella','habitat','xylem','phloem','sporangium','sporangia','fiddlehead',
               'parallel veins','network of veins','net-like veins','waterproof','internal fertilisation','external fertilisation','warm-blooded','cold-blooded',
-              'mammary glands','milk','multicellular','unicellular','single-celled','saprotrophic nutrition','parasite','parasites','pathogen','pathogens']
+              'mammary glands','milk','multicellular','unicellular','single-celled','parasite','parasites','pathogen','pathogens']
   };
 
   /* --------- what happens when you click a term ---------
@@ -105,7 +106,8 @@
   jump(['dichotomous key','dichotomous keys'], 'keys');
   jump(['kingdom','kingdoms','five kingdoms','animal','animals','animal kingdom','plant kingdom','fungus','fungi','fungal','prokaryote','prokaryotes','prokaryotic','bacterium','bacteria','bacterial',
         'protoctist','protoctists','amoeba','paramecium','alga','algae','plasmodium','saprophyte','saprophytes','saprotroph','saprotrophs','yeast','mould','moulds','mushroom','mushrooms',
-        'cell wall','cell walls','nucleus','nuclei','chloroplast','chloroplasts','cellulose','chitin','multicellular','unicellular','single-celled','circular dna'], 'kingdoms');
+        'cell wall','cell walls','nucleus','nuclei','chloroplast','chloroplasts','cellulose','chitin','multicellular','unicellular','single-celled','circular dna',
+        'autotrophic nutrition','heterotrophic nutrition','saprotrophic nutrition','parasitic nutrition','autotrophic','heterotrophic','saprotrophic','autotroph','autotrophs','heterotroph','heterotrophs','photosynthesis'], 'kingdoms');
   jump(['vertebrate','vertebrates','mammal','mammals','bird','birds','reptile','reptiles','amphibian','amphibians','fish','fishes','backbone','lungs','warm-blooded','cold-blooded','mammary glands','milk','lateral line','internal fertilisation','external fertilisation'], 'vertebrates');
   jump(['arthropod','arthropods','myriapod','myriapods','insect','insects','arachnid','arachnids','crustacean','crustaceans','centipede','centipedes','millipede','millipedes','spider','spiders','crab','crabs','abdomen','thorax','segment','segments','segmented','jointed legs','jointed limbs','wings'], 'arthropods');
   jump(['plant','plants','fern','ferns','flowering plant','flowering plants','monocotyledon','monocotyledons','monocot','monocots','dicotyledon','dicotyledons','dicot','dicots','cotyledon','cotyledons',
@@ -145,7 +147,10 @@
   /* _like this_ underlines a phrase the syllabus wants written; the sentinels keep the
      glossary pass off it, and a term inside it comes out plain */
   var U0 = '\u0001', U1 = '\u0002';
-  function underlineMarks(escaped) { return escaped.replace(/_([^_]{1,90})_/g, U0 + '$1' + U1); }
+  /* The cap is a guard against a stray underscore swallowing a paragraph, not a length rule:
+     it was 90, which silently left the respiration definition (99 characters) with its
+     underscores printed on the page. Long syllabus wordings are exactly what this marks. */
+  function underlineMarks(escaped) { return escaped.replace(/_([^_\n]{1,240})_/g, U0 + '$1' + U1); }
   function underlineTags(html) {
     return html.replace(new RegExp(U0 + '([\\s\\S]*?)' + U1, 'g'), function (m, inner) {
       return '<u class="syl-u">' + inner.replace(/<i class="tc__n">[^<]*<\/i>/g, '').replace(/<\/?[bi][^>]*>/g, '') + '</u>';
@@ -164,7 +169,12 @@
         act = ' data-peek="' + PEEK[low][0] + '" data-note="' + esc(PEEK[low][1]) + '"' +
               (PEEK[low][2] ? ' data-credit="' + esc(PEEK[low][2]) + '"' : '') + ' tabindex="0" role="button"';
         cls = ' is-peek';
-      } else if (JUMP[low] && JUMP[low] !== here) {
+      } else if (JUMP[low] === here) {
+        /* the station being read is the one that teaches this word: no link, no glossary
+           marker — the widget below it is where the definition is learnt */
+        return e[2] ? '<b class="tc tc--' + cat + '"><i class="tc__n">' + CATS[cat].n + '</i>' + m + '</b>'
+                    : '<b class="t t--' + cat + '">' + m + '</b>';
+      } else if (JUMP[low]) {
         act = ' data-jump="' + JUMP[low] + '" tabindex="0" role="button"';
         cls = ' is-jump';
       } else if (DEFINED[low] && !KNOWN[low]) {
