@@ -4,15 +4,20 @@
    A station's learn.interact lists them, each with `after` (the exam bullet it follows,
    or none for the end of the list) and a `type`:
      letters   the seven characteristics as tiles that open one at a time
-     finder    a photograph with numbered spots: find the features that place the group
-     dna       a DNA alignment the way MEGA shows one — dots, differences, counts
-     keyrun    a dichotomous key run one step at a time, beside the same key printed
-     binomial  a scientific name built and checked as it is typed
-     kingdoms  five cards; each lights its kingdom on the tree and shows its features
-     drawpair  two drawings of one specimen: click the faults on the one that would not score
-     table     a comparison table
-     photo     a photograph with its credit
-   Also exported for the questions: seqView, keyPrint, svgFor.
+     finder      a photograph with numbered pins: find the features that place the group.
+                 A found feature is named in the column beside the picture and joined to
+                 its pin by a ruled leader line, the way a labelled figure is drawn, so no
+                 label ever sits on the picture or on another label. A labelled diagram of
+                 the same body plan can sit under the photograph.
+     drawphotos  two real drawings of one specimen, photographed: find the faults on the
+                 one that would not score, and read what the other did instead
+     dna         a DNA alignment the way MEGA shows one — dots, differences, counts
+     keyrun      a dichotomous key run one step at a time, beside the same key printed
+     binomial    a scientific name built and checked as it is typed
+     kingdoms    five cards; each lights its kingdom on the tree and shows its features
+     table       a comparison table
+     photo       a photograph with its credit
+   Also exported for the questions: seqView, keyPrint, svgFor (the labelled diagrams).
    ============================================================ */
 (function (global) {
   'use strict';
@@ -29,20 +34,6 @@
     if (ask) frag.appendChild(h('p', 'widget__ask', ask));
     return frag;
   }
-  function photoOf(gid, alt) {
-    var g = GROUP[gid]; if (!g || !g.img) return null;
-    var im = new Image();
-    im.src = 'assets/photos/' + gid + '-900.jpg';
-    im.srcset = 'assets/photos/' + gid + '-900.jpg 900w, assets/photos/' + gid + '-1400.jpg 1400w';
-    im.sizes = '(max-width: 620px) 92vw, 480px';
-    im.alt = alt || g.img.alt || g.label; im.loading = 'lazy'; im.decoding = 'async';
-    return im;
-  }
-  function creditOf(gid) {
-    var g = GROUP[gid]; if (!g || !g.img) return '';
-    return (g.img.alt ? esc(g.img.alt) + ' · ' : '') + '<a href="' + esc(g.img.url) + '" target="_blank" rel="noopener">' + esc(g.img.credit) + '</a>';
-  }
-
   /* ---------- the seven small animations ---------- */
   var ICON = {
     move: '<svg viewBox="0 0 64 48"><g class="an-swim" fill="#0E4D5C"><path d="M12 24 C22 8 42 8 52 24 C42 40 22 40 12 24Z"/><path d="M50 24 L62 15 L62 33Z"/><circle cx="22" cy="21" r="2.2" fill="#fff"/></g></svg>',
@@ -96,41 +87,131 @@
     return box;
   }
 
-  /* ---------- finder: find the features on a photograph ---------- */
-  function finder(spec) {
-    var box = h('div', 'widget'); if (spec.group) box.setAttribute('data-group', spec.group);
-    var g = GROUP[spec.group] || {};
-    box.appendChild(head(spec.title || ('Find the features: ' + (g.label || '')), spec.ask || 'Click each numbered spot on the photograph, or a feature in the list, and see what it is.', 'Click the spots'));
-    var wrap = h('div', 'finder');
-    var stage = h('div', 'finder__stage');
-    var im = photoOf(spec.group, spec.alt); if (im) stage.appendChild(im);
-    var list = h('ul', 'finder__list');
-    var found = {}, spots = [], items = [];
-    function reveal(i) {
-      found[i] = 1;
-      spots[i].classList.add('is-found'); items[i].classList.add('is-found');
-      if (!spots[i].querySelector('.spot__lab')) spots[i].appendChild(h('span', 'spot__lab', esc(spec.spots[i].label)));
-      var n = Object.keys(found).length;
-      if (n === spec.spots.length && !box.querySelector('.widget__done')) box.appendChild(h('p', 'widget__done', spec.done || ('All ' + n + ' found. Those are the features that put it in this group.')));
+  /* a picture: the lab's own file (spec.img, with spec.credit and spec.url), or the tree's photograph of the group */
+  function picture(spec) {
+    var base, alt, credit, url;
+    if (spec.img) { base = 'assets/photos/' + spec.img; alt = spec.alt || ''; credit = spec.credit || ''; url = spec.url || ''; }
+    else {
+      var g = GROUP[spec.group]; if (!g || !g.img) return null;
+      base = 'assets/photos/' + spec.group; alt = spec.alt || g.img.alt || g.label; credit = g.img.credit; url = g.img.url;
     }
-    spec.spots.forEach(function (s, i) {
-      var b = h('button', 'spot' + (s.y < 18 ? ' spot--top' : ''), String(i + 1)); b.type = 'button';
-      b.style.left = s.x + '%'; b.style.top = s.y + '%';
-      b.setAttribute('aria-label', 'Spot ' + (i + 1));
-      b.addEventListener('click', function () { reveal(i); });
-      stage.appendChild(b); spots.push(b);
-      var li = h('li', 'finder__item', '<span class="n"></span><span><b>' + esc(s.label) + '</b>' + (s.note ? '<small>' + esc(s.note) + '</small>' : '') + '</span>');
+    var im = new Image();
+    im.src = base + '-900.jpg';
+    im.srcset = base + '-900.jpg 900w, ' + base + '-1400.jpg 1400w';
+    im.sizes = '(max-width: 620px) 92vw, 520px';
+    im.alt = alt; im.loading = 'lazy'; im.decoding = 'async';
+    return { img: im, credit: (alt && !spec.img ? esc(alt) + ' · ' : '') + (url ? '<a href="' + esc(url) + '" target="_blank" rel="noopener">' + esc(credit) + '</a>' : esc(credit)) };
+  }
+
+  /* ---------- pins on a picture, named in a column, joined by ruled lines ----------
+     Used by the finder and by the drawings. Nothing is written on the picture itself: a
+     pin carries a number, the number's entry sits in the list beside the picture, and
+     when the pin is found a line is ruled from the one to the other — the way a labelled
+     figure is drawn, so no label can sit on the picture or on another label. */
+  function pinned(box, stage, spots, list, opts) {
+    opts = opts || {};
+    var lines = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    lines.setAttribute('class', 'pins__lines'); lines.setAttribute('aria-hidden', 'true');
+    box.appendChild(lines);
+    var found = {}, pins = [], items = [];
+    function draw() {
+      var b = box.getBoundingClientRect();
+      if (!b.width) return;
+      lines.setAttribute('viewBox', '0 0 ' + b.width + ' ' + b.height);
+      lines.style.width = b.width + 'px'; lines.style.height = b.height + 'px';
+      var out = '';
+      pins.forEach(function (pin, i) {
+        if (!found[i]) return;
+        var a = pin.getBoundingClientRect(), c = items[i].getBoundingClientRect();
+        var x1 = a.left + a.width / 2 - b.left, y1 = a.top + a.height / 2 - b.top;
+        var beside = c.left >= a.right - 2;       /* the list is beside the picture, or under it */
+        var x2 = (beside ? c.left : c.left + 14) - b.left, y2 = (beside ? c.top + c.height / 2 : c.top) - b.top;
+        out += '<line class="pins__halo" x1="' + x1 + '" y1="' + y1 + '" x2="' + x2 + '" y2="' + y2 + '"/>' +
+               '<line class="pins__line" x1="' + x1 + '" y1="' + y1 + '" x2="' + x2 + '" y2="' + y2 + '"/>';
+      });
+      lines.innerHTML = out;
+    }
+    function reveal(i) {
+      if (found[i]) return;
+      found[i] = 1;
+      pins[i].classList.add('is-found'); items[i].classList.add('is-found');
+      draw();
+      if (Object.keys(found).length === spots.length && opts.onDone) opts.onDone();
+    }
+    spots.forEach(function (s, i) {
+      var pin = h('button', 'pin' + (opts.pinClass ? ' ' + opts.pinClass : ''), String(i + 1)); pin.type = 'button';
+      pin.style.left = s.x + '%'; pin.style.top = s.y + '%';
+      pin.setAttribute('aria-label', (opts.pinWord || 'Spot') + ' ' + (i + 1));
+      pin.addEventListener('click', function () { reveal(i); });
+      stage.appendChild(pin); pins.push(pin);
+      var li = h('li', 'pins__item', '<span class="n">' + (i + 1) + '</span><span class="pins__txt"><b>' + esc(s.label) + '</b>' + (s.note ? '<small>' + esc(s.note) + '</small>' : '') + '</span>');
       li.setAttribute('role', 'button'); li.tabIndex = 0;
       li.addEventListener('click', function () { reveal(i); });
       li.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); reveal(i); } });
       list.appendChild(li); items.push(li);
     });
-    function paintList() { items.forEach(function (li, i) { if (!found[i]) li.querySelector('.n').textContent = i + 1; }); }
-    paintList();
-    var left = h('div'); left.appendChild(stage);
-    if (spec.group) left.appendChild(h('p', 'finder__credit', creditOf(spec.group)));
+    var im = stage.querySelector('img'); if (im) im.addEventListener('load', draw);
+    window.addEventListener('resize', draw);
+    return { reveal: reveal, draw: draw, all: function () { spots.forEach(function (s, i) { reveal(i); }); } };
+  }
+
+  /* ---------- finder: find the features on a photograph ---------- */
+  function finder(spec) {
+    var box = h('div', 'widget'); if (spec.group) box.setAttribute('data-group', spec.group);
+    var g = GROUP[spec.group] || {};
+    box.appendChild(head(spec.title || ('Find the features: ' + (g.label || '')), spec.ask || 'Click each numbered pin on the photograph, or a feature in the list. A line is ruled from the pin to its name, the way a labelled figure is drawn.', 'Click the pins'));
+    var wrap = h('div', 'finder pins');
+    var stage = h('div', 'finder__stage');
+    var pic = picture(spec); if (pic) stage.appendChild(pic.img);
+    var list = h('ul', 'finder__list');
+    var left = h('div', 'finder__left'); left.appendChild(stage);
+    var ctl = pinned(wrap, stage, spec.spots, list, {
+      onDone: function () { if (!box.querySelector('.widget__done')) box.appendChild(h('p', 'widget__done', spec.done || ('All ' + spec.spots.length + ' found. Those are the features that put it in this group.'))); }
+    });
+    var tools = h('div', 'finder__tools');
+    var all = h('button', 'wbtn wbtn--quiet', 'Show every label'); all.type = 'button';
+    all.addEventListener('click', function () { ctl.all(); });
+    tools.appendChild(all);
+    if (pic && pic.credit) tools.appendChild(h('p', 'finder__credit', pic.credit));
+    left.appendChild(tools);
     wrap.appendChild(left); wrap.appendChild(list);
     box.appendChild(wrap);
+    /* the same body plan as a labelled diagram, under the photograph */
+    if (spec.diagram && DIAGRAMS[spec.diagram]) {
+      var dg = DIAGRAMS[spec.diagram];
+      var dwrap = h('details', 'diag__wrap'); dwrap.open = true;
+      dwrap.innerHTML = '<summary>The same body plan as a labelled diagram</summary>';
+      var fig = h('figure', 'diag', dg.svg + '<figcaption>' + esc(dg.caption) + '</figcaption>');
+      dwrap.appendChild(fig); box.appendChild(dwrap);
+    }
+    if (spec.note) box.appendChild(h('p', 'widget__note', spec.note));
+    return box;
+  }
+
+  /* ---------- drawphotos: two real drawings of one specimen ---------- */
+  function drawphotos(spec) {
+    var box = h('div', 'widget');
+    box.appendChild(head(spec.title || 'One specimen, drawn twice', spec.ask || 'Both are real drawings of the same slice. Find every fault on the first — click the pins, or the faults in the list — then see what the second did instead.', 'Find the faults'));
+    var wrap = h('div', 'drawphotos');
+    var bad = h('div', 'dp2__half pins');
+    bad.appendChild(h('div', 'dp__lab dp__lab--bad', '✗ ' + esc(spec.bad.title || 'This one loses marks') + ' — ' + spec.faults.length + ' faults to find'));
+    var stage = h('div', 'finder__stage dp2__stage');
+    var pic = picture(spec.bad); if (pic) stage.appendChild(pic.img);
+    bad.appendChild(stage);
+    var list = h('ul', 'finder__list dp2__list');
+    bad.appendChild(list);
+    if (pic && pic.credit) bad.appendChild(h('p', 'finder__credit', pic.credit));
+    pinned(bad, stage, spec.faults, list, { pinClass: 'pin--fault', pinWord: 'Fault',
+      onDone: function () { if (!box.querySelector('.widget__done')) box.appendChild(h('p', 'widget__done', 'All ' + spec.faults.length + ' faults found. Each one is a mark lost on the criteria: ' + esc(spec.criteria || 'S, O, L, D1, D2') + '.')); } });
+    var good = h('div', 'dp2__half');
+    good.appendChild(h('div', 'dp__lab dp__lab--good', '✓ ' + esc(spec.good.title || 'This one scores')));
+    var gstage = h('div', 'finder__stage dp2__stage');
+    var gpic = picture(spec.good);
+    if (gpic) { gstage.appendChild(gpic.img); gpic.img.style.cursor = 'zoom-in'; gpic.img.addEventListener('click', function () { if (global.LabLightbox) global.LabLightbox(gpic.img.currentSrc || gpic.img.src, spec.good.title || 'The drawing that scores', 'Drawing', gpic.credit); }); }
+    good.appendChild(gstage);
+    good.appendChild(h('ul', 'dp2__fixes', (spec.fixes || []).map(function (f) { return '<li>' + esc(f) + '</li>'; }).join('')));
+    if (gpic && gpic.credit) good.appendChild(h('p', 'finder__credit', gpic.credit));
+    wrap.appendChild(bad); wrap.appendChild(good); box.appendChild(wrap);
     if (spec.note) box.appendChild(h('p', 'widget__note', spec.note));
     return box;
   }
@@ -217,8 +298,7 @@
     var wrap = h('div', 'keyrun');
     var left = h('div'), right = h('div');
     var sp = h('div', 'keyrun__spec');
-    if (spec.specimen && spec.specimen.group) { var im = photoOf(spec.specimen.group, spec.specimen.alt); if (im) sp.appendChild(im); }
-    if (spec.specimen && spec.specimen.svg) sp.innerHTML = svgFor(spec.specimen.svg);
+    if (spec.specimen) { var pic = picture(spec.specimen); if (pic) sp.appendChild(pic.img); }
     sp.appendChild(h('div', null, '<b>The specimen</b>: ' + esc(spec.specimen ? spec.specimen.desc : '')));
     left.appendChild(sp);
     var run = h('div'); left.appendChild(run);
@@ -317,38 +397,6 @@
     return box;
   }
 
-  /* ---------- drawpair: the drawing that scores and the one that does not ---------- */
-  function drawpair(spec) {
-    var box = h('div', 'widget');
-    box.appendChild(head(spec.title || 'Two drawings of the same specimen', spec.ask || 'The left one would score. Find every fault on the right one: click the numbered spots, or the faults in the list.', 'Find the faults'));
-    var wrap = h('div', 'drawpair');
-    var good = h('div', 'dp__half', '<div class="dp__stage">' + svgFor(spec.good) + '</div><div class="dp__lab dp__lab--good">✓ This one scores</div>');
-    var bad = h('div', 'dp__half');
-    var stage = h('div', 'dp__stage', svgFor(spec.bad));
-    var list = h('ul', 'dp__found');
-    var found = {}, marks = [], items = [];
-    function reveal(i) {
-      found[i] = 1; marks[i].classList.add('is-found'); items[i].classList.add('is-found');
-      if (Object.keys(found).length === spec.faults.length && !box.querySelector('.widget__done')) box.appendChild(h('p', 'widget__done', 'All ' + spec.faults.length + ' faults found. Each one is a mark lost on the criteria: ' + (spec.criteria || 'S, O, L, D1, D2') + '.'));
-    }
-    spec.faults.forEach(function (f, i) {
-      var m = h('button', 'fault', String(i + 1)); m.type = 'button'; m.style.left = f.x + '%'; m.style.top = f.y + '%';
-      m.setAttribute('aria-label', 'Fault ' + (i + 1));
-      m.addEventListener('click', function () { reveal(i); }); stage.appendChild(m); marks.push(m);
-      var li = h('li', null, '<span class="n">' + (i + 1) + '</span><b>' + esc(f.label) + '</b>' + (f.why ? ' — ' + esc(f.why) : ''));
-      li.setAttribute('role', 'button'); li.tabIndex = 0;
-      li.addEventListener('click', function () { reveal(i); });
-      li.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); reveal(i); } });
-      list.appendChild(li); items.push(li);
-    });
-    bad.appendChild(stage); bad.appendChild(h('div', 'dp__lab dp__lab--bad', '✗ This one loses marks — ' + spec.faults.length + ' faults to find'));
-    bad.appendChild(list);
-    wrap.appendChild(good); wrap.appendChild(bad); box.appendChild(wrap);
-    if (spec.rules) box.appendChild(h('ul', 'dp__rules', spec.rules.map(function (r) { return '<li>' + esc(r) + '</li>'; }).join('')));
-    if (spec.note) box.appendChild(h('p', 'widget__note', spec.note));
-    return box;
-  }
-
   /* ---------- table, photo ---------- */
   function table(spec) {
     var box = h('div', 'ctable'); if (spec.group) box.setAttribute('data-group', spec.group);
@@ -359,88 +407,85 @@
   }
   function photo(spec) {
     var f = h('figure', 'photo'); if (spec.group) f.setAttribute('data-group', spec.group);
-    var im = photoOf(spec.group, spec.alt); if (im) { f.appendChild(im); im.addEventListener('click', function () { if (global.LabLightbox) global.LabLightbox(im.currentSrc || im.src, spec.cap || '', 'Photograph', creditOf(spec.group)); }); }
-    f.appendChild(h('figcaption', null, (spec.cap ? esc(spec.cap) + ' · ' : '') + creditOf(spec.group)));
+    var pic = picture(spec);
+    if (pic) { f.appendChild(pic.img); pic.img.addEventListener('click', function () { if (global.LabLightbox) global.LabLightbox(pic.img.currentSrc || pic.img.src, spec.cap || '', 'Photograph', pic.credit); }); }
+    f.appendChild(h('figcaption', null, (spec.cap ? esc(spec.cap) + ' · ' : '') + (pic ? pic.credit : '')));
     return f;
   }
 
-  /* ---------- the drawings ---------- */
-  var uid = 0;
-  var ARROW = function (id) { return '<defs><marker id="' + id + '" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#2B2B2B" stroke="none"/></marker></defs>'; };
-  var DRAW = {
-    'leaf-good': function () {
-      return '<svg viewBox="0 0 348 360" class="draw-good" role="img" aria-label="A drawing of a leaf that would score: clean continuous outline filling the space, ruled label lines, a title and a magnification">' +
-        '<rect x="1" y="1" width="346" height="358" stroke="#C4C4C4" stroke-dasharray="4 4"/>' +
-        '<path d="M150 302 C70 252 40 172 70 102 C95 47 130 27 150 12 C170 27 205 47 230 102 C260 172 230 252 150 302 Z"/>' +
-        '<path d="M150 302 L150 12"/>' +
-        '<path d="M150 90 L104 58"/><path d="M150 90 L196 58"/><path d="M150 140 L88 112"/><path d="M150 140 L212 112"/>' +
-        '<path d="M150 190 L84 176"/><path d="M150 190 L216 176"/><path d="M150 240 L98 236"/><path d="M150 240 L202 236"/>' +
-        '<path d="M150 302 L150 332"/>' +
-        '<path d="M150 165 L262 165"/><text x="266" y="169">midrib</text>' +
-        '<path d="M196 58 L262 40"/><text x="266" y="44">lateral vein</text>' +
-        '<path d="M63 140 L18 140"/><text x="6" y="134">margin</text>' +
-        '<path d="M150 320 L262 320"/><text x="266" y="324">petiole</text>' +
-        '<text x="10" y="350" font-size="12">Leaf of Ficus benjamina, upper surface   ×1.5</text></svg>';
-    },
-    'leaf-bad': function () {
-      var a = 'arr' + (++uid);
-      return '<svg viewBox="0 0 348 360" class="draw-bad" role="img" aria-label="A drawing of the same leaf that would lose marks: small, sketchy outline, shading, arrowed label lines that cross, a label written inside the drawing, and no title">' + ARROW(a) +
-        '<rect x="1" y="1" width="346" height="358" stroke="#C4C4C4" stroke-dasharray="4 4"/>' +
-        '<g transform="translate(-40 -20) scale(1.5)">' +
-        '<g class="sketchy"><path d="M120 200 C90 180 80 140 95 110 C105 85 115 75 120 68 C128 75 140 88 148 110 C160 145 150 180 120 200 Z"/>' +
-        '<path d="M121 204 C88 183 78 143 96 108 C106 83 117 72 121 65 C130 75 142 91 151 113 C163 148 152 183 121 204 Z"/>' +
-        '<path d="M118 198 C93 179 84 139 94 113 C103 88 114 79 119 71 C126 78 138 87 146 108 C157 142 148 178 118 198 Z"/></g>' +
-        '<g class="shade"><path d="M100 128 L112 112"/><path d="M100 140 L118 118"/><path d="M102 152 L124 124"/><path d="M106 164 L130 132"/><path d="M110 176 L136 142"/><path d="M116 186 L140 156"/><path d="M124 194 L142 170"/></g>' +
-        '<path d="M120 200 Q116 150 124 72" stroke-width="1.6"/>' +
-        '<path d="M120 130 q-9 -7 -17 -5 M121 131 q9 -7 17 -5 M118 160 q-10 -6 -18 -3 M120 160 q10 -6 18 -3" stroke-width="1.3"/>' +
-        '<text x="104" y="166" font-size="7">leaf</text>' +
-        '</g>' +
-        '<path d="M262 250 L140 140" marker-end="url(#' + a + ')"/><text x="266" y="254">vein</text>' +
-        '<path d="M262 110 L104 160" marker-end="url(#' + a + ')"/><text x="266" y="114">edge</text>' +
-        '<path d="M60 302 L128 250" marker-end="url(#' + a + ')"/><text x="14" y="318">the middle line</text></svg>';
-    },
-    'beetle-good': function () {
-      var leg = function (m) { return '<path d="M' + m + '"/>'; };
-      return '<svg viewBox="0 0 348 360" class="draw-good" role="img" aria-label="A drawing of a ground beetle that would score: three body parts, six jointed legs, two antennae, clean lines, ruled labels, a title and a magnification">' +
-        '<rect x="1" y="1" width="346" height="358" stroke="#C4C4C4" stroke-dasharray="4 4"/>' +
-        '<ellipse cx="160" cy="72" rx="22" ry="17"/><circle cx="146" cy="64" r="3"/><circle cx="174" cy="64" r="3"/>' +
-        '<path d="M150 57 L140 40 L128 26 L116 14"/><circle cx="140" cy="40" r="1.6"/><circle cx="128" cy="26" r="1.6"/>' +
-        '<path d="M170 57 L180 40 L192 26 L204 14"/><circle cx="180" cy="40" r="1.6"/><circle cx="192" cy="26" r="1.6"/>' +
-        '<path d="M126 92 C120 108 122 122 128 128 L192 128 C198 122 200 108 194 92 C184 84 136 84 126 92 Z"/>' +
-        '<path d="M160 130 C118 132 104 174 110 232 C116 284 140 306 160 312 Z"/><path d="M160 130 C202 132 216 174 210 232 C204 284 180 306 160 312 Z"/>' +
-        '<path d="M138 150 C128 190 130 250 146 300"/><path d="M182 150 C192 190 190 250 174 300"/>' +
-        leg('134 104 L98 84 L76 60 L70 40') + leg('186 104 L222 84 L244 60 L250 40') +
-        leg('124 156 L84 154 L60 168 L48 194') + leg('196 156 L236 154 L260 168 L272 194') +
-        leg('118 214 L88 232 L70 262 L62 292') + leg('202 214 L232 232 L250 262 L258 292') +
-        '<circle cx="98" cy="84" r="1.6"/><circle cx="76" cy="60" r="1.6"/><circle cx="84" cy="154" r="1.6"/><circle cx="60" cy="168" r="1.6"/><circle cx="88" cy="232" r="1.6"/><circle cx="70" cy="262" r="1.6"/>' +
-        '<path d="M128 26 L262 26"/><text x="266" y="30">antenna</text>' +
-        '<path d="M182 72 L262 72"/><text x="266" y="76">head</text>' +
-        '<path d="M196 110 L262 110"/><text x="266" y="114">thorax</text>' +
-        '<path d="M208 200 L262 200"/><text x="266" y="204">wing case</text>' +
-        '<path d="M88 232 L26 232"/><text x="4" y="226">jointed leg</text>' +
-        '<text x="10" y="350" font-size="12">Ground beetle, Carabus sp., from above   ×3</text></svg>';
-    },
-    'beetle-bad': function () {
-      var a = 'arr' + (++uid);
-      return '<svg viewBox="0 0 348 360" class="draw-bad" role="img" aria-label="A drawing of the same beetle that would lose marks: small, sketchy, shaded wing cases, four straight legs and no antennae, arrowed labels that cross, a wrong label, and no title">' + ARROW(a) +
-        '<rect x="1" y="1" width="346" height="358" stroke="#C4C4C4" stroke-dasharray="4 4"/>' +
-        '<g transform="translate(30 60) scale(.8)">' +
-        '<g class="sketchy"><ellipse cx="160" cy="72" rx="22" ry="17"/><ellipse cx="161" cy="74" rx="23" ry="16"/><ellipse cx="159" cy="71" rx="21" ry="18"/>' +
-        '<path d="M126 92 C120 108 122 122 128 128 L192 128 C198 122 200 108 194 92 Z"/><path d="M124 94 C118 110 120 124 130 130 L194 130 C200 124 202 110 196 94 Z"/>' +
-        '<path d="M160 130 C112 134 100 180 108 236 C116 288 140 308 160 312 C180 308 204 288 212 236 C220 180 208 134 160 130 Z"/>' +
-        '<path d="M158 132 C110 136 98 182 106 238 C114 290 138 310 158 314 C178 310 202 290 210 238 C218 182 206 136 158 132 Z"/></g>' +
-        '<g class="shade">' + [140,150,160,170,180,190,200,210,220,230,240,250,260,270,280].map(function (y) { return '<path d="M' + (112 + (y - 140) * .08) + ' ' + y + ' L' + (208 - (y - 140) * .08) + ' ' + (y - 14) + '"/>'; }).join('') + '</g>' +
-        '<path d="M134 104 L60 60" stroke-width="1.8"/><path d="M186 104 L260 60" stroke-width="1.8"/><path d="M118 214 L52 268" stroke-width="1.8"/><path d="M202 214 L268 268" stroke-width="1.8"/>' +
-        '<text x="150" y="226" font-size="9">body</text>' +
-        '</g>' +
-        '<path d="M256 72 L158 148" marker-end="url(#' + a + ')"/><text x="260" y="76">wing</text>' +
-        '<path d="M252 150 L142 120" marker-end="url(#' + a + ')"/><text x="256" y="154">head</text>' +
-        '<path d="M40 322 L86 290" marker-end="url(#' + a + ')"/><text x="14" y="338">leg</text></svg>';
-    }
+  /* ---------- the labelled diagrams: one body plan per arthropod group ----------
+     Drawn to the rules the drawing station teaches: one clean outline, no shading (three
+     tints only tell the body parts apart), label lines ruled to a column, none crossing,
+     a title. The counts are the syllabus counts. */
+  var MX = 150;
+  function mir(d, cx) {
+    cx = cx || MX;
+    return d.replace(/([MLC])((?:\s*-?[\d.]+\s+-?[\d.]+)+)/g, function (m, c, pts) {
+      var out = pts.trim().split(/\s+/), r = [];
+      for (var i = 0; i < out.length; i += 2) r.push((2 * cx - parseFloat(out[i])) + ' ' + out[i + 1]);
+      return c + r.join(' ');
+    });
+  }
+  function both(d, cx) { return '<path d="' + d + '"/><path d="' + mir(d, cx) + '"/>'; }
+  function joints(pts, cx) { cx = cx || MX; return pts.map(function (p) { return '<circle cx="' + p[0] + '" cy="' + p[1] + '" r="1.7"/><circle cx="' + (2 * cx - p[0]) + '" cy="' + p[1] + '" r="1.7"/>'; }).join(''); }
+  function lab(x1, y1, x2, y2, text, anchor) {
+    return '<line class="diag__lead" x1="' + x1 + '" y1="' + y1 + '" x2="' + x2 + '" y2="' + y2 + '"/><text class="diag__lab" x="' + (x2 + (anchor === 'end' ? -4 : 4)) + '" y="' + (y2 + 3.5) + '"' + (anchor ? ' text-anchor="' + anchor + '"' : '') + '>' + text + '</text>';
+  }
+  function segs21() { var s = ''; for (var i = 0; i < 21; i++) s += '<rect class="' + (i % 2 ? 'diag__thorax' : 'diag__abd') + '" x="' + (66 + 13 * i) + '" y="92" width="13" height="26" rx="2"/>'; return s; }
+  function legs20() { var s = ''; for (var i = 0; i < 20; i++) { var x = 72.5 + 13 * i; s += '<path d="M' + x + ' 92 L' + (x - 3.5) + ' 76 L' + (x + 4.5) + ' 62"/><path d="M' + x + ' 118 L' + (x - 3.5) + ' 134 L' + (x + 4.5) + ' 148"/>'; } return s; }
+  var DIAGRAMS = {
+    insect: { caption: 'A generalised insect, from above: three body parts; three pairs of jointed legs and two pairs of wings, all on the thorax; one pair of antennae; compound eyes.',
+      svg: '<svg viewBox="0 0 500 290" class="diag__svg" role="img" aria-label="A labelled diagram of a generalised insect from above">' +
+        '<g class="diag__wing">' + both('M172 88 C236 62 284 100 278 148 C272 174 234 164 188 128 Z') + both('M172 112 C220 106 246 140 236 170 C228 184 200 166 180 134 Z') + '</g>' +
+        '<g class="diag__legs">' + both('M170 74 L196 58 L214 66 L226 88') + both('M172 96 L202 98 L222 118 L230 140') + both('M170 118 L200 136 L216 166 L222 192') +
+        joints([[196, 58], [214, 66], [202, 98], [222, 118], [200, 136], [216, 166]]) + '</g>' +
+        '<g class="diag__ant">' + both('M158 33 L166 22 L176 12 L188 6') + joints([[166, 22], [176, 12]]) + '</g>' +
+        '<ellipse class="diag__head" cx="150" cy="48" rx="20" ry="17"/>' +
+        '<ellipse class="diag__eye" cx="135" cy="46" rx="6" ry="9"/><ellipse class="diag__eye" cx="165" cy="46" rx="6" ry="9"/>' +
+        '<circle class="diag__eye" cx="147" cy="35" r="1.6"/><circle class="diag__eye" cx="150" cy="32" r="1.6"/><circle class="diag__eye" cx="153" cy="35" r="1.6"/>' +
+        '<path class="diag__thorax" d="M128 66 C126 80 126 112 132 128 L168 128 C174 112 174 80 172 66 C164 60 136 60 128 66 Z"/><path class="diag__seg" d="M128 82 L172 82 M129 106 L171 106"/>' +
+        '<path class="diag__abd" d="M150 128 C178 128 186 160 182 196 C178 226 162 242 150 242 C138 242 122 226 118 196 C114 160 122 128 150 128 Z"/>' +
+        '<path class="diag__seg" d="M120 152 Q150 160 180 152 M118 172 Q150 180 182 172 M120 192 Q150 200 180 192 M126 212 Q150 220 174 212"/>' +
+        lab(186, 8, 300, 12, 'antenna — one pair') + lab(171, 46, 300, 40, 'compound eye') + lab(172, 58, 300, 62, 'head') + lab(172, 68, 300, 90, 'thorax — legs and wings attach here') +
+        lab(270, 140, 300, 150, 'forewing') + lab(236, 168, 300, 176, 'hindwing') + lab(216, 166, 300, 210, 'jointed leg — three pairs') + lab(182, 200, 300, 244, 'abdomen') +
+        '<text class="diag__title" x="8" y="280">A generalised insect, from above</text></svg>' },
+    arachnid: { caption: 'A spider, from above: two body parts — the cephalothorax and the abdomen — four pairs of jointed legs, simple eyes, a pair of pedipalps, and no antennae or wings.',
+      svg: '<svg viewBox="0 0 520 290" class="diag__svg" role="img" aria-label="A labelled diagram of a spider from above">' +
+        '<g class="diag__legs">' + both('M176 92 L208 64 L240 52 L262 26') + both('M178 104 L214 100 L246 108 L272 96') + both('M178 116 L210 124 L236 144 L250 166') + both('M176 128 L204 152 L222 190 L228 224') +
+        joints([[208, 64], [240, 52], [214, 100], [246, 108], [210, 124], [236, 144], [204, 152], [222, 190]]) + '</g>' +
+        '<g class="diag__ant">' + both('M162 80 L176 62 L184 46') + joints([[176, 62]]) + '</g>' +
+        '<rect class="diag__seg" x="145" y="137" width="10" height="10"/>' +
+        '<ellipse class="diag__head" cx="150" cy="108" rx="27" ry="32"/>' +
+        '<g class="diag__eye"><circle cx="140" cy="84" r="2"/><circle cx="147" cy="82" r="2"/><circle cx="153" cy="82" r="2"/><circle cx="160" cy="84" r="2"/><circle cx="137" cy="90" r="1.8"/><circle cx="163" cy="90" r="1.8"/><circle cx="144" cy="76" r="1.8"/><circle cx="156" cy="76" r="1.8"/></g>' +
+        '<ellipse class="diag__abd" cx="150" cy="200" rx="42" ry="54"/><circle class="diag__seg" cx="146" cy="252" r="2.5"/><circle class="diag__seg" cx="154" cy="252" r="2.5"/>' +
+        lab(184, 46, 300, 40, 'pedipalp — a feeler, not a leg') + lab(161, 84, 300, 66, 'simple eyes — eight') + lab(170, 134, 300, 130, 'cephalothorax — head and thorax in one') +
+        lab(236, 144, 300, 160, 'jointed leg — four pairs') + lab(188, 200, 300, 200, 'abdomen') + lab(154, 254, 300, 250, 'spinnerets') +
+        '<text class="diag__title" x="8" y="280">A spider, from above</text></svg>' },
+    crustacean: { caption: 'A crab, from above: a hard carapace over a two-part body (the abdomen is folded underneath), five pairs of legs of which the first is a claw, eyes on stalks, and two pairs of antennae.',
+      svg: '<svg viewBox="0 0 560 290" class="diag__svg" role="img" aria-label="A labelled diagram of a crab from above">' +
+        '<g class="diag__legs">' + both('M236 136 L268 130 L292 146 L306 172', 170) + both('M236 152 L270 154 L294 174 L304 202', 170) + both('M234 168 L266 178 L286 204 L292 232', 170) + both('M228 184 L256 200 L270 228 L272 256', 170) +
+        joints([[268, 130], [292, 146], [270, 154], [294, 174], [266, 178], [286, 204], [256, 200], [270, 228]], 170) +
+        both('M234 118 L264 106 L286 92', 170) + joints([[264, 106]], 170) + '</g>' +
+        '<g class="diag__claw">' + both('M286 92 C296 76 318 74 326 84 C332 92 324 104 312 106 L302 108 C292 108 284 100 286 92 Z', 170) + both('M316 78 L336 70', 170) + '</g>' +
+        '<g class="diag__ant">' + both('M164 74 L160 60', 170) + both('M196 80 L210 56', 170) + '</g>' +
+        '<path class="diag__head" d="M104 150 C104 104 130 74 170 72 C210 74 236 104 236 150 C236 186 210 208 170 208 C130 208 104 186 104 150 Z"/>' +
+        '<g class="diag__legs">' + both('M152 76 L148 62', 170) + '</g><circle class="diag__eye" cx="147" cy="58" r="4"/><circle class="diag__eye" cx="193" cy="58" r="4"/>' +
+        lab(210, 56, 340, 30, 'antennae — two pairs, one short') + lab(196, 58, 340, 52, 'eye on a stalk') + lab(326, 84, 340, 96, 'claw — the first pair of legs') +
+        lab(220, 100, 340, 124, 'carapace — exoskeleton over the body') + lab(294, 174, 340, 180, 'walking legs — four more pairs') + lab(170, 206, 340, 232, 'the abdomen is folded under the body') +
+        '<text class="diag__title" x="8" y="280">A crab, from above</text></svg>' },
+    myriapod: { caption: 'A centipede, from above: a head with one pair of antennae and a pair of poison claws beneath it, then a trunk of many similar segments with one pair of jointed legs on each (a millipede has two pairs). The last pair of legs is longer.',
+      svg: '<svg viewBox="0 0 450 210" class="diag__svg" role="img" aria-label="A labelled diagram of a centipede from above">' +
+        '<g class="diag__legs">' + legs20() + '<path d="M332 105 L364 90 L392 96"/><path d="M332 105 L364 120 L392 114"/></g>' +
+        '<g class="diag__ant"><path d="M34 99 L18 84 L8 66"/><path d="M34 111 L18 126 L8 144"/><circle cx="18" cy="84" r="1.7"/><circle cx="18" cy="126" r="1.7"/></g>' +
+        '<g class="diag__claw"><path d="M36 96 C28 90 22 96 26 104"/><path d="M36 114 C28 120 22 114 26 106"/></g>' + segs21() +
+        '<ellipse class="diag__head" cx="48" cy="105" rx="16" ry="13"/><g class="diag__eye"><circle cx="40" cy="99" r="1.4"/><circle cx="43" cy="96" r="1.4"/><circle cx="46" cy="94" r="1.4"/></g>' +
+        lab(8, 66, 8, 44, 'one pair of antennae') + lab(48, 92, 48, 62, 'head') + lab(150, 92, 150, 44, 'a segment') + lab(247, 62, 247, 44, 'a pair of legs on every segment') +
+        lab(26, 106, 26, 170, 'poison claws, under the head') + lab(392, 114, 392, 170, 'last pair of legs, longer', 'end') +
+        '<text class="diag__title" x="8" y="202">A centipede, from above</text></svg>' }
   };
-  function svgFor(name) { return DRAW[name] ? DRAW[name]() : '<p>Drawing not found: ' + esc(name) + '</p>'; }
+  function svgFor(name) { return DIAGRAMS[name] ? DIAGRAMS[name].svg : ''; }
 
-  var MAKERS = { letters: letters, finder: finder, dna: dna, keyrun: keyrun, binomial: binomial, kingdoms: kingdoms, drawpair: drawpair, table: table, photo: photo };
+  var MAKERS = { letters: letters, finder: finder, drawphotos: drawphotos, dna: dna, keyrun: keyrun, binomial: binomial, kingdoms: kingdoms, table: table, photo: photo };
   global.Learn = {
     widget: function (spec, ctx) {
       var mk = MAKERS[spec.type];
@@ -449,6 +494,6 @@
       if (spec.group && !el.getAttribute('data-group')) el.setAttribute('data-group', spec.group);
       return el;
     },
-    seqView: seqView, keyPrint: keyPrint, svgFor: svgFor, ICON: ICON
+    seqView: seqView, keyPrint: keyPrint, svgFor: svgFor, DIAGRAMS: DIAGRAMS, ICON: ICON
   };
 })(window);
