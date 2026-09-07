@@ -244,6 +244,10 @@
     function zoomInto(i) {
       var z = zooms[i], sb = stage.getBoundingClientRect(); if (!z || !opts.zoom || !sb.width) return;
       var bgW = ZOOM_W / ZOOM_FRAC, bgH = bgW * (sb.height / sb.width);
+      /* A picture much wider than it is tall — the centipede, lying along its length — scales
+         to a strip SHORTER than the crop window, and the window then fills with black above
+         and below the animal. Grow the whole picture until the window fits inside it. */
+      if (bgH < ZOOM_W) { bgW *= ZOOM_W / bgH; bgH = ZOOM_W; }
       z.style.backgroundImage = 'url("' + opts.zoom + '")';
       z.style.backgroundSize = bgW + 'px ' + bgH + 'px';
       var x = spots[i].x / 100 * bgW - ZOOM_W / 2, y = spots[i].y / 100 * bgH - ZOOM_W / 2;
@@ -285,6 +289,105 @@
              all: function (on) { spots.forEach(function (sp, i) { toggle(i, on); }); } };
   }
 
+  /* ---------- the body plan, two ways ----------
+     One switch, two views of the same animal, and BOTH are labelled:
+
+       · the diagram — drawn for this lab, every part in the open, nothing hidden by an angle
+       · the scientific drawing — what the skill Paper 6 examines actually looks like on paper:
+         one specimen, in outline, no shading for effect, ruled labels
+
+     They teach different things. The diagram teaches where the parts are; the drawing shows
+     what a good drawing of the same animal looks like, which is the thing being marked. The
+     drawing is labelled with the same pins-and-ruled-lines the photograph uses, so a student
+     reads all three the same way.
+
+     Either view may be absent: a group with only a diagram simply shows it, with no switch. */
+  function bodyPlan(spec) {
+    var dg = spec.diagram && DIAGRAMS[spec.diagram];
+    var dr = spec.drawing;
+    if (!dg && !dr) return null;
+
+    var wrap = h('details', 'diag__wrap'); wrap.open = true;
+    wrap.innerHTML = '<summary>' + esc(spec.planSummary ||
+      (dg && dr ? 'The same body plan — as a diagram, and as a scientific drawing'
+                : dg ? (dg.summary || 'The same body plan as a labelled diagram')
+                     : 'The same body plan as a scientific drawing')) + '</summary>';
+
+    var views = [];
+    if (dg) {
+      var fig = h('figure', 'diag', dg.svg +
+        (/grey label/.test(dg.caption) ? '<p class="diag__key"><b>Green</b> — a word you need for 0610. <i>Grey</i> — not needed; it is there only so the picture makes sense.</p>' : '') +
+        '<figcaption>' + esc(dg.caption) + '</figcaption>');
+      views.push({ key: 'diagram', tab: 'Diagram',
+                   hint: 'Drawn for this lab, so nothing is hidden by the angle.', el: fig });
+    }
+    if (dr) views.push(drawingView(dr));
+
+    var panels = h('div', 'plan__panels');
+    views.forEach(function (v) { v.panel = h('div', 'plan__panel'); v.panel.appendChild(v.el); panels.appendChild(v.panel); });
+
+    if (views.length > 1) {
+      var tabs = h('div', 'plan__tabs'); tabs.setAttribute('role', 'tablist');
+      views.forEach(function (v, i) {
+        var b = h('button', 'plan__tab', esc(v.tab)); b.type = 'button';
+        b.setAttribute('role', 'tab');
+        b.addEventListener('click', function () { show(i); });
+        v.btn = b; tabs.appendChild(b);
+      });
+      wrap.appendChild(tabs);
+      var hint = h('p', 'plan__hint'); wrap.appendChild(hint);
+      var show = function (i) {
+        views.forEach(function (v, j) {
+          var on = i === j;
+          v.btn.classList.toggle('is-on', on);
+          v.btn.setAttribute('aria-selected', on ? 'true' : 'false');
+          v.panel.hidden = !on;
+        });
+        hint.textContent = views[i].hint || '';
+        /* a picture in a hidden panel has no size, so its pins and ruled lines can only be
+           placed once it is on screen */
+        if (views[i].onShow) views[i].onShow();
+      };
+      wrap.appendChild(panels);
+      show(0);
+    } else {
+      wrap.appendChild(panels);
+      views[0].panel.hidden = false;
+      if (views[0].onShow) views[0].onShow();
+    }
+    return wrap;
+  }
+
+  /* a real scientific drawing, labelled the same way the photograph is */
+  function drawingView(dr) {
+    var fig = h('figure', 'plan__draw');
+    var wrap = h('div', 'finder pins');
+    var stage = h('div', 'finder__stage');
+    var pic = picture(dr); if (pic) stage.appendChild(pic.pic);
+    var list = h('ul', 'finder__list');
+    var left = h('div', 'finder__left'); left.appendChild(stage);
+    var ctl = pinned(wrap, stage, dr.spots || [], list, {
+      zoom: pic ? bigVariant(pic.base) : null,
+      pinWord: 'Label',
+      onChange: function (n, total) { all.textContent = n === total ? 'Hide every label' : 'Show every label'; }
+    });
+    var tools = h('div', 'finder__tools');
+    var all = h('button', 'wbtn wbtn--quiet', 'Show every label'); all.type = 'button';
+    all.addEventListener('click', function () { ctl.all(ctl.count() < (dr.spots || []).length); });
+    tools.appendChild(all);
+    if (pic && pic.credit) tools.appendChild(h('p', 'finder__credit', pic.credit));
+    wrap.appendChild(left); wrap.appendChild(list);
+    fig.appendChild(wrap);
+    /* BELOW the two columns, not inside the left one: a drawing that is much wider than it is
+       tall leaves the name column taller than the picture, and the ruled lines were then drawn
+       straight across the button and the credit. */
+    fig.appendChild(tools);
+    if (dr.caption) fig.appendChild(h('figcaption', null, esc(dr.caption)));
+    return { key: 'drawing', tab: 'Scientific drawing', el: fig,
+             hint: dr.hint || 'A real drawing of one specimen: outline only, no shading for effect, every label ruled and horizontal.',
+             onShow: function () { ctl.layout(); setTimeout(ctl.layout, 60); } };
+  }
+
   /* ---------- finder: find the features on a photograph ---------- */
   function finder(spec) {
     var box = h('div', 'widget'); if (spec.group) box.setAttribute('data-group', spec.group);
@@ -316,16 +419,9 @@
     left.appendChild(tools);
     wrap.appendChild(left); wrap.appendChild(list);
     box.appendChild(wrap);
-    /* the same body plan as a labelled diagram, under the photograph */
-    if (spec.diagram && DIAGRAMS[spec.diagram]) {
-      var dg = DIAGRAMS[spec.diagram];
-      var dwrap = h('details', 'diag__wrap'); dwrap.open = true;
-      dwrap.innerHTML = '<summary>' + esc(dg.summary || 'The same body plan as a labelled diagram') + '</summary>';
-      var fig = h('figure', 'diag', dg.svg +
-        (/grey label/.test(dg.caption) ? '<p class="diag__key"><b>Green</b> — a word you need for 0610. <i>Grey</i> — not needed; it is there only so the picture makes sense.</p>' : '') +
-        '<figcaption>' + esc(dg.caption) + '</figcaption>');
-      dwrap.appendChild(fig); box.appendChild(dwrap);
-    }
+    /* the same body plan under the photograph — as a diagram, as a real drawing, or both */
+    var plan = bodyPlan(spec);
+    if (plan) box.appendChild(plan);
     if (spec.note) box.appendChild(h('p', 'widget__note', spec.note));
     return box;
   }
