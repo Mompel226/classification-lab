@@ -23,6 +23,7 @@ import { readFileSync, writeFileSync, existsSync, copyFileSync, readdirSync, mkd
 import { webcrypto as crypto, createHash } from 'node:crypto';
 import { dirname, resolve, join, relative } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
+import { execFileSync } from 'node:child_process';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const REPO = resolve(HERE, '..');
@@ -443,3 +444,28 @@ console.log(`  js/data/glossary.js   ${GLOSSARY.length} shared definitions`);
 console.log(`  js/data/photos.js     ${Object.keys(SIZES).length} picture sizes`);
 console.log(`  shared engine, marking, tree, tree-draw and ${symbols.length} silhouettes copied in`);
 console.log(`  index.html + version.txt  stamped ${STAMP} (${nStamp} assets)`);
+
+/* ---------- the marking gate ----------
+   The build writes the answer hashes; js/marking.js hashes what a student does. If those two
+   ever disagree — a canonical form edited in one and not the other — every question of that
+   type marks wrong, silently, for everybody. So before this build is called finished, run
+   every master answer through the SHIPPED marking.js and the stations.js just written, and
+   refuse the build if a single one comes back wrong. */
+{
+  const gate = resolve(SHARED, 'marking-gate.mjs');
+  if (existsSync(gate)) {
+    try {
+      const out = execFileSync('node', [gate, REPO, MASTER], { encoding: 'utf8' }).trim();
+      const wrong = Number((out.match(/wrong:\s*(\d+)/) || [])[1] ?? -1);
+      if (wrong !== 0) { console.error('\n  MARKING GATE FAILED — ' + out); process.exit(1); }
+      console.log('  marking gate           ' + out.replace(/^.*=>\s*/, ''));
+    } catch (e) {
+      console.error('\n  MARKING GATE FAILED\n' + (e.stdout || '') + (e.stderr || e.message));
+      process.exit(1);
+    }
+  } else {
+    console.error('  marking gate MISSING at ' + gate + ' — cannot prove the answers still mark.');
+    process.exit(1);
+  }
+}
+
