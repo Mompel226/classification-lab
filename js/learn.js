@@ -661,12 +661,37 @@
     svg += '<line class="clado__axis" x1="16" y1="' + (TOP - 12) + '" x2="16" y2="' + (H - 18) + '"/>' +
            '<polygon class="clado__arrow" points="16,' + (H - 12) + ' 12,' + (H - 22) + ' 20,' + (H - 22) + '"/>' +
            '<text class="clado__axist" x="10" y="' + ((TOP + H) / 2) + '" transform="rotate(-90 10 ' + ((TOP + H) / 2) + ')">longer ago</text>';
-    /* each tip drops from its label to its first junction */
+    /* A junction joins exactly TWO things, and the drawing has to show that. Drawn from the
+       leftmost to the rightmost tip of the whole clade, every bar reached out to the last tip
+       and no fork ever closed — which is what made the right-hand side look as if something
+       else were going on over there. Each junction is now a bar between its two children, and
+       its own position is where those two meet. */
+    function kidsOf(n) {
+      var inner = null;
+      for (var i = 0; i < nodes.length; i++)
+        if (nodes[i].from === n.from + 1 && nodes[i].to === n.to) inner = nodes[i];
+      return inner ? [{ tip: n.from }, { node: inner }] : [{ tip: n.from }, { tip: n.to }];
+    }
+    var xMemo = {};
+    function xOfNode(n) {
+      var key = n.from + ':' + n.to;
+      if (xMemo[key] != null) return xMemo[key];
+      var k = kidsOf(n);
+      xMemo[key] = (xAt(k[0]) + xAt(k[1])) / 2;
+      return xMemo[key];
+    }
+    function xAt(c) { return c.tip != null ? xOf(c.tip) : xOfNode(c.node); }
+    function yAt(c) { return c.tip != null ? (TOP - 16) : yOf(c.node.at); }
+
+    /* the tips: a name, and a line down to the junction where its branch joins the rest */
     tips.forEach(function (t, i) {
-      var first = nodes.filter(function (n) { return i >= n.from && i <= n.to; })
-                       .reduce(function (a, n) { return Math.min(a, n.at); }, 99);
+      var joinsAt = 99;
+      nodes.forEach(function (n) {
+        var k = kidsOf(n);
+        if ((k[0].tip === i || k[1].tip === i) && n.at < joinsAt) joinsAt = n.at;
+      });
       svg += '<line class="clado__tw" data-tip="' + i + '" x1="' + xOf(i) + '" y1="' + (TOP - 16) +
-             '" x2="' + xOf(i) + '" y2="' + yOf(first) + '"/>';
+             '" x2="' + xOf(i) + '" y2="' + yOf(joinsAt) + '"/>';
       /* "New World monkey" beside "Old World monkey" collides at this width, so a long name
          is set over two lines rather than shrunk until nobody can read it */
       var words = String(t).split(' ');
@@ -679,18 +704,27 @@
         svg += '<text class="clado__tip" x="' + xOf(i) + '" y="' + (TOP - 24) + '">' + esc(t) + '</text>';
       }
     });
-    /* each junction: the bar, and the stem down to the one below it */
+
+    /* each junction: the bar between its two children, each child's line down into it, and the
+       dot where they meet */
     nodes.forEach(function (n, k) {
-      var y = yOf(n.at);
+      var y = yOf(n.at), kids = kidsOf(n);
+      var xa = xAt(kids[0]), xb = xAt(kids[1]), mid = xOfNode(n);
       svg += '<g class="clado__node" data-node="' + k + '" tabindex="0" role="button" aria-label="' + esc(n.of || 'common ancestor') + '">';
-      svg += '<line class="clado__bar" x1="' + xOf(n.from) + '" y1="' + y + '" x2="' + xOf(n.to) + '" y2="' + y + '"/>';
-      var below = nodes.filter(function (o) { return o.at > n.at && o.from <= n.from && o.to >= n.to; })
-                       .sort(function (a, b) { return a.at - b.at; })[0];
-      var mid = (xOf(n.from) + xOf(n.to)) / 2;
-      if (below) svg += '<line class="clado__stem" x1="' + mid + '" y1="' + y + '" x2="' + mid + '" y2="' + yOf(below.at) + '"/>';
+      svg += '<line class="clado__bar" x1="' + xa + '" y1="' + y + '" x2="' + xb + '" y2="' + y + '"/>';
+      /* the child that is itself a junction drops into this bar from its own line */
+      kids.forEach(function (c) {
+        if (c.node) svg += '<line class="clado__stem" x1="' + xAt(c) + '" y1="' + yAt(c) + '" x2="' + xAt(c) + '" y2="' + y + '"/>';
+      });
       svg += '<circle class="clado__dot" cx="' + mid + '" cy="' + y + '" r="6"/>';
       svg += '</g>';
     });
+    /* the root: a short line below the oldest junction, so the tree has somewhere to come from */
+    if (nodes.length) {
+      var root = nodes.reduce(function (a, b) { return b.at > a.at ? b : a; });
+      svg += '<line class="clado__stem" x1="' + xOfNode(root) + '" y1="' + yOf(root.at) +
+             '" x2="' + xOfNode(root) + '" y2="' + (yOf(root.at) + 18) + '"/>';
+    }
     svg += '</svg>';
 
     var plate = h('div', 'clado');
@@ -698,6 +732,13 @@
     var say = h('p', 'clado__say', 'Every dot is a <b>common ancestor</b> — the point at which one group split into two. Click one.');
     plate.appendChild(say);
     box.appendChild(plate);
+    /* the two names for a diagram like this, and which one this is */
+    if (spec.explain) {
+      var d = h('details', 'clado__what');
+      d.innerHTML = '<summary>' + esc(spec.explainTitle || 'Cladogram or phylogenetic tree?') + '</summary>' +
+                    spec.explain.map(function (p) { return '<p>' + mk(p) + '</p>'; }).join('');
+      box.appendChild(d);
+    }
 
     plate.querySelectorAll('.clado__node').forEach(function (g) {
       function light() {
