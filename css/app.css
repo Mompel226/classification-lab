@@ -1074,7 +1074,12 @@ svg.lit .kl--all.is-on{opacity:1}
 .pins__item--extra.is-found{border-color:#C9C9C4;background:#F4F4F1}
 .pins__item--extra.is-found .n{background:#8A8A8A}
 .pins__item--extra b{color:#5A5A5A}
-.pins__tag{display:block;font-size:10.5px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:#7A6B52;background:#F1EDE3;border:1px dashed #C3B69C;border-radius:var(--r-pill);padding:1px 7px;margin:2px 0 2px;width:max-content}
+/* It sat on its own line under the label, in capitals, at max-content width — so it broke
+   out of the card on a narrow list. It is a small chip beside the label now, and it can
+   never be wider than the space it has. */
+.pins__tag{display:inline-block;vertical-align:.06em;margin-left:6px;font-size:10px;font-weight:700;
+  letter-spacing:.03em;color:#7A6B52;background:#F4F0E6;border:1px solid #DCD2BC;border-radius:var(--r-pill);
+  padding:0 6px;line-height:15px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .pin--fault{background:rgba(176,58,46,.7)}
 .pin--fault:hover{background:rgba(176,58,46,.95)}
 .pin--fault.is-found{background:#fff;color:var(--red);border-color:var(--red)}
@@ -1085,7 +1090,7 @@ svg.lit .kl--all.is-on{opacity:1}
 .pins__item b{color:var(--green)}
 .pins__item small{display:block;color:var(--grey);font-size:12px}
 .pins__item .n{flex:none;width:20px;height:20px;border-radius:50%;background:var(--edge-2);color:var(--grey);font-size:11px;font-weight:700;display:grid;place-items:center}
-.pins__txt{flex:1;min-width:0}
+.pins__txt{flex:1;min-width:0;overflow-wrap:anywhere}
 .pins__zoom{display:none;flex:none;width:64px;height:64px;border-radius:8px;border:1px solid var(--edge);background-color:#1B2226;background-repeat:no-repeat}
 .pins__item.is-found{border-color:#A9D6BA;background:var(--green-tint)}
 .pins__item.is-found .n{background:var(--green-2);color:#fff}

@@ -50,7 +50,7 @@ Commons, CC BY 4.0, shown full frame at 900 and 1400 px wide.
 | `finder-crustaceans-*` | [Four-toothed shore crab, Paragrapsus quadridentatus](https://commons.wikimedia.org/wiki/File:Four-toothed-shore-crab-paragrapsus-quadridentatus-live-collection-specimen-389835-large.jpg) — dorsal view on black | Michael Marmach, Museums Victoria |
 | `finder-myriapods-*` | [Scolopendra canidens.png](https://commons.wikimedia.org/wiki/File:Scolopendra_canidens.png) — a centipede on white | Denis Potanin |
 | `finder-mammals-*` | [Rode vos - red fox - Vulpes vulpes 8.jpg](https://commons.wikimedia.org/wiki/File:Rode_vos_-_red_fox_-_Vulpes_vulpes_8.jpg) — a red fox, close | BouketenCate |
-| `finder-fish-*` | [Perca fluviatilis 148981408.jpg](https://commons.wikimedia.org/wiki/File:Perca_fluviatilis_148981408.jpg) — a perch, side on | Enrico Tomschke |
+| `finder-fish-*` | [Yellow Perch (Perca flavescens).jpg](https://commons.wikimedia.org/wiki/File:Yellow_Perch_(Perca_flavescens).jpg) — a yellow perch side on against black, every fin spread | USFWS Mountain-Prairie (public domain) |
 | `finder-ferns-*` | [Polypodium glycyrrhiza 6878343.jpg](https://commons.wikimedia.org/wiki/File:Polypodium_glycyrrhiza_6878343.jpg) — the underside of a fern frond, with its spore cases | Alex Abair |
 | `finder-viruses-*` | [HIV-1 virus particles, colorized scanning electron micrograph](https://commons.wikimedia.org/wiki/File:HIV-1_virus_particles_colorized_scanning_electron_micrograph_-_211.jpg) — particles (yellow) on a human white blood cell (blue) | NIAID |
 | `finder-monocots-*` | [Iris leaves with glittering rain drops…](https://commons.wikimedia.org/wiki/File:Iris_leaves_with_glittering_rain_drops_in_morning_sunlight_Dnipro_2026-06-10_by_baby-bear.org_Natalka-Ukraine.jpg) — parallel veins | Natalka Ukraine |
@@ -164,3 +164,9 @@ quality" — and a close-up whose whole job is to show a texture has to be sharp
 The pumpkin-seedling cotyledon picture it replaces was too dark to read, and a whale sentence
 was showing a perch's dorsal fin. Reusing a photograph for a second animal is worse than
 finding a new one.
+
+**Why the fish photograph changed.** The first one was a perch held in a hand, and the hand
+covered the gill cover — so the one feature 0610 asks for on a fish, and the one that returns
+in Topic 9 when the gills are a gas exchange surface, could not be pinned at all. The
+replacement is a whole yellow perch against black with every fin spread and the operculum in
+plain view. `peek-fins-*` and `peek-wet-scales-*` no longer come from this file.
