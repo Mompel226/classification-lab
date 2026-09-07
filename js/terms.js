@@ -171,8 +171,8 @@
      'An insect <b>wing</b>: a thin membrane stiffened by veins, growing from the thorax. A bird’s wing is a different thing — the front limb itself, with bones inside.',
      'Common wasp · bemma · CC BY 4.0 · Wikimedia Commons'],
     ['wet scales', 'peek-wet-scales-900.jpg',
-     '<b>Wet scales</b>: thin overlapping plates in the skin of a fish, kept slippery by mucus. Not the same as a reptile’s dry scales, which are horny and waterproof.',
-     'Perca fluviatilis · Enrico Tomschke · CC BY 4.0 · Wikimedia Commons'],
+     '<b>Wet scales</b>: thin plates in the skin of a fish, overlapping like roof tiles and kept slippery by mucus. Not the same as a reptile’s dry scales, which are horny and waterproof.',
+     'Rainbow trout · Ryan Hagerty/USFWS · public domain · Wikimedia Commons'],
     ['dry scales', 'peek-scales-900.jpg',
      '<b>Dry scales</b>: a horny waterproof skin, here on an iguana, which is why a reptile can live away from water. A fish’s scales are wet and slippery instead.',
      'Green iguana · Wilfredor · CC0 · Wikimedia Commons']
@@ -282,10 +282,19 @@
     });
   }
 
+  /* A word inside a negative is a word about something that is NOT there. Clicking "scales"
+     in "smooth, moist skin with no scales" opened a photograph of a reptile's scales — the
+     very picture shown two sentences earlier, now offered as if it were the frog's. A word
+     that has just been denied gets no picture, no link and no definition: there is nothing
+     there to look at. */
+  var NEGATED = /(?:^|[\s(\u2014-])(?:no|not|non|never|without|neither|nor|lack|lacks|lacking|nothing)\s+(?:[a-z]+\s+){0,2}$/i;
+
   function mark(text) {
-    return underlineTags(underlineMarks(esc(text)).replace(RE, function (m) {
+    return underlineTags(underlineMarks(esc(text)).replace(RE, function (m, _g, at, whole) {
       var low = m.toLowerCase(), e = INFO[low];
       if (!e) return m;
+      var before = String(whole).slice(0, at).replace(/<[^>]*>/g, '');
+      if (NEGATED.test(before)) return m;
       var cat = e[1], act = '', cls = '';
       var first = !quiet && !(seen && seen[low]);
       if (seen) seen[low] = true;

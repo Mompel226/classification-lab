@@ -123,9 +123,9 @@ a 5% grid. No new licences are involved except the gill drawing.
 | `peek-protein-coat-*` | `finder-viruses-*` | single virus particles, the coat being the outside |
 | `peek-cilia-*` | `protoctists-*` | the rim of a Paramecium. Cilia do not resolve at this magnification and the card says so |
 
-| `peek-wing-bird-*` | `birds-*` | a bald eagle's wing: the front limb itself |
+| `peek-wing-bird-*` | `birds-*` | a bald eagle's whole wing, shoulder to tip: the front limb itself |
 | `peek-wing-insect-*` | `finder-insects-*` | a wasp's wing: a membrane stiffened by veins |
-| `peek-wet-scales-*` | `finder-fish-*` | the thin overlapping scales of a perch |
+| `peek-wet-scales-*` | *(its own photograph — see below)* | the overlapping scales of a rainbow trout |
 
 A word can also mean different things on different stations, so `CONTEXT` in `js/terms.js`
 overrides a card for one station only: "wings" opens the eagle's wing on the vertebrates
@@ -145,3 +145,13 @@ and the card says why.
 and give a definition, but have no picture yet. Each needs one public-domain, CC0 or CC BY
 photograph: a flower cut lengthways with the ovary showing, a fruit cut open with its seeds, a
 seed cut in half, and the two root systems side by side.
+
+### A close-up with its own source
+
+`peek-wet-scales-*` is not cropped from a picture above. The perch is held in a hand and its
+flank is shaded, so every crop of it came out soft — the teacher's words were "very bad
+quality" — and a close-up whose whole job is to show a texture has to be sharp.
+
+| File | Source | Photographer | Licence |
+|---|---|---|---|
+| `peek-wet-scales-*` | [Erwin NFH rainbow trout scales 7 March 2022.png](https://commons.wikimedia.org/wiki/File:Erwin_NFH_rainbow_trout_scales_7_March_2022.png) — rainbow trout scales, Erwin National Fish Hatchery | Ryan Hagerty/USFWS | Public domain |
