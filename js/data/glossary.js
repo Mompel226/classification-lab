@@ -696,6 +696,11 @@ window.GLOSSARY = [
   "def": "The alkaline fluid the pancreas secretes into the duodenum; it contains amylase, protease (trypsin) and lipase."
  },
  {
+  "term": "parasite",
+  "def": "An organism that lives on or in another organism, its host, taking food from it and doing it harm. Parasites are found in several groups: animals such as the tapeworm and the flea, protoctists such as the malaria parasite, and many fungi.",
+  "sup": true
+ },
+ {
   "term": "parasitic nutrition",
   "def": "Heterotrophic nutrition in which an organism (the parasite) feeds on or in a living host, harming it. Plasmodium, which causes malaria, feeds this way.",
   "ext": true
@@ -706,7 +711,7 @@ window.GLOSSARY = [
  },
  {
   "term": "pathogen",
-  "def": "A disease-causing organism: bacteria, fungi, protoctists and viruses can all be pathogens."
+  "def": "A disease-causing organism. Pathogens are not one group: bacteria (cholera, tuberculosis), viruses (influenza, measles), fungi (athlete’s foot, ringworm) and protoctists (malaria) can all be pathogens. Most bacteria and most viruses cause no disease at all — pathogen describes what an organism does, not what it is."
  },
  {
   "term": "pepsin",
