@@ -257,7 +257,14 @@
       if (bgH < ZOOM_W) { bgW *= ZOOM_W / bgH; bgH = ZOOM_W; }
       z.style.backgroundImage = 'url("' + opts.zoom + '")';
       z.style.backgroundSize = bgW + 'px ' + bgH + 'px';
-      var x = spots[i].x / 100 * bgW - ZOOM_W / 2, y = spots[i].y / 100 * bgH - ZOOM_W / 2;
+      /* The close-up is centred on the MIDDLE OF THE STRUCTURE, which is not always where the
+         pin is. A pin has two other jobs — to point at the feature unambiguously and to keep
+         clear of the other pins — so several of them sit deliberately off-centre, and a crop
+         taken from the pin then shows the structure pushed to one side. cx/cy say where the
+         middle actually is; without them the pin is used, which is right for most spots. */
+      var cx = spots[i].cx != null ? spots[i].cx : spots[i].x;
+      var cy = spots[i].cy != null ? spots[i].cy : spots[i].y;
+      var x = cx / 100 * bgW - ZOOM_W / 2, y = cy / 100 * bgH - ZOOM_W / 2;
       x = Math.max(0, Math.min(x, bgW - ZOOM_W)); y = Math.max(0, Math.min(y, bgH - ZOOM_W));
       z.style.backgroundPosition = (-x) + 'px ' + (-y) + 'px';
     }
@@ -368,33 +375,44 @@
   }
 
   /* ---------- SOLD: how a biological drawing is marked ----------
-     Size · Outline · Labels · Detail · Detail — five marks, the way the department marks a
-     drawing. It is shown small under each drawing, with the reason for every letter, so a
-     student sees the same criteria they will be marked against and can see them being met.
-     A letter is only ticked if the drawing really does it: the score is a judgement, not a
-     decoration, and a drawing that fails one says so. */
+     Size · Outline · Labels · Detail — four things, FIVE marks, because Detail carries two:
+     one mark for the detail that is there, the second for going further. So a drawing that
+     does everything else right and is plainly drawn scores 4, and the same drawing with the
+     finer structures put in scores 5.
+
+     It is shown small under each drawing, and the score is a judgement, not a decoration: a
+     drawing that only earns one detail mark says so, and says what the second mark would have
+     taken. That is the useful part — a student can see the gap. */
   var SOLD = [
-    ['S', 'Size',    'Large — it fills the space it is given. A small drawing cannot be labelled.'],
-    ['O', 'Outline', 'One continuous line. No sketching, no hairy lines, no shading for effect.'],
-    ['L', 'Labels',  'Ruled label lines, horizontal, touching the structure, never crossing, the names in a column.'],
-    ['D', 'Detail',  'The main structures are all there, and in the right proportions.'],
-    ['D', 'Detail',  'The finer structures that say which specimen this is.']
+    ['S', 'Size',    1, 'Large — it fills the space it is given. A small drawing cannot be labelled.'],
+    ['O', 'Outline', 1, 'One continuous line. No sketching, no hairy lines, no shading for effect.'],
+    ['L', 'Labels',  1, 'Ruled label lines, horizontal, touching the structure, never crossing, the names in a column.'],
+    ['D', 'Detail',  2, 'Two marks. One for the main structures, all present and in proportion; the second for the finer structures that say which specimen this is.']
   ];
   function soldBadge(sp) {
-    var keys = ['s', 'o', 'l', 'd1', 'd2'];
-    var got = keys.map(function (k) { return sp[k] ? 1 : 0; });
-    var score = sp.score != null ? sp.score : got.reduce(function (a, b) { return a + b; }, 0);
+    var d = Math.max(0, Math.min(2, sp.d == null ? 2 : sp.d));
+    var have = [sp.s ? 1 : 0, sp.o ? 1 : 0, sp.l ? 1 : 0, d];
+    var score = have.reduce(function (a, b) { return a + b; }, 0);
+    var why = [sp.s, sp.o, sp.l, sp.dWhy];
     var box = h('div', 'sold');
     box.innerHTML =
       '<div class="sold__row"><b class="sold__score">SOLD ' + score + '/5</b>' +
       SOLD.map(function (c, i) {
-        return '<span class="sold__c' + (got[i] ? ' is-on' : '') + '">' +
-               '<i>' + c[0] + '</i>' + esc(c[1]) + (got[i] ? ' \u2713' : ' \u2717') + '</span>';
+        var full = have[i] === c[2];
+        return '<span class="sold__c' + (have[i] ? (full ? ' is-on' : ' is-part') : '') + '">' +
+               '<i>' + c[0] + '</i>' + esc(c[1]) +
+               (c[2] === 2 ? ' ' + have[i] + '/2' : (have[i] ? ' \u2713' : ' \u2717')) + '</span>';
       }).join('') + '</div>' +
       '<details class="sold__more"><summary>how this drawing scores, and what the letters mean</summary><ul>' +
       SOLD.map(function (c, i) {
-        return '<li><b>' + c[0] + ' — ' + esc(c[1]) + '</b> <span class="sold__rule">' + esc(c[2]) + '</span>' +
-               '<br>' + (sp[keys[i]] ? esc(sp[keys[i]]) : '<i>not shown on this drawing</i>') + '</li>';
+        var mark = c[2] === 2 ? (' <b class="sold__m">' + have[i] + ' of 2</b>')
+                              : (' <b class="sold__m">' + have[i] + ' of 1</b>');
+        return '<li><b>' + c[0] + ' — ' + esc(c[1]) + '</b>' + mark +
+               '<br><span class="sold__rule">' + esc(c[3]) + '</span><br>' +
+               (why[i] ? esc(why[i]) : '<i>not shown on this drawing</i>') +
+               (c[2] === 2 && have[i] < 2 && sp.dNext
+                  ? '<br><span class="sold__next">The second mark would need: ' + esc(sp.dNext) + '</span>' : '') +
+               '</li>';
       }).join('') + '</ul></details>';
     return box;
   }
@@ -700,11 +718,17 @@
   }
 
   /* ---------- table, photo ---------- */
+  /* A comparison table is where a student meets most of these words for the first time —
+     "parallel veins", "two cotyledons", "flower parts in threes" — and until now not one of
+     them was clickable, because the cells were escaped and never passed to the term marker.
+     They are marked now, so every registered word in a table opens its picture or its
+     definition exactly as it does in a sentence. */
+  function mk(t) { return (global.Terms && global.Terms.mark) ? global.Terms.mark(t) : esc(t); }
   function table(spec) {
     var box = h('div', 'ctable'); if (spec.group) box.setAttribute('data-group', spec.group);
     box.innerHTML = '<table>' + (spec.caption ? '<caption>' + esc(spec.caption) + '</caption>' : '') +
-      '<thead><tr>' + spec.head.map(function (c) { return '<th>' + esc(c) + '</th>'; }).join('') + '</tr></thead><tbody>' +
-      spec.rows.map(function (r) { return '<tr>' + r.map(function (c, i) { return i === 0 ? '<th scope="row">' + esc(c) + '</th>' : '<td>' + esc(c) + '</td>'; }).join('') + '</tr>'; }).join('') + '</tbody></table>';
+      '<thead><tr>' + spec.head.map(function (c) { return '<th>' + mk(c) + '</th>'; }).join('') + '</tr></thead><tbody>' +
+      spec.rows.map(function (r) { return '<tr>' + r.map(function (c, i) { return i === 0 ? '<th scope="row">' + mk(c) + '</th>' : '<td>' + mk(c) + '</td>'; }).join('') + '</tr>'; }).join('') + '</tbody></table>';
     return box;
   }
   function photo(spec) {

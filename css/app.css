@@ -1122,6 +1122,7 @@ svg.lit .kl--all.is-on{opacity:1}
 .sold__c{display:inline-flex;align-items:center;gap:4px;font-size:11.5px;color:#8A8A8A;
   border:1px solid var(--edge);border-radius:var(--r-pill);padding:2px 8px}
 .sold__c.is-on{color:var(--green);border-color:var(--green);background:rgba(20,87,43,.06)}
+.sold__c.is-part{color:#8A5A0E;border-color:#E2B95F;background:#FFF8E6}   /* one detail mark of two */
 .sold__c i{font-style:normal;font-weight:700}
 .sold__more{margin-top:7px}
 .sold__more summary{cursor:pointer;font-size:12px;color:var(--grey);list-style:none}
@@ -1131,6 +1132,8 @@ svg.lit .kl--all.is-on{opacity:1}
 .sold__more ul{margin:6px 0 0;padding-left:18px}
 .sold__more li{font-size:12.5px;line-height:1.5;margin-bottom:6px;color:#3C3C3C}
 .sold__rule{color:var(--grey)}
+.sold__m{color:var(--green)}
+.sold__next{color:#8A5A0E}
 .diag{margin:0}
 .diag__svg{width:100%;max-width:560px;height:auto;display:block;margin:0 auto;font-family:var(--font)}
 .diag figcaption{font-size:13px;color:#3C3C3C;line-height:1.45;margin-top:6px}

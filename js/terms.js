@@ -160,13 +160,17 @@
   jump(['dichotomous key','dichotomous keys'], 'keys');
   jump(['kingdom','kingdoms','five kingdoms','animal','animals','animal kingdom','plant kingdom','fungus','fungi','fungal','prokaryote','prokaryotes','prokaryotic','bacterium','bacteria','bacterial',
         'protoctist','protoctists','amoeba','paramecium','alga','algae','plasmodium','saprophyte','saprophytes','saprotroph','saprotrophs','yeast','mould','moulds','mushroom','mushrooms',
-        'cell wall','cell walls','nucleus','nuclei','chloroplast','chloroplasts','cellulose','chitin','multicellular','unicellular','single-celled','circular dna',
+        'cell wall','cell walls','nucleus','nuclei','chloroplast','chloroplasts','cellulose','multicellular','unicellular','single-celled','circular dna',
         'autotrophic nutrition','heterotrophic nutrition','saprotrophic nutrition','parasitic nutrition','autotrophic','heterotrophic','saprotrophic','autotroph','autotrophs','heterotroph','heterotrophs','photosynthesis'], 'kingdoms');
   jump(['vertebrate','vertebrates','mammal','mammals','bird','birds','reptile','reptiles','amphibian','amphibians','fish','fishes','backbone','lungs','warm-blooded','cold-blooded','mammary glands','milk','lateral line','internal fertilisation','external fertilisation'], 'vertebrates');
   jump(['arthropod','arthropods','myriapod','myriapods','insect','insects','arachnid','arachnids','crustacean','crustaceans','centipede','centipedes','millipede','millipedes','spider','spiders','crab','crabs','abdomen','thorax','segment','segments','segmented','jointed legs','jointed limbs','wings'], 'arthropods');
   jump(['plant','plants','fern','ferns','flowering plant','flowering plants','monocotyledon','monocotyledons','monocot','monocots','dicotyledon','dicotyledons','dicot','dicots','cotyledon','cotyledons',
         'spore','spores','sporangium','sporangia','xylem','phloem','parallel veins','network of veins','net-like veins'], 'plants');
-  jump(['virus','viruses','host cell','host cells','pathogen','pathogens','parasite','parasites'], 'viruses');
+  jump(['virus','viruses','host cell','host cells'], 'viruses');
+  /* NOT pathogen and NOT parasite. Sending a reader from either word to the viruses station
+     teaches that pathogens are viruses, and they are not: bacteria, fungi and protoctists
+     cause disease too, and most viruses and most bacteria cause none. Both words now open a
+     definition that says so. */
   jump(['magnification','specimen','specimens'], 'drawing');
 
   /* --------- build one matcher, longest phrase first --------- */
