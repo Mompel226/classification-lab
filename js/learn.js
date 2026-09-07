@@ -199,12 +199,19 @@
       });
       lines.innerHTML = out;
     }
+    /* The picture beside a found name is a close view of that feature — a window about a
+       sixth of the picture wide, centred on the pin. Tighter than this (it was a twentieth)
+       and every crop was an unreadable patch of pixels: a leg became blank paper, a thorax
+       a black smudge. It is cropped from the 1400 px file, so it stays sharp. */
+    var ZOOM_W = 64, ZOOM_FRAC = 0.15;
     function zoomInto(i) {
       var z = zooms[i], sb = stage.getBoundingClientRect(); if (!z || !opts.zoom || !sb.width) return;
-      var mag = 2.6, w = 54;
+      var bgW = ZOOM_W / ZOOM_FRAC, bgH = bgW * (sb.height / sb.width);
       z.style.backgroundImage = 'url("' + opts.zoom + '")';
-      z.style.backgroundSize = (mag * sb.width) + 'px auto';
-      z.style.backgroundPosition = (-(spots[i].x / 100 * mag * sb.width - w / 2)) + 'px ' + (-(spots[i].y / 100 * mag * sb.height - w / 2)) + 'px';
+      z.style.backgroundSize = bgW + 'px ' + bgH + 'px';
+      var x = spots[i].x / 100 * bgW - ZOOM_W / 2, y = spots[i].y / 100 * bgH - ZOOM_W / 2;
+      x = Math.max(0, Math.min(x, bgW - ZOOM_W)); y = Math.max(0, Math.min(y, bgH - ZOOM_W));
+      z.style.backgroundPosition = (-x) + 'px ' + (-y) + 'px';
     }
     function toggle(i, on) {
       var now = on == null ? !found[i] : !!on;
@@ -243,6 +250,10 @@
     var box = h('div', 'widget'); if (spec.group) box.setAttribute('data-group', spec.group);
     var g = GROUP[spec.group] || {};
     box.appendChild(head(spec.title || ('Find the features: ' + (g.label || '')), spec.ask || 'Click a numbered pin on the photograph, or its name beside it, and a line is ruled between them — the way a labelled figure is drawn. Click again to take the line away. The small picture beside a name is a close-up of that feature.', 'Click the pins'));
+    /* where the group sits in the ranks: the kingdom is examined, the rest is context */
+    if (spec.taxon) box.appendChild(h('p', 'taxon', '<b>Where it sits</b>' + spec.taxon.map(function (t, i) {
+      return '<span class="taxon__step' + (t.exam ? ' taxon__step--exam' : '') + '"><small>' + esc(t.rank) + '</small>' + esc(t.name) + '</span>';
+    }).join('<i class="taxon__arrow">→</i>') + '<span class="taxon__note">0610 asks for the kingdom and the group; the ranks between them are here so you can see how they nest.</span>'));
     var wrap = h('div', 'finder pins');
     var stage = h('div', 'finder__stage');
     var pic = picture(spec); if (pic) stage.appendChild(pic.img);
@@ -543,10 +554,18 @@
   function joints(pts, cx) { cx = cx || MX; return pts.map(function (p) { return '<circle cx="' + p[0] + '" cy="' + p[1] + '" r="1.7"/><circle cx="' + (2 * cx - p[0]) + '" cy="' + p[1] + '" r="1.7"/>'; }).join(''); }
   /* a label the syllabus does not ask a candidate to produce is drawn in grey, and the
      caption says so: the diagram completes the picture without adding to what must be learnt */
+  /* A label line on a drawing starts a little way off the structure it names. Touching it
+     would leave the reader unable to tell where the drawing ends and the line begins, which
+     is the same rule the drawing station teaches. On a photograph the pin marks the spot, so
+     this gap belongs to the diagrams only. */
+  var LEAD_GAP = 6;
   function lab(x1, y1, x2, y2, text, anchor, extra) {
     if (anchor === 'extra') { extra = true; anchor = null; }
-    return '<line class="diag__lead' + (extra ? ' diag__lead--extra' : '') + '" x1="' + x1 + '" y1="' + y1 + '" x2="' + x2 + '" y2="' + y2 + '"/><text class="diag__lab' + (extra ? ' diag__lab--extra' : '') + '" x="' + (x2 + (anchor === 'end' ? -4 : 4)) + '" y="' + (y2 + 3.5) + '"' + (anchor ? ' text-anchor="' + anchor + '"' : '') + '>' + text + '</text>';
+    var dx = x2 - x1, dy = y2 - y1, len = Math.sqrt(dx * dx + dy * dy) || 1;
+    var sx = x1 + dx / len * LEAD_GAP, sy = y1 + dy / len * LEAD_GAP;
+    return '<line class="diag__lead' + (extra ? ' diag__lead--extra' : '') + '" x1="' + f1(sx) + '" y1="' + f1(sy) + '" x2="' + x2 + '" y2="' + y2 + '"/><text class="diag__lab' + (extra ? ' diag__lab--extra' : '') + '" x="' + (x2 + (anchor === 'end' ? -4 : 4)) + '" y="' + (y2 + 3.5) + '"' + (anchor ? ' text-anchor="' + anchor + '"' : '') + '>' + text + '</text>';
   }
+  function f1(v) { return Math.round(v * 10) / 10; }
   function segs21() { var s = ''; for (var i = 0; i < 21; i++) s += '<rect class="' + (i % 2 ? 'diag__thorax' : 'diag__abd') + '" x="' + (66 + 13 * i) + '" y="92" width="13" height="26" rx="2"/>'; return s; }
   function legs20() { var s = ''; for (var i = 0; i < 20; i++) { var x = 72.5 + 13 * i; s += '<path d="M' + x + ' 92 L' + (x - 3.5) + ' 76 L' + (x + 4.5) + ' 62"/><path d="M' + x + ' 118 L' + (x - 3.5) + ' 134 L' + (x + 4.5) + ' 148"/>'; } return s; }
   var DIAGRAMS = {
