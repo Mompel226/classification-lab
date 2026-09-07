@@ -479,8 +479,18 @@
       '<div id="subWho" class="signinbox"></div><div id="subMsg" class="submsg"></div>';
     go.style.display = 'none';
     if (!mountSignIn(document.getElementById('subWho'))) {
-      document.getElementById('subWho').innerHTML = '<p class="fineprint">Google sign-in could not load. You can still get your completion code.</p>';
+      /* Sign-in did not load — offline, or a school filter has blocked accounts.google.com.
+         This used to show "Get my code" with NO name field, so pressing it answered "Please
+         type your full name" with nowhere to type it, and no code was ever issued. */
+      document.getElementById('subWho').innerHTML =
+        '<p class="fineprint">Google sign-in could not load, so this cannot go into Dr&nbsp;Mompel&rsquo;s records ' +
+        'automatically. Type your name and you will still get your completion code.</p>' +
+        '<label class="fld"><span>Your full name</span><input id="subName" type="text" autocomplete="name"></label>' +
+        '<label class="fld"><span>Your class</span><select id="subForm">' +
+        (cfg.classes || ['Other']).map(function (c) { return '<option>' + c + '</option>'; }).join('') +
+        '</select></label>';
       go.style.display = ''; go.textContent = 'Get my code'; go.onclick = doSubmit;
+      var nf = document.getElementById('subName'); if (nf) nf.focus();
     }
   }
   function doSubmit() {

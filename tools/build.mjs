@@ -19,9 +19,9 @@
    of the answers for your own checking. The site never loads it, .gitignore
    keeps it out of the repo, and it is not published.
    ============================================================ */
-import { readFileSync, writeFileSync, existsSync, copyFileSync, readdirSync, mkdirSync } from 'node:fs';
-import { webcrypto as crypto } from 'node:crypto';
-import { dirname, resolve } from 'node:path';
+import { readFileSync, writeFileSync, existsSync, copyFileSync, readdirSync, mkdirSync, statSync } from 'node:fs';
+import { webcrypto as crypto, createHash } from 'node:crypto';
+import { dirname, resolve, join, relative } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
@@ -392,6 +392,51 @@ const nStamp = (idx.match(/\.(?:js|css)\?v=\d+/g) || []).length;
 if (!nStamp) throw new Error('index.html has no ?v= stamps to bump — cache busting would be silent');
 writeFileSync(idxPath, idx.replace(/(\.(?:js|css))\?v=\d+/g, `$1?v=${STAMP}`));
 
+const SW_LAB = 'classification-lab';
+const SW_TEMPLATE = resolve(SHARED, 'sw.template.js');
+
+/* ---------- the offline worker ----------
+   Its manifest is read back out of the index.html this build has JUST stamped, so a stale
+   file behind a new page is impossible by construction: if it is not in the HTML, the worker
+   does not precache it, and if the HTML says v=N then so does the worker.
+
+   `node tools/build.mjs --no-sw` leaves sw.js alone, which is what a kill-switch deploy needs
+   until every device has loaded the site once. */
+if (!process.argv.includes('--no-sw')) {
+  const stamped = readFileSync(idxPath, 'utf8');
+  const assets = [...stamped.matchAll(/(?:src|href)="([^":]+?\.(?:js|css))\?v=(\d+)"/g)];
+  const wrong = assets.filter(m => m[2] !== STAMP);
+  if (wrong.length) throw new Error('index.html still carries old stamps: ' + wrong.map(m => m[1] + '?v=' + m[2]).join(', '));
+  const PRECACHE = assets.map(m => './' + m[1] + '?v=' + m[2]);
+  if (PRECACHE.length < 3) throw new Error('only ' + PRECACHE.length + ' assets found for the worker — the regex has stopped matching');
+
+  /* every picture, keyed by a hash of its own bytes. Video is left out on purpose: it is
+     served with Range requests, which the worker never touches. */
+  const MEDIA_REV = {};
+  let mediaBytes = 0;
+  (function walkAssets(dir) {
+    for (const f of readdirSync(dir)) {
+      const full = join(dir, f);
+      if (statSync(full).isDirectory()) { walkAssets(full); continue; }
+      if (/\.(mp4|webm|mov|md|json)$/i.test(f)) continue;
+      const buf = readFileSync(full);
+      MEDIA_REV[relative(resolve(REPO, 'assets'), full).split('\\').join('/')] =
+        createHash('sha1').update(buf).digest('hex').slice(0, 8);
+      mediaBytes += buf.length;
+    }
+  })(resolve(REPO, 'assets'));
+
+  const tpl = readFileSync(SW_TEMPLATE, 'utf8')
+    .replace('__LAB__', SW_LAB)
+    .replace('__VERSION__', STAMP)
+    .replace('__PRECACHE__', JSON.stringify(PRECACHE))
+    .replace('__MEDIA_REV__', JSON.stringify(MEDIA_REV));
+  if (/__[A-Z_]+__/.test(tpl)) throw new Error('sw.template.js has a placeholder this build does not fill: ' + /__[A-Z_]+__/.exec(tpl)[0]);
+  writeFileSync(resolve(REPO, 'sw.js'), tpl);
+  console.log(`  sw.js                 ${PRECACHE.length} stamped files + ${Object.keys(MEDIA_REV).length} pictures (${(mediaBytes/1024/1024).toFixed(1)} MB), version ${STAMP}`);
+} else {
+  console.log('  sw.js                 LEFT ALONE (--no-sw)');
+}
 console.log(`built ${pub.length} stations, ${nAct} activities`);
 console.log(`  js/data/stations.js   presentation + hashes (no answers)`);
 console.log(`  js/data/glossary.js   ${GLOSSARY.length} shared definitions`);
