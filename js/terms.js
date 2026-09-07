@@ -265,8 +265,39 @@
   function escRe(s) { return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
   var RE = new RegExp('(?<![A-Za-z0-9-])(' + ENTRIES.map(function (e) { return escRe(e[0]); }).join('|') + ')(?![A-Za-z0-9-])', 'gi');
 
-  var here = null, seen = null, quiet = false;
-  function setStation(id) { here = id; seen = Object.create(null); quiet = false; }
+  /* ---------- what a mark promises ----------
+     Three marks, three different things, and a reader must be able to tell them apart before
+     clicking:
+
+       a magnifying glass  a picture opens where you are
+       a faint dotted rule the definition opens where you are
+       an arrow            you are taken to another station
+
+     So the arrow is only ever used when there is something at the other end worth the journey
+     — a table, an activity, a photograph of the thing. A word that only wants explaining gets
+     the definition, in place: the back chip fades after a few seconds, and a reader who misses
+     it has to find their own way back, which is a poor trade for a sentence they could have
+     read without moving.
+
+     These are the words with something at the other end. Everything else that has a
+     definition now opens it. */
+  var GOES_THERE = {};
+  ('animal animals animal kingdom plant plants plant kingdom fungus fungi fungal ' +
+   'prokaryote prokaryotes prokaryotic protoctist protoctists bacteria bacterium bacterial ' +
+   'kingdom kingdoms five kingdoms ' +
+   'vertebrate vertebrates mammal mammals bird birds reptile reptiles amphibian amphibians fish fishes ' +
+   'arthropod arthropods insect insects arachnid arachnids crustacean crustaceans myriapod myriapods ' +
+   'fern ferns flowering plant flowering plants monocotyledon monocotyledons monocot monocots ' +
+   'dicotyledon dicotyledons dicot dicots virus viruses ' +
+   'dichotomous key dichotomous keys binomial system dna base sequence base sequences ' +
+   'magnification specimen specimens').split(' ').forEach(function (w) { GOES_THERE[w] = true; });
+  /* the multi-word ones the split above broke apart */
+  ['animal kingdom', 'plant kingdom', 'five kingdoms', 'flowering plant', 'flowering plants',
+   'dichotomous key', 'dichotomous keys', 'binomial system', 'base sequence', 'base sequences']
+    .forEach(function (w) { GOES_THERE[w] = true; });
+
+  var here = null, seen = null, quiet = false, wentTo = null;
+  function setStation(id) { here = id; seen = Object.create(null); quiet = false; wentTo = Object.create(null); }
   function setQuiet(v) { quiet = !!v; }
 
   /* _like this_ underlines a phrase the syllabus wants written; the sentinels keep the
@@ -310,12 +341,21 @@
            marker — the widget below it is where the definition is learnt */
         return e[2] ? '<b class="tc tc--' + cat + '"><i class="tc__n">' + CATS[cat].n + '</i>' + m + '</b>'
                     : '<b class="t t--' + cat + '">' + m + '</b>';
-      } else if (JUMP[low]) {
+      } else if (JUMP[low] && GOES_THERE[low] && !(wentTo && wentTo[JUMP[low]])) {
+        /* Only the FIRST word on a station that leads somewhere carries the arrow there. A
+           reader who follows "mammal" to the table, comes back, and finds "milk" takes them to
+           the same table has been sent twice to the same page. */
+        if (wentTo) wentTo[JUMP[low]] = true;
         act = ' data-jump="' + JUMP[low] + '" tabindex="0" role="button"';
         cls = ' is-jump';
       } else if (DEFINED[low] && !KNOWN[low]) {
         act = ' data-gloss="' + esc(DEFINED[low]) + '" tabindex="0" role="button"';
         cls = ' is-gloss';
+      } else if (JUMP[low] && !(wentTo && wentTo[JUMP[low]])) {
+        /* no definition written for it, so the station that teaches it is the only answer */
+        if (wentTo) wentTo[JUMP[low]] = true;
+        act = ' data-jump="' + JUMP[low] + '" tabindex="0" role="button"';
+        cls = ' is-jump';
       }
       /* A category chip prints its letter inside the same element, so reading the term off
          textContent yields "Nnutrition". Carry the word itself. */
