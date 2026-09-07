@@ -35,14 +35,32 @@
   }
   /* A record is filed by the question's position, and a changed question set would credit
      a reader for a question they never saw: the record carries a fingerprint of the set. */
-  function stationSig(st) {
-    return (st.activities || []).length + ':' + (st.activities || []).map(function (a) { return a.type; }).join(',');
+  /* FNV-1a, base 36. Small, stable, and it only has to notice a change, not resist an attack. */
+  function hash36(s) {
+    var h = 0x811c9dc5;
+    for (var i = 0; i < s.length; i++) {
+      h ^= s.charCodeAt(i);
+      h = (h + ((h << 1) + (h << 4) + (h << 7) + (h << 8) + (h << 24))) >>> 0;
+    }
+    return h.toString(36);
   }
-  /* The fingerprint was once the first letter of each type, and 'mcq' and 'match' both begin
-     with m — so turning a matching task into a multiple choice left it unchanged and the old
-     record survived. A record written in that old form no longer matches anything and is
-     dropped, which is the point: it is the only honest thing to do with a record we cannot
-     trust. */
+  /* The fingerprint covers the number of questions AND everything a student reads in each one,
+     in order — the prompt, the options, the items, the labels. Counting types alone was not
+     enough: rewording a question, or reordering its options, left the fingerprint unchanged, so
+     a student kept a tick against a question that had changed underneath them.
+
+     Deliberately NOT the answer key `k`. It is salted afresh on every build, so hashing it
+     would wipe every record on every deploy whether anything changed or not. Verified: across
+     two rebuilds with no content change, every station's fingerprint is identical in both labs. */
+  function stationSig(st) {
+    var acts = st.activities || [];
+    var body = acts.map(function (a) {
+      var c = {};
+      Object.keys(a).sort().forEach(function (k) { if (k !== 'k') c[k] = a[k]; });
+      return JSON.stringify(c);
+    }).join('|');
+    return acts.length + ':' + hash36(body);
+  }
   function reconcile() {
     var dropped = 0;
     Object.keys(progress).forEach(function (id) {
