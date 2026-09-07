@@ -203,7 +203,7 @@
        sixth of the picture wide, centred on the pin. Tighter than this (it was a twentieth)
        and every crop was an unreadable patch of pixels: a leg became blank paper, a thorax
        a black smudge. It is cropped from the 1400 px file, so it stays sharp. */
-    var ZOOM_W = 64, ZOOM_FRAC = 0.15;
+    var ZOOM_W = 64, ZOOM_FRAC = 0.26;
     function zoomInto(i) {
       var z = zooms[i], sb = stage.getBoundingClientRect(); if (!z || !opts.zoom || !sb.width) return;
       var bgW = ZOOM_W / ZOOM_FRAC, bgH = bgW * (sb.height / sb.width);
