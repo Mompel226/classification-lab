@@ -49,6 +49,11 @@ window.GLOSSARY = [
   "def": "Anaemia is the condition in which the blood carries too little haemoglobin, so it carries less oxygen and the person feels tired and weak. In the diet, the usual cause is too little iron, which is needed to make haemoglobin."
  },
  {
+  "term": "anatomy",
+  "def": "The internal structure of an organism — the parts inside it and how they are arranged. Classification once rested on anatomy and morphology; DNA now settles the arguments those could not.",
+  "ext": true
+ },
+ {
   "term": "antenna",
   "def": "A jointed feeler on the head of an arthropod, sensing touch and chemicals. Plural: antennae. Insects and myriapods have one pair, crustaceans two, arachnids none."
  },

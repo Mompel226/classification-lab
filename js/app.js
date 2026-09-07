@@ -192,8 +192,8 @@
       pane.appendChild(key);
     }
     if (tab === 'learn') paintLearn(pane, st); else paintDo(pane, st);
-    var panelEl = document.getElementById('panel');
-    panelEl.style.scrollBehavior = 'auto'; panelEl.scrollTop = 0; panelEl.style.scrollBehavior = '';
+    var sc = panelScroller();
+    if (sc) { var prev = sc.style.scrollBehavior; sc.style.scrollBehavior = 'auto'; sc.scrollTop = 0; sc.style.scrollBehavior = prev || ''; }
   }
 
   var WIDGET_CTX = {
@@ -357,6 +357,60 @@
     if (focusTerm) focusOnTerm(focusTerm, cameFrom);
     if (location.hash.slice(1) !== id) history.replaceState(null, '', '#' + id);
   }
+  /* ---------- landing in the right place ----------
+     Following a word to another station used to CENTRE the paragraph it landed on, so on any
+     paragraph taller than half the panel the reader arrived in the middle of it and had to
+     scroll back up to find where it began. It now puts the START of the block just below the
+     top of the panel.
+
+     Two things have to be measured rather than assumed. The tab bar is position:sticky at
+     top:0 inside the panel, so anything scrolled to the panel's top edge lands underneath it;
+     and its height is not the same on a laptop, an iPad and a phone. And a picture above the
+     target can finish loading just after the scroll and push everything down, so the position
+     is re-applied on the next frame and once more a moment later. */
+  /* Which box actually scrolls. Below 1000px the panel is overflow:visible and .stage takes
+     over the scrolling, so scrolling #panel there moves nothing at all — which is why a jump
+     did nothing on an iPad held upright or on a phone. Never assume; walk up and find it. */
+  function scrollerFor(el) {
+    for (var n = el.parentNode; n && n.nodeType === 1 && n !== document.body; n = n.parentNode) {
+      var oy = window.getComputedStyle(n).overflowY;
+      if ((oy === 'auto' || oy === 'scroll') && n.scrollHeight > n.clientHeight + 4) return n;
+    }
+    return document.scrollingElement || document.documentElement;
+  }
+  /* The tab bar sticks to the top of that same box, so the first line a reader can actually
+     read starts below it, not at the box's top edge. */
+  function stickyInset(scroller) {
+    var tabs = document.querySelector('#panelInner .tabs');
+    if (!tabs || window.getComputedStyle(tabs).position !== 'sticky') return 0;
+    var tr = tabs.getBoundingClientRect(), sr = topOf(scroller);
+    return tr.height && tr.top <= sr + tr.height + 2 ? Math.round(tr.height) : 0;
+  }
+  function topOf(scroller) {
+    return scroller === document.scrollingElement || scroller === document.documentElement
+      ? 0 : scroller.getBoundingClientRect().top;
+  }
+  function placeBlock(target, smooth, gap) {
+    var sc = scrollerFor(target);
+    var inset = stickyInset(sc) + (gap == null ? 14 : gap);
+    var prev = sc.style.scrollBehavior;
+    sc.style.scrollBehavior = smooth ? 'smooth' : 'auto';
+    sc.scrollTop += (target.getBoundingClientRect().top - topOf(sc)) - inset;
+    sc.style.scrollBehavior = prev || '';
+  }
+  /* Re-place on the next frame and again shortly after: a picture above the target often
+     finishes loading after the first scroll and pushes the paragraph back down the page. */
+  function landOn(target, smooth) {
+    placeBlock(target, smooth);
+    requestAnimationFrame(function () { placeBlock(target, false); });
+    setTimeout(function () { placeBlock(target, false); }, 160);
+  }
+  function panelScroller() {
+    var inner = document.getElementById('panelInner');
+    return inner ? scrollerFor(inner) : (document.scrollingElement || document.documentElement);
+  }
+  function toStationTop() { var sc = panelScroller(); if (sc) sc.scrollTop = 0; }
+
   /* a group clicked on the tree opens the station that teaches it, on that group */
   function openGroup(gid) {
     var id = OWNER[gid];
@@ -366,28 +420,75 @@
     history.replaceState(null, '', '#' + gid);
     var target = document.querySelector('#panelInner [data-group="' + gid + '"]');
     if (!target) return;
-    var panel = document.getElementById('panel');
-    var prev = panel.style.scrollBehavior; panel.style.scrollBehavior = 'smooth';
-    var tr = target.getBoundingClientRect();
-    panel.scrollTop += (tr.top - panel.getBoundingClientRect().top) - 90;
-    setTimeout(function () { panel.style.scrollBehavior = prev || ''; }, 600);
+    landOn(target, true);
     target.classList.add('flash');
     setTimeout(function () { target.classList.remove('flash'); }, 2800);
   }
 
+  /* Plurals English refuses to make regularly, and which this lab uses constantly. */
+  var SAME_WORD = { genera: 'genus', phyla: 'phylum', taxa: 'taxon', fungi: 'fungus', fungal: 'fungus',
+    bacteria: 'bacterium', nuclei: 'nucleus', algae: 'alga', sporangia: 'sporangium',
+    stimuli: 'stimulus', larvae: 'larva', ancestry: 'ancestor', classify: 'classification' };
+
+  /* An element's words, with a space at every child boundary. Read straight off textContent,
+     a badge letter in its own <span> glues itself to the first word — "SClassification
+     systems" — and a whole-word search then fails on a word that is plainly there. */
+  function wordsOf(el) {
+    var out = '', w = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, null, false), n;
+    while ((n = w.nextNode())) out += ' ' + n.nodeValue;
+    return out.replace(/\s+/g, ' ').trim();
+  }
+
   function focusOnTerm(term, cameFrom) {
-    var panel = document.getElementById('panel');
-    var re = new RegExp('(?<![A-Za-z0-9-])' + term.toLowerCase().replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '(?![A-Za-z0-9-])', 'i');
-    var target = null;
-    var kws = document.querySelectorAll('#panelInner .kw');
-    for (var i = 0; i < kws.length && !target; i++) { var dt = kws[i].querySelector('dt'); if (dt && re.test(dt.textContent)) target = kws[i]; }
-    if (!target) { var lis = document.querySelectorAll('#panelInner .exam-list > li'); for (var j = 0; j < lis.length && !target; j++) if (re.test(lis[j].textContent)) target = lis[j]; }
-    if (!target) { var caps = document.querySelectorAll('#panelInner .later__list li'); for (var k = 0; k < caps.length && !target; k++) if (re.test(caps[k].textContent)) target = caps[k]; }
-    if (!target) return;
-    var prev = panel.style.scrollBehavior; panel.style.scrollBehavior = 'smooth';
-    var tr = target.getBoundingClientRect();
-    panel.scrollTop += (tr.top - panel.getBoundingClientRect().top) - panel.clientHeight / 2 + tr.height / 2;
-    setTimeout(function () { panel.style.scrollBehavior = prev || ''; }, 600);
+    var low = String(term).toLowerCase().trim();
+    var esc = function (t) { return t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); };
+    var whole = function (t) { return new RegExp('(?<![A-Za-z0-9-])' + esc(t) + '(?![A-Za-z0-9-])', 'i'); };
+    var starts = function (t) { return new RegExp('(?<![A-Za-z0-9-])' + esc(t), 'i'); };
+
+    /* Tried in order, most exact first. A reader clicking "ancestry" is sent to the station
+       that says "ancestor", "genera" to the one that says "genus", "animal kingdom" to the
+       line about animals. Without these, nine words arrived with nothing found and nothing
+       highlighted, which leaves a reader at the top of a station wondering why. */
+    var tries = [whole(low)];
+    if (SAME_WORD[low]) tries.push(whole(SAME_WORD[low]));
+    var trimmed = low.replace(/(ies|es|ing|ed|al|ic|um|s|y)$/, '');
+    if (trimmed.length >= 4 && trimmed !== low) tries.push(starts(trimmed));
+    if (low.length >= 7) tries.push(starts(low.slice(0, 6)));
+    if (/ /.test(low)) tries.push(whole(low.split(' ')[0]));
+
+    /* Where to look, best first: the keyword card that defines it, then the lines a student
+       reads, then anything else on the station that names it. */
+    var ORDER = [
+      ['#panelInner .kw', function (el) { return el.querySelector('dt') || el; }],
+      ['#panelInner .exam-list > li', null],
+      ['#panelInner .later__list li', null],
+      ['#panelInner li', null],
+      ['#panelInner .st-sub, #panelInner .card p, #panelInner .widget__note, #panelInner p', null],
+      ['#panelInner td, #panelInner th', null]
+    ];
+    function firstIn(sel, re, pick) {
+      var els = document.querySelectorAll(sel);
+      for (var i = 0; i < els.length; i++) {
+        var probe = pick ? pick(els[i]) : els[i];
+        if (probe && re.test(wordsOf(probe))) return els[i];
+      }
+      return null;
+    }
+    var target = null, t, k;
+    for (t = 0; t < tries.length && !target; t++)
+      for (k = 0; k < ORDER.length && !target; k++) target = firstIn(ORDER[k][0], tries[t], ORDER[k][1]);
+    /* a table cell is not a paragraph: take the whole table, so the headings come with it */
+    if (target && /^(TD|TH)$/.test(target.tagName)) target = target.closest('.ctable') || target.closest('table') || target;
+
+    if (!target) {
+      /* nothing on this station names it. Start the reader at the beginning rather than
+         leaving them wherever the previous scroll happened to be. */
+      toStationTop();
+      if (cameFrom && S[cameFrom]) showBackChip(cameFrom, term);
+      return;
+    }
+    /* arriving from another station: there is nothing to animate from, so land instantly */
+    landOn(target, cameFrom == null);
     target.classList.add('flash');
     setTimeout(function () { target.classList.remove('flash'); }, 2800);
     if (cameFrom && S[cameFrom]) showBackChip(cameFrom, term);
@@ -395,13 +496,12 @@
 
   var backChip = null, whereWeWere = null;
   function jumpTo(el, top) { var prev = el.style.scrollBehavior; el.style.scrollBehavior = 'auto'; el.scrollTop = top; el.style.scrollBehavior = prev || ''; }
-  function markWhereWeAre() { var panel = document.getElementById('panel'); whereWeWere = { id: current, top: panel ? panel.scrollTop : 0, tab: tab }; }
+  function markWhereWeAre() { var sc = panelScroller(); whereWeWere = { id: current, top: sc ? sc.scrollTop : 0, tab: tab }; }
   function goBackToMark(id) {
     var w = whereWeWere && whereWeWere.id === id ? whereWeWere : null;
     open(id);
     if (!w) return;
-    var panel = document.getElementById('panel'); if (!panel) return;
-    requestAnimationFrame(function () { requestAnimationFrame(function () { jumpTo(panel, w.top); }); });
+    requestAnimationFrame(function () { requestAnimationFrame(function () { var sc = panelScroller(); if (sc) jumpTo(sc, w.top); }); });
   }
   function showBackChip(id, term) {
     if (backChip) backChip.remove();
@@ -608,7 +708,7 @@
       markWhereWeAre();
       if (t.hasAttribute('data-peek')) openPeek(t);
       else if (t.hasAttribute('data-gloss')) { closePeek(); window.LabGlossary(t.getAttribute('data-gloss')); }
-      else { closePeek(); open(t.getAttribute('data-jump'), t.textContent.trim(), current); }
+      else { closePeek(); open(t.getAttribute('data-jump'), (t.getAttribute('data-term') || t.textContent).trim(), current); }
     }
     root.addEventListener('click', function (e) {
       var t = e.target.closest('[data-peek],[data-jump],[data-gloss]');
@@ -712,8 +812,8 @@
         if (f) f.addEventListener('click', function () { window.Terms.forgetAll(); built = false; build(); filter(); countKnown(); paintPanel(); });
       }
       function openG(term) {
-        var panel = document.getElementById('panel');
-        atOpen = panel ? panel.scrollTop : null;
+        var sc = panelScroller();
+        atOpen = sc ? sc.scrollTop : null;
         pinTerm = term ? String(term).trim().toLowerCase() : null;
         built = false; build(); find.value = term || ''; filter(); countKnown(); dlg.hidden = false;
         var box = dlg.querySelector('.modal__box'); if (box) box.scrollTop = 0;
@@ -722,7 +822,7 @@
       }
       window.LabGlossary = openG;
       document.getElementById('btnGloss').addEventListener('click', function () { openG(''); });
-      function close() { dlg.hidden = true; var panel = document.getElementById('panel'); if (panel && atOpen != null) jumpTo(panel, atOpen); }
+      function close() { dlg.hidden = true; var sc = panelScroller(); if (sc && atOpen != null) jumpTo(sc, atOpen); }
       document.getElementById('glossClose').addEventListener('click', close);
       dlg.addEventListener('click', function (e) { if (e.target === this) close(); });
       find.addEventListener('input', filter);
