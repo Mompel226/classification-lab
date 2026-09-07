@@ -1116,6 +1116,13 @@ svg.lit .kl--all.is-on{opacity:1}
 .diag__lab--extra{fill:#8A8A8A;font-weight:500;font-style:italic}
 .diag__lead--extra{stroke:#B5B5B5;stroke-dasharray:3 2}
 .diag__title{font-size:11px;fill:#3C3C3C;font-style:italic}
+.diag__unit{fill:#EFE7F6;stroke:#1A1A1A;stroke-width:1.1}
+.diag__inside{fill:#FFFFFF;stroke:none}
+.diag__gene{fill:none;stroke:#5B3FA0;stroke-width:3;stroke-linecap:round}
+.diag__spike{stroke:#8A8A8A;stroke-width:1;fill:none}
+.diag__spike-t{fill:#C9C9C4;stroke:#8A8A8A;stroke-width:.8}
+.diag__scale{stroke:#3C3C3C;stroke-width:1.2;fill:none}
+.diag__scalelab{font-size:9.5px;fill:#6B6B6B}
 
 /* two real drawings, one above the other, each beside its column */
 .dp2__block{border:1px solid var(--edge);border-radius:var(--r);background:#fff;padding:10px;margin-top:10px}
