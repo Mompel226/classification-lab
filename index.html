@@ -21,7 +21,7 @@
 <link rel="stylesheet" media="print" onload="this.media='all'"
       href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500&display=swap">
 <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500&display=swap"></noscript>
-<link rel="stylesheet" href="css/app.css?v=1788771818">
+<link rel="stylesheet" href="css/app.css?v=1788772546">
 </head>
 <body>
 <div class="app">
@@ -72,6 +72,15 @@
           <defs></defs>
         </svg>
         <div class="tag" id="tag" aria-hidden="true"><span class="tag__pill"></span></div>
+      </div>
+      <!-- On the dichotomous keys station the tree of life is hidden and this takes its place:
+           the same key the student is answering, drawn as it is answered. A key says nothing
+           about how closely things are related, so showing it beside the tree would invite
+           exactly the wrong idea. -->
+      <div class="keyplate" id="keyPlate">
+        <div class="keyplate__head"><b id="keyPlateTitle">The key, drawn</b></div>
+        <div class="keyplate__body" id="keyPlateBody"></div>
+        <p class="keyplate__note" id="keyPlateNote">Choose a statement on the right, and the key draws itself here.</p>
       </div>
       <p class="said" id="said"><span class="said__name">The tree of life</span><span class="said__note">Every group the syllabus names, on one tree</span></p>
     </section>
@@ -177,19 +186,19 @@
 </div>
 
 <script src="https://accounts.google.com/gsi/client" async defer></script>
-<script src="js/config.js?v=1788771818" defer></script>
-<script src="js/data/glossary.js?v=1788771818" defer></script>
-<script src="js/data/stations.js?v=1788771818" defer></script>
-<script src="js/data/photos.js?v=1788771818" defer></script>
-<script src="js/tree.js?v=1788771818" defer></script>
-<script src="js/tree-draw.js?v=1788771818" defer></script>
-<script src="js/terms.js?v=1788771818" defer></script>
-<script src="js/marking.js?v=1788771818" defer></script>
-<script src="js/engine.js?v=1788771818" defer></script>
-<script src="js/learn.js?v=1788771818" defer></script>
-<script src="js/engine-ext.js?v=1788771818" defer></script>
-<script src="js/plate.js?v=1788771818" defer></script>
-<script src="js/app.js?v=1788771818" defer></script>
+<script src="js/config.js?v=1788772546" defer></script>
+<script src="js/data/glossary.js?v=1788772546" defer></script>
+<script src="js/data/stations.js?v=1788772546" defer></script>
+<script src="js/data/photos.js?v=1788772546" defer></script>
+<script src="js/tree.js?v=1788772546" defer></script>
+<script src="js/tree-draw.js?v=1788772546" defer></script>
+<script src="js/terms.js?v=1788772546" defer></script>
+<script src="js/marking.js?v=1788772546" defer></script>
+<script src="js/engine.js?v=1788772546" defer></script>
+<script src="js/learn.js?v=1788772546" defer></script>
+<script src="js/engine-ext.js?v=1788772546" defer></script>
+<script src="js/plate.js?v=1788772546" defer></script>
+<script src="js/app.js?v=1788772546" defer></script>
 <!-- The silhouettes live here, AFTER the scripts, not inside #tree.
      They are 220 KB of path data. In the <head>-ward half of the document they sat
      between the browser and the 13 script URLs, so on a slow link nothing else could

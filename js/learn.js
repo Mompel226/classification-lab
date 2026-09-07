@@ -586,6 +586,38 @@
     var box = h('div', 'widget'); if (spec.group) box.setAttribute('data-group', spec.group);
     box.appendChild(head(spec.title || 'DNA base sequences', spec.ask || 'The same stretch of one gene in several organisms. Press the buttons: dots hide what is the same, so the differences stand out; then count them.', 'Press the buttons'));
     var v = seqView({ rows: spec.rows, title: spec.ruler || 'site' }, { tools: true });
+
+    /* A question FIRST, and the sequences only after it has been answered. Shown the other way
+       round, an alignment is a table to be looked at; asked first, it is the evidence that
+       settles something the student has just committed to. That is the whole point of the
+       widget, and it was missing. */
+    if (spec.question) {
+      var q = h('div', 'dnaq');
+      q.appendChild(h('p', 'dnaq__ask', mk(spec.question.ask)));
+      var opts = h('div', 'dnaq__opts');
+      var out = h('p', 'dnaq__out');
+      var answered = false;
+      (spec.question.options || []).forEach(function (o) {
+        var b = h('button', 'wbtn', esc(o)); b.type = 'button';
+        b.addEventListener('click', function () {
+          if (answered) return;
+          answered = true;
+          var right = o === spec.question.answer;
+          Array.prototype.forEach.call(opts.children, function (x) {
+            x.disabled = true;
+            if (x.textContent === spec.question.answer) x.classList.add('is-right');
+            else if (x === b) x.classList.add('is-wrong');
+          });
+          out.className = 'dnaq__out ' + (right ? 'is-ok' : 'is-no');
+          out.innerHTML = (right ? '<b>Yes — and now prove it.</b> ' : '<b>Have another look.</b> ') + mk(spec.question.why);
+          v.hidden = false;
+        });
+        opts.appendChild(b);
+      });
+      q.appendChild(opts); q.appendChild(out);
+      box.appendChild(q);
+      v.hidden = true;
+    }
     box.appendChild(v);
     if (spec.note) box.appendChild(h('p', 'widget__note', spec.note));
     return box;
@@ -606,6 +638,65 @@
     });
     return ol;
   }
+  /* ---------- the key, drawn ----------
+     A written key and a drawn key are the same thing twice, and a student who has only ever
+     read one down a page does not see that. This builds the branching diagram as the choices
+     are made: step 1 first, then the branch that was taken, then the step it leads to.
+     The branch NOT taken stays on the page, greyed, because seeing what you ruled out is half
+     of what a key is for.
+
+     Nothing is revealed early: a subtree is drawn only once its branch has been chosen, so the
+     diagram is a record of the route and never a spoiler. */
+  function keyTree(key, path, current) {
+    var taken = {};                      /* step number -> the side taken there */
+    (path || []).forEach(function (p) { taken[p.step] = p.side; });
+
+    function node(target, depth) {
+      if (typeof target === 'string') {
+        return '<div class="kt__name">' + esc(target) + '</div>';
+      }
+      var st = key.steps[target - 1];
+      if (!st) return '';
+      var reached = target === 1 || taken[target] != null || target === current;
+      if (!reached) return '';
+      var out = '<div class="kt__step' + (target === current ? ' is-here' : '') + '">' +
+                '<span class="kt__n">' + target + '</span>';
+      ['a', 'b'].forEach(function (side) {
+        var chosen = taken[target] === side;
+        var ruled = taken[target] != null && !chosen;
+        out += '<div class="kt__opt' + (chosen ? ' is-taken' : '') + (ruled ? ' is-out' : '') + '">' +
+               '<span class="kt__b">' + target + side + '</span>' +
+               '<span class="kt__t">' + esc(st[side].t) + '</span>' +
+               (chosen ? '<div class="kt__kid">' + node(st[side].go, depth + 1) + '</div>' : '') +
+               '</div>';
+      });
+      return out + '</div>';
+    }
+    var box = h('div', 'kt');
+    box.innerHTML = node(1, 0);
+    return box;
+  }
+
+  /* The plate on the left of the keys station. The tree of life is hidden there — a key has
+     nothing to do with the tree, and showing both at once invites the idea that a key says
+     something about how closely things are related, which is exactly what it does NOT say. */
+  var KeyPlate = {
+    claimed: false,
+    show: function (key, path, current, title) {
+      var body = document.getElementById('keyPlateBody');
+      if (!body) return;
+      body.innerHTML = '';
+      body.appendChild(keyTree(key, path, current));
+      var t = document.getElementById('keyPlateTitle');
+      if (t && title) t.textContent = title;
+      var n = document.getElementById('keyPlateNote');
+      if (n) n.textContent = (path && path.length)
+        ? 'Grey is the branch you ruled out. A key names one thing by ruling out everything else.'
+        : 'Choose a statement on the right, and the key draws itself here.';
+    }
+  };
+  global.KeyPlate = KeyPlate;
+
   function keyrun(spec) {
     var box = h('div', 'widget'); if (spec.group) box.setAttribute('data-group', spec.group);
     box.appendChild(head(spec.title || 'Use the key', spec.ask || 'Look at the specimen, then choose the statement that is true for it at each step. The key is printed on the right so you can see the same choices the way an exam prints them.', 'Choose a statement'));
@@ -618,16 +709,23 @@
     var run = h('div'); left.appendChild(run);
     var printed = h('div'); right.appendChild(printed);
     var path = [];
-    function paint(step) {
+    /* Two keys share this station and one plate. The FIRST to be built shows there, and after
+       that the plate belongs to whichever key the student is actually answering — otherwise
+       the second widget's blank step 1 replaces the first one before anybody has touched it. */
+    function paint(step, byUser) {
       printed.innerHTML = ''; printed.appendChild(keyPrint(spec.key, step));
+      if (global.KeyPlate && (byUser || !global.KeyPlate.claimed)) {
+        global.KeyPlate.claimed = true;
+        global.KeyPlate.show(spec.key, path, typeof step === 'number' ? step : null, spec.title);
+      }
       run.innerHTML = '';
-      var crumbs = h('div', 'keyrun__crumbs', path.map(function (p) { return '<span>' + esc(p) + '</span>'; }).join(''));
+      var crumbs = h('div', 'keyrun__crumbs', path.map(function (p) { return '<span>' + esc(p.step + p.side + ' ' + p.t) + '</span>'; }).join(''));
       run.appendChild(crumbs);
       if (typeof step === 'string') {
         run.appendChild(h('div', 'keyrun__done', 'The key names it:<b><i>' + esc(step) + '</i></b>' +
           (spec.specimen && spec.specimen.name && spec.specimen.name !== step ? '<span style="color:var(--bad)">That is not this specimen. Start again and look more carefully at each step.</span>' : (spec.done ? esc(spec.done) : 'Every choice was a feature you could see. That is what a good key does.'))));
         var again = h('button', 'wbtn wbtn--quiet', 'Start again'); again.type = 'button'; again.style.marginTop = '8px';
-        again.addEventListener('click', function () { path = []; paint(1); });
+        again.addEventListener('click', function () { path = []; paint(1, true); });
         run.appendChild(again);
         return;
       }
@@ -635,12 +733,68 @@
       run.appendChild(h('div', 'keyrun__step', 'Step ' + step + ' of ' + spec.key.steps.length));
       ['a', 'b'].forEach(function (side) {
         var b = h('button', 'keyrun__opt', '<b>' + step + side + '</b>' + esc(s[side].t)); b.type = 'button';
-        b.addEventListener('click', function () { path.push(step + side + ' ' + s[side].t); paint(s[side].go); });
+        b.addEventListener('click', function () { path.push({ step: step, side: side, t: s[side].t }); paint(s[side].go, true); });
         run.appendChild(b);
       });
     }
     paint(1);
     wrap.appendChild(left); wrap.appendChild(right); box.appendChild(wrap);
+    if (spec.note) box.appendChild(h('p', 'widget__note', spec.note));
+    return box;
+  }
+
+  /* ---------- keybad: a key that does not work, and why ----------
+     The faults are the ones examiners actually report: statements that overlap so an organism
+     fits both, statements about two different features so an organism fits neither, words that
+     are opinions rather than observations, features you cannot see on the specimen, and steps
+     that nothing leads to. Each fault highlights the lines it is about. */
+  function keybad(spec) {
+    var box = h('div', 'widget');
+    box.appendChild(head(spec.title || 'A key that does not work',
+      spec.ask || 'This key was written by a student and it fails. Click a fault to see which lines it is about — then read the rule it breaks.',
+      'Find the faults'));
+    var wrap = h('div', 'keybad');
+    var left = h('div', 'keybad__key');
+    var ol = keyPrint(spec.key);
+    /* tag every line so a fault can point at it */
+    var lines = Array.prototype.slice.call(ol.children);
+    (spec.key.steps || []).forEach(function (st, i) {
+      ['a', 'b'].forEach(function (side, j) {
+        var li = lines[i * 2 + j];
+        if (li) li.setAttribute('data-line', (i + 1) + side);
+      });
+    });
+    left.appendChild(ol);
+    var list = h('ul', 'keybad__faults');
+    var open = null;
+    (spec.faults || []).forEach(function (f, i) {
+      var li = h('li', 'keybad__fault', '<span class="n">' + (i + 1) + '</span><span class="keybad__txt"><b>' +
+        esc(f.lines.join(' and ')) + '</b><small>' + esc(f.what) + '</small></span>');
+      li.setAttribute('role', 'button'); li.tabIndex = 0;
+      function show() {
+        var on = open !== i;
+        Array.prototype.forEach.call(list.children, function (x) { x.classList.remove('is-on'); });
+        Array.prototype.forEach.call(ol.children, function (x) { x.classList.remove('is-bad'); });
+        open = on ? i : null;
+        if (!on) return;
+        li.classList.add('is-on');
+        f.lines.forEach(function (ref) {
+          var t = ol.querySelector('[data-line="' + ref + '"]');
+          if (t) t.classList.add('is-bad');
+        });
+      }
+      li.addEventListener('click', show);
+      li.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); show(); } });
+      list.appendChild(li);
+    });
+    wrap.appendChild(left); wrap.appendChild(list);
+    box.appendChild(wrap);
+    if (spec.rules && spec.rules.length) {
+      var r = h('div', 'keybad__rules');
+      r.innerHTML = '<div class="keybad__rh">' + esc(spec.rulesTitle || 'What a pair of statements has to be') + '</div><ul>' +
+        spec.rules.map(function (x) { return '<li>' + mk(x) + '</li>'; }).join('') + '</ul>';
+      box.appendChild(r);
+    }
     if (spec.note) box.appendChild(h('p', 'widget__note', spec.note));
     return box;
   }
@@ -840,7 +994,7 @@
   };
   function svgFor(name) { return DIAGRAMS[name] ? DIAGRAMS[name].svg : ''; }
 
-  var MAKERS = { letters: letters, finder: finder, drawphotos: drawphotos, dna: dna, keyrun: keyrun, binomial: binomial, kingdoms: kingdoms, table: table, photo: photo };
+  var MAKERS = { letters: letters, finder: finder, drawphotos: drawphotos, dna: dna, keyrun: keyrun, keybad: keybad, binomial: binomial, kingdoms: kingdoms, table: table, photo: photo };
   global.Learn = {
     /* Drop the entries whose picture has left the page. Called from paintPanel AFTER the old
        station is cleared and BEFORE the new one is built — the only moment when isConnected

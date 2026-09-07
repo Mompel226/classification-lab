@@ -348,7 +348,11 @@
     tab = 'learn';
     p(id).opened = true;
     save();
-    if (window.Plate) window.Plate.showStation(S[id]);
+    /* The keys station swaps the tree of life for the key, drawn. */
+    var pc = document.querySelector('.platecol');
+    if (pc) pc.classList.toggle('is-key', id === 'keys');
+    if (window.KeyPlate) window.KeyPlate.claimed = false;   /* the first key on the station takes the plate */
+    if (id !== 'keys' && window.Plate) window.Plate.showStation(S[id]);
     paintPanel(); paintRail();
     if (focusTerm) focusOnTerm(focusTerm, cameFrom);
     if (location.hash.slice(1) !== id) history.replaceState(null, '', '#' + id);
