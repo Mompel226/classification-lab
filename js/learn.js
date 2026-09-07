@@ -640,63 +640,171 @@
   }
   /* ---------- the key, drawn ----------
      A written key and a drawn key are the same thing twice, and a student who has only ever
-     read one down a page does not see that. This builds the branching diagram as the choices
-     are made: step 1 first, then the branch that was taken, then the step it leads to.
-     The branch NOT taken stays on the page, greyed, because seeing what you ruled out is half
-     of what a key is for.
+     read one down a page does not see that. This draws the real thing: a step at the top, two
+     branches out of it carrying the two statements, and under each branch either the next step
+     or the name the key arrives at. It is the shape drawn on a whiteboard and printed in the
+     textbooks, not the written key with indents.
 
-     Nothing is revealed early: a subtree is drawn only once its branch has been chosen, so the
-     diagram is a record of the route and never a spoiler. */
+     Nothing is revealed early: a branch grows a subtree only once it has been chosen, so the
+     diagram is a record of the route and never a spoiler. Where the student is standing, both
+     branches are drawn with an empty box at the end of each — that fork is the choice in front
+     of them. The branch NOT taken stays on the page, greyed, because seeing what you ruled out
+     is half of what a key is for. */
   function keyTree(key, path, current) {
     var taken = {};                      /* step number -> the side taken there */
     (path || []).forEach(function (p) { taken[p.step] = p.side; });
 
-    function node(target, depth) {
-      if (typeof target === 'string') {
-        return '<div class="kt__name">' + esc(target) + '</div>';
-      }
-      var st = key.steps[target - 1];
-      if (!st) return '';
-      var reached = target === 1 || taken[target] != null || target === current;
-      if (!reached) return '';
-      var out = '<div class="kt__step' + (target === current ? ' is-here' : '') + '">' +
-                '<span class="kt__n">' + target + '</span>';
-      ['a', 'b'].forEach(function (side) {
-        var chosen = taken[target] === side;
-        var ruled = taken[target] != null && !chosen;
-        out += '<div class="kt__opt' + (chosen ? ' is-taken' : '') + (ruled ? ' is-out' : '') + '">' +
-               '<span class="kt__b">' + target + side + '</span>' +
-               '<span class="kt__t">' + esc(st[side].t) + '</span>' +
-               (chosen ? '<div class="kt__kid">' + node(st[side].go, depth + 1) + '</div>' : '') +
-               '</div>';
-      });
-      return out + '</div>';
+    function box(cls, inner) { return '<div class="kt2__box ' + cls + '">' + inner + '</div>'; }
+
+    /* what a branch leads to: a name, the next step, or — at the fork you are standing on —
+       an empty box, so the tree shows the choice rather than pretending it is already made */
+    function target(go, chosen, atFork) {
+      if (atFork && !chosen) return box('kt2__box--todo', '?');
+      if (typeof go === 'string') return box('kt2__box--name', esc(go));
+      return step(go);
     }
-    var box = h('div', 'kt');
-    box.innerHTML = node(1, 0);
-    return box;
+
+    function step(n) {
+      var st = key.steps[n - 1];
+      if (!st) return '';
+      var atFork = taken[n] == null;                    /* the student is standing here */
+      var here = n === current;
+      var kids = ['a', 'b'].map(function (side) {
+        var chosen = taken[n] === side;
+        var ruled = taken[n] != null && !chosen;
+        return '<div class="kt2__kid' + (chosen ? ' is-taken' : '') + (ruled ? ' is-out' : '') + '">' +
+                 '<div class="kt2__edge">' +
+                   '<span class="kt2__lab">' + n + side + '</span>' +
+                   '<span class="kt2__txt">' + esc(st[side].t) + '</span>' +
+                 '</div>' +
+                 target(st[side].go, chosen, atFork) +
+               '</div>';
+      }).join('');
+      return '<div class="kt2__node">' +
+               box('kt2__box--step' + (here ? ' is-here' : ''), esc(String(n))) +
+               '<div class="kt2__kids">' + kids + '</div>' +
+             '</div>';
+    }
+
+    var wrap = h('div', 'kt2');
+    wrap.innerHTML = '<div class="kt2__start">Start</div>' +
+                     '<div class="kt2__canvas"><svg class="kt2__lines" aria-hidden="true"></svg>' + step(1) + '</div>';
+    return wrap;
+  }
+
+  /* The branches are drawn from the boxes' real positions, not with CSS borders. A key leans:
+     one side of a step ends in a name and the other carries the whole rest of the tree, so a
+     kid's own middle is nowhere near the box it holds, and border-drawn elbows point at empty
+     space. Measuring is the only way the line meets the box it belongs to. */
+  function drawKeyLines(wrap) {
+    var canvas = wrap.querySelector('.kt2__canvas'), svg = wrap.querySelector('.kt2__lines');
+    if (!canvas || !svg) return;
+    var cr = canvas.getBoundingClientRect();
+    svg.setAttribute('viewBox', '0 0 ' + Math.round(cr.width) + ' ' + Math.round(cr.height));
+    svg.setAttribute('width', Math.round(cr.width)); svg.setAttribute('height', Math.round(cr.height));
+    var d = '';
+    Array.prototype.forEach.call(canvas.querySelectorAll('.kt2__node'), function (node) {
+      var from = node.children[0], kidsBox = node.children[1];
+      if (!from || !kidsBox) return;
+      var fr = from.getBoundingClientRect();
+      var x0 = fr.left + fr.width / 2 - cr.left, y0 = fr.bottom - cr.top;
+      Array.prototype.forEach.call(kidsBox.children, function (kid) {
+        var kr = kid.getBoundingClientRect();
+        var x1 = kr.left + kr.width / 2 - cr.left, y1 = kr.top - cr.top;
+        var mid = y0 + Math.max(6, (y1 - y0) / 2);
+        var path = 'M' + x0.toFixed(1) + ' ' + y0.toFixed(1) +
+                   'V' + mid.toFixed(1) + 'H' + x1.toFixed(1) + 'V' + y1.toFixed(1);
+        var cls = kid.classList.contains('is-taken') ? 'is-taken' : kid.classList.contains('is-out') ? 'is-out' : '';
+        d += '<path class="kt2__line ' + cls + '" d="' + path + '"/>';
+      });
+    });
+    svg.innerHTML = d;
   }
 
   /* The plate on the left of the keys station. The tree of life is hidden there — a key has
      nothing to do with the tree, and showing both at once invites the idea that a key says
-     something about how closely things are related, which is exactly what it does NOT say. */
+     something about how closely things are related, which is exactly what it does NOT say.
+
+     A station can carry more than one key, and they are different trees. The plate belongs to
+     whichever key the reader is actually at: the one they last answered, or — if they are just
+     reading — the one nearest the top of the screen. Each key keeps its own route, so scrolling
+     back to an earlier one shows it exactly as it was left, not from the beginning. */
   var KeyPlate = {
-    claimed: false,
+    keys: [],                 /* {id, el, draw}  in the order they appear on the station */
+    activeId: null,
+    reset: function () { this.keys = []; this.activeId = null; },
+    register: function (id, el, draw) {
+      this.keys.push({ id: id, el: el, draw: draw });
+      if (this.activeId == null) this.setActive(id);
+      this.watch();
+    },
+    setActive: function (id) {
+      var k = null;
+      for (var i = 0; i < this.keys.length; i++) if (this.keys[i].id === id) k = this.keys[i];
+      if (!k) return;
+      this.activeId = id;
+      k.draw();                                    /* the widget knows its own route */
+      for (i = 0; i < this.keys.length; i++) this.keys[i].el.classList.toggle('is-plated', this.keys[i].id === id);
+    },
     show: function (key, path, current, title) {
       var body = document.getElementById('keyPlateBody');
       if (!body) return;
       body.innerHTML = '';
-      body.appendChild(keyTree(key, path, current));
+      var tree = keyTree(key, path, current);
+      body.appendChild(tree);
+      drawKeyLines(tree);
+      requestAnimationFrame(function () { drawKeyLines(tree); });   /* after the text has wrapped */
+      if (window.ResizeObserver) {
+        if (this._ro) this._ro.disconnect();
+        this._ro = new ResizeObserver(function () { drawKeyLines(tree); });
+        this._ro.observe(body);
+      }
       var t = document.getElementById('keyPlateTitle');
       if (t && title) t.textContent = title;
       var n = document.getElementById('keyPlateNote');
       if (n) n.textContent = (path && path.length)
         ? 'Grey is the branch you ruled out. A key names one thing by ruling out everything else.'
         : 'Choose a statement on the right, and the key draws itself here.';
+    },
+    /* follow the reading position: the key nearest the top of the screen owns the plate */
+    watch: function () {
+      if (this.bound) return;
+      this.bound = true;
+      var self = this;
+      var pick = function () {
+        if (!self.keys.length) return;
+        var best = null, bestD = Infinity;
+        for (var i = 0; i < self.keys.length; i++) {
+          var k = self.keys[i];
+          if (!k.el.isConnected) continue;
+          var r = k.el.getBoundingClientRect();
+          if (r.bottom < 40 || r.top > window.innerHeight - 40) continue;   /* off screen */
+          var d = Math.abs(r.top - 90);
+          if (d < bestD) { bestD = d; best = k; }
+        }
+        if (best && best.id !== self.activeId) self.setActive(best.id);
+      };
+      var t = null;
+      var onScroll = function () { if (t) return; t = setTimeout(function () { t = null; pick(); }, 120); };
+      [document.getElementById('panel'), document.querySelector('.stage'), window].forEach(function (n) {
+        if (n) n.addEventListener('scroll', onScroll, { passive: true });
+      });
     }
   };
   global.KeyPlate = KeyPlate;
 
+  /* every key on the station gets its own place to keep the route it is on, so coming back to
+     one shows it as it was left. Kept out of the station's own progress record on purpose: a
+     half-finished key is not an answer, and it must not change what a station is worth. */
+  var KEYPATH_KEY = 'labs.keyPaths.v1';
+  function keyPaths() {
+    try { return JSON.parse(localStorage.getItem(KEYPATH_KEY) || '{}') || {}; } catch (e) { return {}; }
+  }
+  function saveKeyPath(id, path) {
+    try { var all = keyPaths(); all[id] = path; localStorage.setItem(KEYPATH_KEY, JSON.stringify(all)); } catch (e) {}
+  }
+
+  var keyrunSeq = 0;
   function keyrun(spec) {
     var box = h('div', 'widget'); if (spec.group) box.setAttribute('data-group', spec.group);
     box.appendChild(head(spec.title || 'Use the key', spec.ask || 'Look at the specimen, then choose the statement that is true for it at each step. The key is printed on the right so you can see the same choices the way an exam prints them.', 'Choose a statement'));
@@ -708,16 +816,34 @@
     left.appendChild(sp);
     var run = h('div'); left.appendChild(run);
     var printed = h('div'); right.appendChild(printed);
-    var path = [];
-    /* Two keys share this station and one plate. The FIRST to be built shows there, and after
-       that the plate belongs to whichever key the student is actually answering — otherwise
-       the second widget's blank step 1 replaces the first one before anybody has touched it. */
-    function paint(step, byUser) {
-      printed.innerHTML = ''; printed.appendChild(keyPrint(spec.key, step));
-      if (global.KeyPlate && (byUser || !global.KeyPlate.claimed)) {
-        global.KeyPlate.claimed = true;
-        global.KeyPlate.show(spec.key, path, typeof step === 'number' ? step : null, spec.title);
+
+    var id = 'key:' + (spec.title || 'key') + ':' + (++keyrunSeq);
+    var path = [], at = 1;
+    /* pick up where this key was left, replaying the route it had */
+    (function restore() {
+      var saved = keyPaths()[id];
+      if (!Object.prototype.toString.call(saved).match(/Array/)) return;
+      var n = 1;
+      for (var i = 0; i < saved.length; i++) {
+        var st = spec.key.steps[n - 1]; if (!st) return;
+        var side = saved[i].side, o = st[side]; if (!o) return;
+        path.push({ step: n, side: side, t: o.t });
+        if (typeof o.go === 'string') { at = o.go; return; }
+        n = o.go;
       }
+      at = n;
+    })();
+
+    function plate() {
+      if (global.KeyPlate) global.KeyPlate.show(spec.key, path, typeof at === 'number' ? at : null, spec.title);
+    }
+    /* clicking a statement means this is the key the reader is working on */
+    function claim() { if (global.KeyPlate) global.KeyPlate.setActive(id); }
+
+    function paint(step, byUser) {
+      at = step;
+      printed.innerHTML = ''; printed.appendChild(keyPrint(spec.key, step));
+      if (byUser) claim(); else if (global.KeyPlate && global.KeyPlate.activeId === id) plate();
       run.innerHTML = '';
       var crumbs = h('div', 'keyrun__crumbs', path.map(function (p) { return '<span>' + esc(p.step + p.side + ' ' + p.t) + '</span>'; }).join(''));
       run.appendChild(crumbs);
@@ -725,7 +851,7 @@
         run.appendChild(h('div', 'keyrun__done', 'The key names it:<b><i>' + esc(step) + '</i></b>' +
           (spec.specimen && spec.specimen.name && spec.specimen.name !== step ? '<span style="color:var(--bad)">That is not this specimen. Start again and look more carefully at each step.</span>' : (spec.done ? esc(spec.done) : 'Every choice was a feature you could see. That is what a good key does.'))));
         var again = h('button', 'wbtn wbtn--quiet', 'Start again'); again.type = 'button'; again.style.marginTop = '8px';
-        again.addEventListener('click', function () { path = []; paint(1, true); });
+        again.addEventListener('click', function () { path = []; saveKeyPath(id, path); paint(1, true); });
         run.appendChild(again);
         return;
       }
@@ -733,13 +859,21 @@
       run.appendChild(h('div', 'keyrun__step', 'Step ' + step + ' of ' + spec.key.steps.length));
       ['a', 'b'].forEach(function (side) {
         var b = h('button', 'keyrun__opt', '<b>' + step + side + '</b>' + esc(s[side].t)); b.type = 'button';
-        b.addEventListener('click', function () { path.push({ step: step, side: side, t: s[side].t }); paint(s[side].go, true); });
+        b.addEventListener('click', function () {
+          path.push({ step: step, side: side, t: s[side].t });
+          saveKeyPath(id, path.map(function (p) { return { side: p.side }; }));
+          paint(s[side].go, true);
+        });
         run.appendChild(b);
       });
     }
-    paint(1);
+    paint(at);
     wrap.appendChild(left); wrap.appendChild(right); box.appendChild(wrap);
     if (spec.note) box.appendChild(h('p', 'widget__note', spec.note));
+    /* reading this key, or touching it, hands it the plate */
+    box.addEventListener('mouseenter', claim);
+    box.addEventListener('focusin', claim);
+    if (global.KeyPlate) global.KeyPlate.register(id, box, plate);
     return box;
   }
 

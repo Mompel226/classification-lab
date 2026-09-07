@@ -1157,25 +1157,37 @@ svg.lit .kl--all.is-on{opacity:1}
 .keyplate__note{color:#8FB3C7;font-size:12.5px;line-height:1.5;margin:12px 0 0;flex:0 0 auto}
 
 /* a step, its two branches, and what each branch leads to */
-.kt{font-size:13.5px;line-height:1.45;color:#EAF3F8}
-.kt__step{position:relative;padding-left:26px;margin:0 0 2px}
-.kt__step>.kt__n{position:absolute;left:0;top:1px;display:inline-flex;align-items:center;justify-content:center;
-  width:20px;height:20px;border-radius:50%;background:#14572B;color:#fff;font-size:11.5px;font-weight:700;
-  border:1px solid #4E9A6A}
-.kt__step.is-here>.kt__n{background:#E2B95F;color:#20160A;border-color:#F2D48A;
-  box-shadow:0 0 0 4px rgba(226,185,95,.22)}
-.kt__opt{position:relative;padding:2px 0 2px 18px;margin-left:4px;border-left:1px solid #2B5A74}
-.kt__opt::before{content:"";position:absolute;left:0;top:12px;width:13px;height:1px;background:#2B5A74}
-.kt__opt:last-child{border-left-color:transparent}
-.kt__opt:last-child::after{content:"";position:absolute;left:0;top:0;height:12px;width:1px;background:#2B5A74}
-.kt__b{display:inline-block;min-width:22px;color:#8FB3C7;font-weight:700;font-size:11.5px;margin-right:4px}
-.kt__t{color:#C9DCE8}
-.kt__opt.is-taken>.kt__b{color:#F2D48A}
-.kt__opt.is-taken>.kt__t{color:#FFFFFF;font-weight:600}
-.kt__opt.is-out{opacity:.42}
-.kt__opt.is-out>.kt__t{text-decoration:line-through;text-decoration-color:#5A7E92}
-.kt__kid{margin-top:4px}
-.kt__name{display:inline-block;margin-top:2px;background:#14572B;border:1px solid #4E9A6A;color:#fff;
+/* ---- the key, drawn as a tree ----
+   A step is a box, the two statements are the two branches out of it, and each branch ends in
+   the next step or in the name the key reaches. The lines are drawn with borders on the kids,
+   which is what keeps a branch and its label together when the text wraps. */
+.kt2{--kt-line:#2F6484;--kt-dim:#8FB3C7;color:#EAF3F8;font-size:13px;line-height:1.35;
+     display:flex;flex-direction:column;align-items:center;overflow:auto;max-height:100%;padding-bottom:4px}
+.kt2__start{color:var(--kt-dim);font-size:10.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;margin-bottom:6px}
+.kt2__canvas{position:relative}
+.kt2__lines{position:absolute;left:0;top:0;pointer-events:none;overflow:visible}
+.kt2__line{fill:none;stroke:#2F6484;stroke-width:1.4}
+.kt2__line.is-taken{stroke:#E2B95F;stroke-width:2}
+.kt2__line.is-out{stroke:#2F6484;opacity:.4}
+.kt2__node{display:flex;flex-direction:column;align-items:center;position:relative}
+.kt2__box{border:1px solid var(--kt-line);border-radius:8px;padding:5px 10px;background:#0E2B3D;
+          color:#EAF3F8;font-weight:700;text-align:center;max-width:190px;box-sizing:border-box}
+.kt2__box--step{min-width:34px;background:#123A52;border-color:#3E7FA3}
+.kt2__box--step.is-here{background:#E2B95F;border-color:#F2D48A;color:#20160A;
+                        box-shadow:0 0 0 3px rgba(226,185,95,.22)}
+.kt2__box--name{background:#14572B;border-color:#4E9A6A;color:#fff;font-weight:700}
+.kt2__box--todo{background:transparent;border-style:dashed;color:var(--kt-dim);font-weight:700;min-width:30px}
+/* the kids sit side by side under a stem from the parent */
+.kt2__kids{display:flex;align-items:flex-start;justify-content:center;gap:14px;padding-top:26px;position:relative}
+.kt2__kid{display:flex;flex-direction:column;align-items:center;position:relative;min-width:0;flex:0 1 auto}
+.kt2__edge{display:flex;align-items:baseline;gap:5px;max-width:180px;margin-bottom:7px;text-align:left}
+.kt2__lab{color:#8FB3C7;font-weight:700;font-size:11px;flex:0 0 auto}
+.kt2__txt{color:#C9DCE8;font-size:12px;line-height:1.3}
+.kt2__kid.is-taken>.kt2__edge>.kt2__lab{color:#F2D48A}
+.kt2__kid.is-taken>.kt2__edge>.kt2__txt{color:#FFFFFF;font-weight:600}
+.kt2__kid.is-out{opacity:.4}
+.kt2__kid.is-out>.kt2__edge>.kt2__txt{text-decoration:line-through;text-decoration-color:#5A7E92}
+@media (max-width:1000px){ .kt2{font-size:12px} .kt2__edge{max-width:150px} .kt2__box{max-width:150px} }
   border-radius:var(--r-pill);padding:2px 12px;font-weight:700;font-size:13px}
 
 /* SOLD — how the department marks a biological drawing. Deliberately small: it sits under the

@@ -351,7 +351,9 @@
     /* The keys station swaps the tree of life for the key, drawn. */
     var pc = document.querySelector('.platecol');
     if (pc) pc.classList.toggle('is-key', id === 'keys');
-    if (window.KeyPlate) window.KeyPlate.claimed = false;   /* the first key on the station takes the plate */
+    /* the widgets are about to be rebuilt, so the plate forgets which ones it knew about;
+       each key registers itself again as it is built, and brings its saved route with it */
+    if (window.KeyPlate) window.KeyPlate.reset();
     if (id !== 'keys' && window.Plate) window.Plate.showStation(S[id]);
     paintPanel(); paintRail();
     if (focusTerm) focusOnTerm(focusTerm, cameFrom);
