@@ -699,6 +699,14 @@
   function drawKeyLines(wrap) {
     var canvas = wrap.querySelector('.kt2__canvas'), svg = wrap.querySelector('.kt2__lines');
     if (!canvas || !svg) return;
+    /* two statements in a pair rarely wrap to the same number of lines, which leaves the
+       boxes under them at different heights and the fork looking crooked. Give both the
+       height of the taller one before anything is measured. */
+    Array.prototype.forEach.call(canvas.querySelectorAll('.kt2__kids'), function (kids) {
+      var edges = kids.querySelectorAll(':scope > .kt2__kid > .kt2__edge'), tall = 0;
+      Array.prototype.forEach.call(edges, function (e) { e.style.minHeight = ''; tall = Math.max(tall, e.offsetHeight); });
+      Array.prototype.forEach.call(edges, function (e) { e.style.minHeight = tall + 'px'; });
+    });
     var cr = canvas.getBoundingClientRect();
     svg.setAttribute('viewBox', '0 0 ' + Math.round(cr.width) + ' ' + Math.round(cr.height));
     svg.setAttribute('width', Math.round(cr.width)); svg.setAttribute('height', Math.round(cr.height));
@@ -714,6 +722,16 @@
         var mid = y0 + Math.max(6, (y1 - y0) / 2);
         var path = 'M' + x0.toFixed(1) + ' ' + y0.toFixed(1) +
                    'V' + mid.toFixed(1) + 'H' + x1.toFixed(1) + 'V' + y1.toFixed(1);
+        /* and on past the statement, into the box it leads to, so the branch reads as one line */
+        var lab = kid.querySelector('.kt2__edge');
+        var to = kid.querySelector(':scope > .kt2__box') || kid.querySelector(':scope > .kt2__node > .kt2__box');
+        if (lab && to) {
+          var lr = lab.getBoundingClientRect(), tr2 = to.getBoundingClientRect();
+          var xb = tr2.left + tr2.width / 2 - cr.left;
+          path += 'M' + x1.toFixed(1) + ' ' + (lr.bottom - cr.top).toFixed(1) +
+                  'V' + ((lr.bottom + tr2.top) / 2 - cr.top).toFixed(1) +
+                  'H' + xb.toFixed(1) + 'V' + (tr2.top - cr.top).toFixed(1);
+        }
         var cls = kid.classList.contains('is-taken') ? 'is-taken' : kid.classList.contains('is-out') ? 'is-out' : '';
         d += '<path class="kt2__line ' + cls + '" d="' + path + '"/>';
       });
@@ -804,8 +822,7 @@
     try { var all = keyPaths(); all[id] = path; localStorage.setItem(KEYPATH_KEY, JSON.stringify(all)); } catch (e) {}
   }
 
-  var keyrunSeq = 0;
-  function keyrun(spec) {
+  function keyrun(spec, ctx) {
     var box = h('div', 'widget'); if (spec.group) box.setAttribute('data-group', spec.group);
     box.appendChild(head(spec.title || 'Use the key', spec.ask || 'Look at the specimen, then choose the statement that is true for it at each step. The key is printed on the right so you can see the same choices the way an exam prints them.', 'Choose a statement'));
     var wrap = h('div', 'keyrun');
@@ -817,12 +834,13 @@
     var run = h('div'); left.appendChild(run);
     var printed = h('div'); right.appendChild(printed);
 
-    var id = 'key:' + (spec.title || 'key') + ':' + (++keyrunSeq);
+    /* a name that is the same every time this key is built, so its route can be found again */
+    var id = 'key:' + ((ctx && ctx.station) || '?') + ':' + (spec.after == null ? 'x' : spec.after) + ':' + (spec.title || 'key');
     var path = [], at = 1;
     /* pick up where this key was left, replaying the route it had */
     (function restore() {
       var saved = keyPaths()[id];
-      if (!Object.prototype.toString.call(saved).match(/Array/)) return;
+      if (!saved || !saved.length || typeof saved.length !== 'number') return;
       var n = 1;
       for (var i = 0; i < saved.length; i++) {
         var st = spec.key.steps[n - 1]; if (!st) return;
