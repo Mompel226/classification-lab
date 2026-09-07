@@ -146,14 +146,14 @@
      'A <b>mycelium</b> is the whole tangle of these hyphae — the body of the fungus, mostly hidden in the soil, the log or the food. The mushroom is only the part that makes spores.',
      'Branching fungal hyphae · Ajay Kumar Chaurasiya · CC BY 4.0 · Wikimedia Commons'],
     ['cotyledon', 'peek-cotyledon-900.jpg',
-     '<b>Cotyledons</b>, or seed leaves: the first leaves, already packed inside the seed. These two belong to a pumpkin seedling — two of them, so it is a dicotyledon. The leaves that come after them look quite different.',
-     'Cotyledon leaves of a field pumpkin · Juliancolton · public domain · Wikimedia Commons'],
+     'A <b>cotyledon</b>, or seed leaf: the pale, thick pair on this bean seedling. It was inside the seed, packed with the food that grew the seedling this far, and it is not a true leaf — the darker folded pair above it is the first of those. One cotyledon in the seed means a monocotyledon, two means a dicotyledon.',
+     'Bean germination, Phaseolus vulgaris · Victor M. Vicente Selvas · public domain · Wikimedia Commons'],
     ['cotyledons', 'peek-cotyledon-900.jpg',
-     '<b>Cotyledons</b>, or seed leaves: the first leaves, already packed inside the seed. Two of them makes a dicotyledon; one makes a monocotyledon.',
-     'Cotyledon leaves of a field pumpkin · Juliancolton · public domain · Wikimedia Commons'],
+     '<b>Cotyledons</b>, or seed leaves: the thick pale pair on this bean seedling. They came out of the seed with the food that fed the seedling, and they are not true leaves — the darker folded pair above them is. Two cotyledons makes a dicotyledon; one makes a monocotyledon.',
+     'Bean germination, Phaseolus vulgaris · Victor M. Vicente Selvas · public domain · Wikimedia Commons'],
     ['seed leaves', 'peek-cotyledon-900.jpg',
-     '<b>Seed leaves</b> are cotyledons — the first leaves, already inside the seed before it grows. Count them: one or two is how monocotyledons and dicotyledons are told apart.',
-     'Cotyledon leaves of a field pumpkin · Juliancolton · public domain · Wikimedia Commons'],
+     '<b>Seed leaves</b> are cotyledons: the thick pale pair here, which were inside the bean before it grew and carried the food that got it this far. Count them — one or two is how monocotyledons and dicotyledons are told apart.',
+     'Bean germination, Phaseolus vulgaris · Victor M. Vicente Selvas · public domain · Wikimedia Commons'],
     ['stigma', 'peek-stigma-900.jpg',
      'The <b>stigma</b>: the sticky tip of the female part of a flower, where pollen lands. The yellow grains on this dandelion stigma are pollen.',
      'Dandelion flower stigma with pollen · CC BY 4.0 · Wikimedia Commons'],
@@ -192,6 +192,14 @@
       'wing': ['peek-wing-bird-900.jpg',
         'A bird\u2019s <b>wing</b> is its front limb \u2014 the same bones as your arm, carrying feathers.',
         'Bald eagle \u00b7 Andy Morffew \u00b7 CC BY 2.0 \u00b7 Wikimedia Commons']
+    },
+    naming: {
+      /* the sentence here is about a WHALE, and showing a perch's dorsal fin under it is the
+         reuse that makes a reader stop looking. A whale's tail is its own picture, and it
+         carries the point: held flat, not upright like a fish's. */
+      'fins': ['peek-whale-tail-900.jpg',
+        'A humpback whale\u2019s tail, lifted clear of the water. It drives the whale exactly as a fish\u2019s tail drives a fish \u2014 and it is held FLAT, while a fish\u2019s tail stands upright. Same job, different animal, different structure: a whale is a mammal that swims, not a fish.',
+        'Humpback whale tail flukes \u00b7 Tony Hisgett \u00b7 CC BY 2.0 \u00b7 Wikimedia Commons']
     },
     arthropods: {
       'gills': ['peek-gills-900.jpg',
