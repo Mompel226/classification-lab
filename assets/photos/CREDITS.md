@@ -102,6 +102,36 @@ group photographs — a mushroom is not a picture of a hypha.
 | `peek-stigma-900.jpg` | [Dandelion flower stigma with pollen.jpg](https://commons.wikimedia.org/wiki/File:Dandelion_flower_stigma_with_pollen.jpg) — a stigma with pollen grains on it | — | CC BY 4.0 |
 | `peek-vascular-900.jpg` | [Closed Collateral Vascular Bundle in Monocot Stem](https://commons.wikimedia.org/wiki/File:Closed_Collateral_Vascular_Bundle_in_Monocot_Stem_(35995829090).jpg) — a bundle in a slice across a stem | — | CC0 |
 
+### The close-ups behind a clickable word
+
+Clicking a word used to open the group's photograph, which meant "gills" showed a whole
+clownfish. Each of these is now a CLOSE-UP of the thing the word names, cropped from a picture
+this lab already carries and already credits, at a point that had already been checked against
+a 5% grid. No new licences are involved except the gill drawing.
+
+| File | Cropped from | Shows |
+|---|---|---|
+| `peek-frond-*` | `finder-ferns-*` | a fern frond with its rows of sori |
+| `peek-fins-*` | `finder-fish-*` | the spiny dorsal fin of a perch, ray by ray |
+| `peek-scales-*` | `reptiles-*` | an iguana's scales, individually |
+| `peek-feathers-*` | `birds-*` | separated flight feathers on an eagle's wing |
+| `peek-moist-skin-*` | `amphibians-*` | the smooth wet skin of a tree frog |
+| `peek-exoskeleton-*` | `finder-crustaceans-*` | the hard granular carapace of a crab |
+| `peek-compound-eye-*` | `finder-insects-*` | the two curved compound eyes of a wasp |
+| `peek-antenna-*` | `finder-myriapods-*` | a centipede's antenna, jointed bead by bead |
+| `peek-cephalothorax-*` | `finder-arachnids-*` | a spider's front body part with its legs |
+| `peek-protein-coat-*` | `finder-viruses-*` | single virus particles, the coat being the outside |
+| `peek-cilia-*` | `protoctists-*` | the rim of a Paramecium. Cilia do not resolve at this magnification and the card says so |
+
+| New file | Source | Licence |
+|---|---|---|
+| `peek-gills-*` | [Gills.jpg](https://commons.wikimedia.org/wiki/File:Gills.jpg) — a scientific drawing of the five gill arches in place inside a fish's head | United States Fish Commission · Public domain |
+
+**No picture at all for plasmids, on purpose.** A plasmid is inside the cell and far below what
+a school microscope resolves, so a photograph of a bacterium from the outside shows nothing.
+That word opens one of the lab's own drawings instead (`fig:prokaryote` in `Learn.DIAGRAMS`),
+and the card says why.
+
 **Still wanted.** `ovary`, `fruit`, `seed`, `tap root` and `fibrous root system` are clickable
 and give a definition, but have no picture yet. Each needs one public-domain, CC0 or CC BY
 photograph: a flower cut lengthways with the ovary showing, a fruit cut open with its seeds, a

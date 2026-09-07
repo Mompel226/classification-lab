@@ -81,33 +81,61 @@
     return [gid + '-900.jpg', note, g.img.credit];
   }
   var PEEK = {};
+  /* Every word here opens a CLOSE-UP of the thing it names, not a photograph of the whole
+     organism. The group pictures were doing the second: clicking "gills" showed a clownfish,
+     which does not show a gill. Each of these is cropped from a picture the lab already
+     carries and already credits, at the place a pin on that picture has already been checked.
+     Where no photograph in the world would help — a plasmid is inside the cell and far below
+     what a school microscope resolves — the card shows one of the lab's own drawings instead. */
   [
-    ['frond', 'ferns', '<b>Fronds</b>: the leaves of a fern. Spores are made in sporangia on the underside.'],
-    ['fronds', 'ferns', '<b>Fronds</b>: the leaves of a fern. Spores are made in sporangia on the underside.'],
-    ['fiddlehead', 'ferns', 'A young frond, still unrolling: the <b>fiddlehead</b>.'],
-    ['exoskeleton', 'arthropods', 'The <b>exoskeleton</b>: a hard skeleton on the outside, jointed so the animal can move. It cannot grow, so an arthropod moults.'],
-    ['compound eye', 'insects', '<b>Compound eyes</b>: many small lenses, each pointing a slightly different way. Insects have them, and so do crustaceans; spiders do not — theirs are simple eyes.'],
-    ['compound eyes', 'insects', '<b>Compound eyes</b>: many small lenses, each pointing a slightly different way. Insects have them, and so do crustaceans; spiders do not — theirs are simple eyes.'],
-    ['antennae', 'insects', '<b>Antennae</b>: feelers on the head, for touch and smell. One pair in insects and myriapods, two pairs in crustaceans, none in arachnids.'],
-    ['cephalothorax', 'arachnids', 'The <b>cephalothorax</b>: an arachnid’s head and thorax fused into one part, carrying all eight legs. The abdomen is the second part.'],
-    ['scales', 'reptiles', 'Dry <b>scales</b>: a waterproof skin, which is why a reptile can live away from water. Its eggs survive on dry land for a separate reason — they have a waterproof shell of their own.'],
-    ['feathers', 'birds', '<b>Feathers</b>, and front limbs that are wings. No other group has feathers.'],
-    ['fins', 'fish', '<b>Fins</b> and wet scales; gills for breathing under water.'],
-    ['gills', 'fish', '<b>Gills</b> take oxygen from water. Fish keep them all their lives; amphibians only as larvae.'],
-    ['moist skin', 'amphibians', 'A smooth, <b>moist skin</b> that also takes in oxygen. It dries out, so amphibians stay near water and lay their eggs in it.'],
-    ['hyphae', 'fungi', 'Most fungi are threads called <b>hyphae</b>, growing through what they feed on. The mushroom is the part that makes the spores.'],
-    ['mycelium', 'fungi', 'A <b>mycelium</b> is the mass of hyphae that makes up the body of a fungus, mostly hidden in the soil or the food.'],
-    ['cilia', 'protoctists', '<b>Cilia</b>: rows of tiny hairs that beat to move a Paramecium through the water.'],
-    ['plasmids', 'prokaryotes', 'Small extra rings of DNA in a bacterium: <b>plasmids</b>. The main DNA is one circle, free in the cytoplasm.'],
-    ['protein coat', 'viruses', 'A virus is genetic material inside a <b>protein coat</b>. That is all the exam asks for: no cytoplasm, no organelles, no cell. Some — HIV and influenza among them — also carry an outer envelope of membrane taken from the last cell they left.']
-  ].forEach(function (e) { var p = pic(e[1], e[2]); if (p) PEEK[e[0]] = p; });
-
-  /* ---------- words that need a picture of their OWN ----------
-     The entries above borrow the group's photograph, which is right for "feathers" and wrong
-     for "hyphae": a mushroom is not a picture of a hypha. These carry their own file. A word a
-     student has never met is a word they need to SEE — click it, and there it is.
-     Every one is public domain, CC0 or CC BY; the source is in assets/photos/CREDITS.md. */
-  [
+    ['frond', 'peek-frond-900.jpg',
+     '<b>Fronds</b>: the leaves of a fern. The rows of brown dots on the underside are sori — clusters of spore cases. Ferns make spores, not seeds.',
+     'Polypodium glycyrrhiza · Alex Abair · CC BY 4.0 · Wikimedia Commons'],
+    ['fronds', 'peek-frond-900.jpg',
+     '<b>Fronds</b>: the leaves of a fern. The rows of brown dots on the underside are sori — clusters of spore cases.',
+     'Polypodium glycyrrhiza · Alex Abair · CC BY 4.0 · Wikimedia Commons'],
+    ['exoskeleton', 'peek-exoskeleton-900.jpg',
+     'The <b>exoskeleton</b>, close up: a hard skeleton on the OUTSIDE, here the carapace of a crab. It is jointed so the animal can move, and it cannot grow — an arthropod has to shed it and harden a new one.',
+     'Four-toothed shore crab · Museums Victoria · CC BY 4.0 · Wikimedia Commons'],
+    ['compound eye', 'peek-compound-eye-900.jpg',
+     '<b>Compound eyes</b>: the two large curved eyes on this wasp\u2019s head. Each is made of many small lenses, every one pointing a slightly different way. Insects and crustaceans have them; spiders have simple eyes instead.',
+     'Common wasp · bemma · CC BY 4.0 · Wikimedia Commons'],
+    ['compound eyes', 'peek-compound-eye-900.jpg',
+     '<b>Compound eyes</b>: many small lenses, each pointing a slightly different way. Insects and crustaceans have them; spiders have simple eyes instead.',
+     'Common wasp · bemma · CC BY 4.0 · Wikimedia Commons'],
+    ['antennae', 'peek-antenna-900.jpg',
+     '<b>Antennae</b>: feelers on the head, for touch and smell — here one of a centipede\u2019s pair, jointed bead by bead. One pair in insects and myriapods, two pairs in crustaceans, none in arachnids.',
+     'Scolopendra canidens · Denis Potanin · CC BY 4.0 · Wikimedia Commons'],
+    ['cephalothorax', 'peek-cephalothorax-900.jpg',
+     'The <b>cephalothorax</b>: the front body part of a spider, head and thorax fused into one, with all eight legs attached to it. The rounded abdomen behind it is the second part.',
+     'Garden spider · Joe Holt · CC BY 4.0 · Wikimedia Commons'],
+    ['scales', 'peek-scales-900.jpg',
+     'Dry <b>scales</b>, close up on an iguana: a waterproof skin, which is why a reptile can live away from water. Its eggs survive on dry land for a separate reason — they have a waterproof shell of their own.',
+     'Green iguana · Wilfredor · CC0 · Wikimedia Commons'],
+    ['feathers', 'peek-feathers-900.jpg',
+     '<b>Feathers</b>, close up on the wing of a bald eagle: separate, overlapping, and light. No other group has them, and the front limbs they grow on are wings.',
+     'Bald eagle · Andy Morffew · CC BY 2.0 · Wikimedia Commons'],
+    ['fins', 'peek-fins-900.jpg',
+     '<b>Fins</b>: a fan of thin rays in a web of skin — this is the spiny dorsal fin of a perch. Fins move a fish and hold it steady.',
+     'Perca fluviatilis · Enrico Tomschke · CC BY 4.0 · Wikimedia Commons'],
+    ['gills', 'peek-gills-900.jpg',
+     '<b>Gills</b>: five arches of feathery filaments sitting in a chamber on each side of the head, behind the gill cover. Water is taken in at the mouth and pushed out over them, and oxygen passes into the blood. Fish keep gills all their lives; amphibians only as larvae.',
+     'US Fish Commission · public domain · Wikimedia Commons'],
+    ['moist skin', 'peek-moist-skin-900.jpg',
+     'A smooth, <b>moist skin</b>, close up on a tree frog. It takes in oxygen as well as the lungs do, and it dries out — which is why amphibians stay near water and lay their eggs in it.',
+     'Red-eyed tree frog · Careyjamesbalboa · public domain · Wikimedia Commons'],
+    ['cilia', 'peek-cilia-900.jpg',
+     '<b>Cilia</b>: rows of tiny hairs that beat to move a Paramecium through the water. Be honest about what you can see here — at the magnification of a school microscope they show only as a fine fringe along the edge of the cell, which is the blurred rim in this picture. Individual cilia need an electron microscope.',
+     'Paramecium · CC BY · Wikimedia Commons'],
+    ['plasmids', 'fig:prokaryote',
+     '<b>Plasmids</b>: small extra rings of DNA in a bacterium, separate from the one big circular loop that is its chromosome. There is no photograph of them here on purpose — a plasmid is inside the cell and far below what a school microscope can resolve, so a picture of a bacterium from the outside would show you nothing.',
+     ''],
+    ['plasmid', 'fig:prokaryote',
+     'A <b>plasmid</b>: a small extra ring of DNA in a bacterium, separate from the single circular loop that is its chromosome.',
+     ''],
+    ['protein coat', 'peek-protein-coat-900.jpg',
+     'The <b>protein coat</b>: each yellow body here is one virus particle, and the coat is its whole outside. Inside it is the genetic material, and nothing else — no cytoplasm, no organelles, no cell.',
+     'HIV-1 particles · NIAID · CC BY 2.0 · Wikimedia Commons'],
     ['hyphae', 'peek-hyphae-900.jpg',
      '<b>Hyphae</b>: the threads a fungus is made of. Look along one — the cross-walls divide it into cells, joined end to end. That is the answer to "how many cells?": many, but in threads rather than in blocks of tissue.',
      'Branching fungal hyphae · Ajay Kumar Chaurasiya · CC BY 4.0 · Wikimedia Commons'],

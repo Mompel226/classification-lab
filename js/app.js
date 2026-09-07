@@ -567,8 +567,18 @@
     /* the same box reservation the finder pictures get: without it the note under the picture
        jumps down the moment the file lands */
     var pkw = (window.PHOTO_SIZE || {})[src] || (window.PHOTO_SIZE || {})[String(src).replace(/-900\.jpg$/, '')];
-    pk.innerHTML = (src ? '<img src="assets/photos/' + src + '" alt="" decoding="async"' +
-                          (pkw ? ' width="' + pkw[0] + '" height="' + pkw[1] + '"' : '') + '>' : '') +
+    /* "fig:name" draws one of the lab's own diagrams instead of a photograph. Some things
+       cannot be photographed at all — a plasmid is inside a cell and far below the resolution
+       of any school microscope — and showing a picture of the outside of a bacterium under the
+       word "plasmids" teaches nothing. */
+    var art = '';
+    if (String(src).slice(0, 4) === 'fig:') {
+      art = '<div class="peek__fig">' + (window.Learn ? window.Learn.svgFor(String(src).slice(4)) : '') + '</div>';
+    } else if (src) {
+      art = '<img src="assets/photos/' + src + '" alt="" decoding="async"' +
+            (pkw ? ' width="' + pkw[0] + '" height="' + pkw[1] + '"' : '') + '>';
+    }
+    pk.innerHTML = art +
       '<div class="peek__note">' + note + (credit ? '<span class="peek__credit">' + credit + '</span>' : '') + '</div>' +
       '<button class="peek__x" aria-label="Close">×</button>';
     host.appendChild(pk);
