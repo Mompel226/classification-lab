@@ -85,6 +85,35 @@ This lab's own files: `js/app.js` (wiring, progress, hand-in), `js/plate.js` (th
 `js/learn.js` (the widgets and the drawings), `js/engine-ext.js` (grid, hotspot, and what a question can
 show), `js/terms.js` (the colour language), `css/app.css`.
 
+## Before the next content change ships
+
+`js/app.js` still carries `sigLegacy`. It is there only so that the 2026-09-07 deploy, which
+changed no question, reset nobody's saved progress. **Delete it, and the
+`progress[id].sig !== old` branch beside it, before you deploy any change to a station's
+question set.** The fingerprint used to be the first letter of each question type, and `mcq`
+and `match` both begin with m — five of the ten stations mix them, so swapping one for the
+other in the same slot would leave a student's record in place and credit them for a question
+they never saw.
+
+Deleting it means the next deploy that changes a station's questions resets that station for
+everyone who has already answered it. That is correct and intended — but choose when.
+
+## About the pictures
+
+Every photograph ships as four files: `<base>-900.jpg`, `-1400.jpg`, `-900.webp`, `-1400.webp`.
+`picture()` in `js/learn.js` wraps them in a `<picture>`, so a browser that can decode WebP
+takes about a third off every photograph and one that cannot keeps the JPEG.
+
+**`<picture>` does not fall back on a 404.** A `<source>` is chosen on its type and media
+alone; once chosen, a missing file is a broken image. So `tools/build.mjs` refuses to build if
+any base is missing one of its four variants. After adding a photograph, make all four.
+
+The silhouettes in `index.html` are generated: `tools/build.mjs` divides potrace's ten-times
+coordinates down to whole viewBox units, which takes a third off the HTML. The sources in
+`assets/silhouettes/` are never touched, so it is always re-runnable — reverting the six lines
+in `build.mjs` is the whole rollback. The sprite lives after the `<script>` tags, not inside
+`<svg id="tree">`: in front of them it stood between the browser and the 13 script URLs.
+
 ## Local preview
 
 ```bash

@@ -21,7 +21,14 @@
   function load() {
     try { return JSON.parse(localStorage.getItem(STORE) || '{}'); } catch (e) { return {}; }
   }
-  function save() { try { localStorage.setItem(STORE, JSON.stringify(progress)); } catch (e) {} }
+  var saveBroken = false;
+  function save() {
+    try { localStorage.setItem(STORE, JSON.stringify(progress)); }
+    catch (e) {
+      /* Private browsing, or a school profile with site data blocked. Said once per session. */
+      if (!saveBroken) { saveBroken = true; toast('This browser is not saving your work — finish and hand in before you reload.'); }
+    }
+  }
   function p(id) {
     if (!progress[id]) progress[id] = { done:{}, tried:{}, sig:(S[id] ? stationSig(S[id]) : '') };
     return progress[id];
@@ -29,6 +36,13 @@
   /* A record is filed by the question's position, and a changed question set would credit
      a reader for a question they never saw: the record carries a fingerprint of the set. */
   function stationSig(st) {
+    return (st.activities || []).length + ':' + (st.activities || []).map(function (a) { return a.type; }).join(',');
+  }
+  /* The fingerprint used to be the first letter of each type, and 'mcq' and 'match' both begin
+     with m — so turning a matching task into a multiple choice left it unchanged and the old
+     record survived. REMOVE sigLegacy BEFORE THE NEXT CONTENT EDIT SHIPS: it exists only so
+     that this one deploy, which changes no question, resets nobody. */
+  function sigLegacy(st) {
     return (st.activities || []).length + ':' + (st.activities || []).map(function (a) { return a.type.charAt(0); }).join('');
   }
   function reconcile() {
@@ -37,8 +51,10 @@
       var st = S[id];
       if (!st) { delete progress[id]; dropped++; return; }
       var sig = stationSig(st);
-      if (progress[id].sig && progress[id].sig !== sig) { progress[id] = { done:{}, tried:{}, sig:sig }; dropped++; }
-      else progress[id].sig = sig;
+      var old = sigLegacy(st);
+      if (progress[id].sig && progress[id].sig !== sig && progress[id].sig !== old) {
+        progress[id] = { done:{}, tried:{}, sig:sig }; dropped++;
+      } else progress[id].sig = sig;
     });
     if (dropped) save();
     return dropped;
@@ -119,6 +135,7 @@
     var st = S[current]; if (!st) return;
     var host = document.getElementById('panelInner'), sc = stationScore(current);
     host.innerHTML = '';
+    if (window.Learn && Learn.reap) Learn.reap();   /* the old station's widgets are detached now */
 
     var head = document.createElement('div');
     head.className = 'st-head';
@@ -266,7 +283,8 @@
       if (p(st.id).done[i]) {
         var tick = document.createElement('span');
         tick.className = 'verdict ok'; tick.textContent = '✓ answered correctly earlier'; tick.style.marginLeft = 'auto';
-        card.querySelector('.act__top').appendChild(tick);
+        var top = card.querySelector('.act__top');
+        if (top) top.appendChild(tick);
       }
       card.addEventListener('result', function (e) {
         if (!e.detail) return;
@@ -486,15 +504,24 @@
     var url = (window.LAB_CONFIG || {}).submitUrl;
     go.disabled = true;
     msg.className = 'submsg'; msg.textContent = url ? 'Sending…' : 'Generating your code…';
-    function finish(sent) {
+    /* The POST goes out with mode:'no-cors', so the reply is opaque: this page cannot tell a
+       real 200 from an error page or a school portal's login screen. It never claims a
+       delivery it cannot know. */
+    function finish(sent, offline) {
       go.disabled = false; go.style.display = 'none';
       msg.className = 'submsg ok';
-      msg.innerHTML = (sent ? '<b>Sent.</b> ' : '<b>Could not reach the server.</b> ') + 'Your completion code is<div class="code">' + code + '</div>' +
-        (sent ? (signIn ? 'If you are on Dr Mompel&rsquo;s class list it is now in his records. Keep the code either way.' : 'Keep it as your receipt.')
-              : 'Paste this into the Google Classroom assignment to hand in.');
+      var head = sent ? '<b>Handed in.</b> '
+               : offline ? '<b>You are offline — nothing was sent yet.</b> '
+               : '<b>Could not reach the server.</b> ';
+      var tail = sent
+        ? (signIn ? 'If you are on Dr Mompel&rsquo;s class list it should now be in his records. Your code is your receipt — keep it whether or not it arrived.' : 'Your code is your receipt — keep it.')
+        : offline ? 'Your work is saved on this device. Keep the code, and hand in again once you are back online.'
+        : 'Paste this into the Google Classroom assignment to hand in.';
+      msg.innerHTML = head + 'Your completion code is<div class="code">' + code + '</div>' + tail;
       try { localStorage.setItem(LAB + '.submitted', JSON.stringify({ name:name.trim(), form:form, code:code, at:payload.at, sent:sent })); } catch (e) {}
     }
     if (!url) { finish(false); return; }
+    if (navigator.onLine === false) { finish(false, true); return; }
     fetch(url, { method:'POST', mode:'no-cors', headers:{ 'Content-Type':'text/plain;charset=utf-8' }, body:JSON.stringify(payload) })
       .then(function () { finish(true); }).catch(function () { finish(false); });
   }
@@ -508,7 +535,11 @@
     var src = el.getAttribute('data-peek'), note = el.getAttribute('data-note'), credit = el.getAttribute('data-credit');
     var pk = document.createElement('div');
     pk.className = 'peek';
-    pk.innerHTML = (src ? '<img src="assets/photos/' + src + '" alt="">' : '') +
+    /* the same box reservation the finder pictures get: without it the note under the picture
+       jumps down the moment the file lands */
+    var pkw = (window.PHOTO_SIZE || {})[src] || (window.PHOTO_SIZE || {})[String(src).replace(/-900\.jpg$/, '')];
+    pk.innerHTML = (src ? '<img src="assets/photos/' + src + '" alt="" decoding="async"' +
+                          (pkw ? ' width="' + pkw[0] + '" height="' + pkw[1] + '"' : '') + '>' : '') +
       '<div class="peek__note">' + note + (credit ? '<span class="peek__credit">' + credit + '</span>' : '') + '</div>' +
       '<button class="peek__x" aria-label="Close">×</button>';
     host.appendChild(pk);
@@ -728,7 +759,7 @@
             var m = html.match(/stations\.js\?v=(\d+)/);
             if (!m || m[1] === pageVersion) return;
             updateShown = true;
-            var t = document.getElementById('toast');
+            var t = document.getElementById('updBar') || document.getElementById('toast');
             t.innerHTML = 'A newer version of this page is available. <button class="btn btn--ghost" style="margin-left:8px;padding:3px 12px;font-size:13px" onclick="location.reload()">Reload</button>';
             t.style.pointerEvents = 'auto'; t.classList.add('show');
           });

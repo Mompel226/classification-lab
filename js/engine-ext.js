@@ -69,7 +69,16 @@
     if (a.svg) {
       stage.innerHTML = global.Learn ? global.Learn.svgFor(a.svg) : '';
     } else if (a.img) {
-      var im = new Image(); im.src = 'assets/photos/' + a.img; im.alt = a.imgCap || ''; im.loading = 'lazy';
+      /* .hs__stage is position:relative and every clickable region is placed at left:x%,
+         top:y%, so until the photograph lands the stage has no height and the regions pile
+         into the corner. A student on a slow link could then click a region that is not yet
+         where it will be — inside a question that is marked. The size comes from PHOTO_SIZE,
+         which the build keys by the WHOLE filename for exactly this call. */
+      var im = new Image();
+      var whh = (global.PHOTO_SIZE || {})[a.img];
+      if (whh) { im.width = whh[0]; im.height = whh[1]; }
+      im.decoding = 'async'; im.alt = a.imgCap || ''; im.loading = 'lazy';
+      im.src = 'assets/photos/' + a.img;
       stage.appendChild(im);
     }
     var picked = {};

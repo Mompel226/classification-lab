@@ -87,6 +87,22 @@
     return box;
   }
 
+  /* How wide a picture is really drawn, measured across every widget at 390, 820, 1100 and
+     1440 px: the widest is about 420. The old declaration said 520, which on a 1.5x screen
+     asked for 780 and still fetched the 900w file, and on a 3x phone fetched the 1400w one.
+     Saying the true width lets the browser pick the smaller file whenever it can. */
+  var SIZES_ATTR = '(max-width: 620px) 92vw, 440px';
+
+  /* Safari 14 and 15 decode WebP but cannot encode one, so this test says no for them and
+     they keep their JPEGs. <picture> above handles them properly on its own; this flag is
+     only for the two places that build a URL by hand. */
+  var WEBP = (function () {
+    try { var c = document.createElement('canvas'); c.width = c.height = 1;
+          return !!c.toDataURL && c.toDataURL('image/webp').indexOf('data:image/webp') === 0; }
+    catch (e) { return false; }
+  })();
+  function bigVariant(base) { return base + '-1400' + (WEBP ? '.webp' : '.jpg'); }
+
   /* a picture: the lab's own file (spec.img, with spec.credit and spec.url), or the tree's photograph of the group */
   function picture(spec) {
     var base, alt, credit, url;
@@ -98,11 +114,23 @@
     var im = new Image();
     var wh = (global.PHOTO_SIZE || {})[base.replace('assets/photos/', '')];
     if (wh) { im.width = wh[0]; im.height = wh[1]; }   /* the box is reserved before the picture arrives */
+    /* Every photograph has had a WebP twin in the repo since the day it was added and nothing
+       has ever asked for one — about a third of the bytes, for free. <picture> does the asking
+       safely: a browser that cannot decode WebP simply never chooses that <source>.
+       The build refuses to ship a base whose four variants are not all present, because a
+       chosen <source> that 404s is a broken image, NOT a fall back to the <img>. */
+    var pic = document.createElement('picture');
+    var wp = document.createElement('source');
+    wp.type = 'image/webp';
+    wp.srcset = base + '-900.webp 900w, ' + base + '-1400.webp 1400w';
+    wp.sizes = SIZES_ATTR;
+    pic.appendChild(wp);
     im.src = base + '-900.jpg';
     im.srcset = base + '-900.jpg 900w, ' + base + '-1400.jpg 1400w';
-    im.sizes = '(max-width: 620px) 92vw, 520px';
+    im.sizes = SIZES_ATTR;
     im.alt = alt; im.loading = 'lazy'; im.decoding = 'async';
-    return { img: im, base: base, credit: (alt && !spec.img ? esc(alt) + ' · ' : '') + (url ? '<a href="' + esc(url) + '" target="_blank" rel="noopener">' + esc(credit) + '</a>' : esc(credit)) };
+    pic.appendChild(im);
+    return { img: im, pic: pic, base: base, credit: (alt && !spec.img ? esc(alt) + ' · ' : '') + (url ? '<a href="' + esc(url) + '" target="_blank" rel="noopener">' + esc(credit) + '</a>' : esc(credit)) };
   }
 
   /* every pinned picture on screen, so one listener can lay them all out again */
@@ -268,12 +296,12 @@
     }).join('<i class="taxon__arrow">→</i>') + '<span class="taxon__note">0610 asks for the kingdom and the group; the ranks between them are here so you can see how they nest.</span>'));
     var wrap = h('div', 'finder pins');
     var stage = h('div', 'finder__stage');
-    var pic = picture(spec); if (pic) stage.appendChild(pic.img);
+    var pic = picture(spec); if (pic) stage.appendChild(pic.pic);
     var list = h('ul', 'finder__list');
     var left = h('div', 'finder__left'); left.appendChild(stage);
     var done = null;
     var ctl = pinned(wrap, stage, spec.spots, list, {
-      zoom: pic ? pic.base + '-1400.jpg' : null,
+      zoom: pic ? bigVariant(pic.base) : null,
       onChange: function (n, total) {
         all.textContent = n === total ? 'Hide every label' : 'Show every label';
         if (n === total && !done) { done = h('p', 'widget__done', spec.done || ('All ' + total + ' found. Those are the features that put it in this group.')); box.appendChild(done); }
@@ -311,11 +339,11 @@
     bad.appendChild(h('div', 'dp__lab dp__lab--bad', '✗ ' + esc(spec.bad.title || 'This one loses marks') + ' — ' + spec.faults.length + ' faults to find'));
     var wrap = h('div', 'finder pins');
     var stage = h('div', 'finder__stage');
-    var pic = picture(spec.bad); if (pic) stage.appendChild(pic.img);
+    var pic = picture(spec.bad); if (pic) stage.appendChild(pic.pic);
     var list = h('ul', 'finder__list');
     var left = h('div', 'finder__left'); left.appendChild(stage);
     var done = null;
-    var ctl = pinned(wrap, stage, spec.faults, list, { pinClass: 'pin--fault', pinWord: 'Fault', zoom: pic ? pic.base + '-1400.jpg' : null,
+    var ctl = pinned(wrap, stage, spec.faults, list, { pinClass: 'pin--fault', pinWord: 'Fault', zoom: pic ? bigVariant(pic.base) : null,
       onChange: function (n, total) {
         all.textContent = n === total ? 'Hide the faults' : 'Show every fault';
         if (n === total && !done) { done = h('p', 'widget__done', 'All ' + total + ' faults found. Each one is a mark lost on the criteria: ' + esc(spec.criteria || 'S, O, L, D1, D2') + '.'); bad.appendChild(done); }
@@ -334,7 +362,7 @@
     var gwrap = h('div', 'finder');
     var gstage = h('div', 'finder__stage');
     var gpic = picture(spec.good);
-    if (gpic) { gstage.appendChild(gpic.img); gpic.img.style.cursor = 'zoom-in'; gpic.img.addEventListener('click', function () { if (global.LabLightbox) global.LabLightbox(gpic.img.currentSrc || gpic.img.src, spec.good.title || 'The drawing that scores', 'Drawing', gpic.credit); }); }
+    if (gpic) { gstage.appendChild(gpic.pic); gpic.img.style.cursor = 'zoom-in'; gpic.img.addEventListener('click', function () { if (global.LabLightbox) global.LabLightbox(gpic.img.currentSrc || gpic.img.src, spec.good.title || 'The drawing that scores', 'Drawing', gpic.credit); }); }
     var gleft = h('div', 'finder__left'); gleft.appendChild(gstage);
     if (gpic && gpic.credit) gleft.appendChild(h('p', 'finder__credit', gpic.credit));
     gwrap.appendChild(gleft);
@@ -428,7 +456,7 @@
     var wrap = h('div', 'keyrun');
     var left = h('div'), right = h('div');
     var sp = h('div', 'keyrun__spec');
-    if (spec.specimen) { var pic = picture(spec.specimen); if (pic) sp.appendChild(pic.img); }
+    if (spec.specimen) { var pic = picture(spec.specimen); if (pic) sp.appendChild(pic.pic); }
     sp.appendChild(h('div', null, '<b>The specimen</b>: ' + esc(spec.specimen ? spec.specimen.desc : '')));
     left.appendChild(sp);
     var run = h('div'); left.appendChild(run);
@@ -544,7 +572,7 @@
   function photo(spec) {
     var f = h('figure', 'photo'); if (spec.group) f.setAttribute('data-group', spec.group);
     var pic = picture(spec);
-    if (pic) { f.appendChild(pic.img); pic.img.addEventListener('click', function () { if (global.LabLightbox) global.LabLightbox(pic.img.currentSrc || pic.img.src, spec.cap || '', 'Photograph', pic.credit); }); }
+    if (pic) { f.appendChild(pic.pic); pic.img.addEventListener('click', function () { if (global.LabLightbox) global.LabLightbox(pic.img.currentSrc || pic.img.src, spec.cap || '', 'Photograph', pic.credit); }); }
     f.appendChild(h('figcaption', null, (spec.cap ? esc(spec.cap) + ' · ' : '') + (pic ? pic.credit : '')));
     return f;
   }
@@ -652,6 +680,11 @@
 
   var MAKERS = { letters: letters, finder: finder, drawphotos: drawphotos, dna: dna, keyrun: keyrun, binomial: binomial, kingdoms: kingdoms, table: table, photo: photo };
   global.Learn = {
+    /* Drop the entries whose picture has left the page. Called from paintPanel AFTER the old
+       station is cleared and BEFORE the new one is built — the only moment when isConnected
+       means what it looks like it means. Pruning at push time would be wrong: a widget is
+       always still detached when it registers. */
+    reap: function () { for (var i = LIVE.length - 1; i >= 0; i--) if (!LIVE[i].box.isConnected) LIVE.splice(i, 1); },
     widget: function (spec, ctx) {
       var mk = MAKERS[spec.type];
       if (!mk) return h('p', 'widget__note', 'Unknown widget: ' + esc(spec.type));

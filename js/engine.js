@@ -229,7 +229,20 @@
 
     check.addEventListener('click', function () {
       check.disabled = true;
-      Promise.resolve(onCheck()).then(function (res) {
+      var run;
+      try { run = Promise.resolve(onCheck()); } catch (err) { run = Promise.reject(err); }
+      run.catch(function (err) {
+        /* Marking can only fail if the browser has no crypto.subtle — a page served over plain
+           http, or opened from a downloaded copy. Say so: a button that goes grey and never
+           comes back reads to a student as "I broke it". */
+        check.disabled = false;
+        verdict.className = 'verdict no';
+        verdict.textContent = '\u2717 Could not check';
+        fb.className = 'feedback no'; fb.style.display = '';
+        fb.innerHTML = 'This page could not mark your answer. Open it from the https:// address, not a downloaded copy, and try again.';
+        console.error('marking failed', err);
+        return null;
+      }).then(function (res) {
         check.disabled = false;
         if (res == null) return;
         card.classList.toggle('is-right', res.correct);
