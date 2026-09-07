@@ -123,6 +123,15 @@ a 5% grid. No new licences are involved except the gill drawing.
 | `peek-protein-coat-*` | `finder-viruses-*` | single virus particles, the coat being the outside |
 | `peek-cilia-*` | `protoctists-*` | the rim of a Paramecium. Cilia do not resolve at this magnification and the card says so |
 
+| `peek-wing-bird-*` | `birds-*` | a bald eagle's wing: the front limb itself |
+| `peek-wing-insect-*` | `finder-insects-*` | a wasp's wing: a membrane stiffened by veins |
+| `peek-wet-scales-*` | `finder-fish-*` | the thin overlapping scales of a perch |
+
+A word can also mean different things on different stations, so `CONTEXT` in `js/terms.js`
+overrides a card for one station only: "wings" opens the eagle's wing on the vertebrates
+station and the wasp's everywhere else, and "gills" carries a note about crustacean gills when
+it is read on the arthropods station.
+
 | New file | Source | Licence |
 |---|---|---|
 | `peek-gills-*` | [Gills.jpg](https://commons.wikimedia.org/wiki/File:Gills.jpg) — a scientific drawing of the five gill arches in place inside a fish's head | United States Fish Commission · Public domain |
