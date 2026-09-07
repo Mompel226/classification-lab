@@ -71,6 +71,9 @@
           '<p class="lt__def"><b>' + esc(it.word) + '</b> is ' + keyify(it.def, it.key, it.first) + '.</p>' +
           (it.first ? '<p class="lt__firstline">The first word to remember: <b>' + esc(it.first) + '</b>' + (it.firstWhy ? ' — ' + esc(it.firstWhy) : '') + '</p>' : '') +
           (it.eg ? '<p class="lt__firstline">' + esc(it.eg) + '</p>' : '') +
+          /* the warning that used to be repeated in a sentence below the widget: it belongs
+             with the definition it is about, not a second time further down the page */
+          (it.remember ? '<p class="lt__remember"><b>Remember</b> ' + esc(it.remember) + '</p>' : '') +
           (it.old ? '<p class="lt__old">Older wording you may still see on slides: ' + esc(it.old) + '</p>' : '') + '</div>';
         open.hidden = false;
         bar();

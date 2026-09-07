@@ -1282,3 +1282,8 @@ svg.lit .kl--all.is-on{opacity:1}
 .krule__eg--yes{color:var(--green-2)}
 .krule__eg--no{color:var(--red)}
 .krules__last{margin-top:13px;border-top:1px solid var(--edge);padding-top:11px;font-size:14px;font-weight:650;color:var(--ink)}
+
+/* the one thing to remember about a definition, kept with the definition */
+.lt__remember{margin:8px 0 0;padding:7px 10px;border-left:3px solid var(--amber);
+  background:var(--amber-tint);border-radius:0 8px 8px 0;font-size:13.5px;line-height:1.45}
+.lt__remember>b{color:var(--amber);font-weight:800;letter-spacing:.02em}
