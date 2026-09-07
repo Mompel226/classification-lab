@@ -390,7 +390,16 @@
     return scroller === document.scrollingElement || scroller === document.documentElement
       ? 0 : scroller.getBoundingClientRect().top;
   }
+  /* A word can send a reader into a section that is folded shut — the "optimum pH" line lives
+     inside a closed <details>, and scrolling to something behind a shut disclosure scrolls to
+     nothing the reader can see. Open the way in first. */
+  function revealAncestors(target) {
+    for (var n = target.parentNode; n && n.nodeType === 1; n = n.parentNode) {
+      if (n.tagName === 'DETAILS' && !n.open) n.open = true;
+    }
+  }
   function placeBlock(target, smooth, gap) {
+    revealAncestors(target);
     var sc = scrollerFor(target);
     var inset = stickyInset(sc) + (gap == null ? 14 : gap);
     var prev = sc.style.scrollBehavior;
