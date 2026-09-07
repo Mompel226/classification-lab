@@ -43,7 +43,12 @@
               'reptile','reptiles','amphibian','amphibians','fish','fishes','myriapod','myriapods','insect','insects','arachnid','arachnids',
               'crustacean','crustaceans','centipede','centipedes','millipede','millipedes','spider','spiders','crab','crabs'],
     plants:  ['plant','plants','plant kingdom','fern','ferns','flowering plant','flowering plants','monocotyledon','monocotyledons','monocot','monocots',
-              'dicotyledon','dicotyledons','dicot','dicots','cotyledon','cotyledons','frond','fronds'],
+              'dicotyledon','dicotyledons','dicot','dicots','cotyledon','cotyledons','seed leaf','seed leaves','frond','fronds',
+              /* words a student meets here for the first time and will not have seen: every one
+                 opens a picture, because a name with no picture behind it is just a noise */
+              'stigma','ovary','ovule','ovules','fruit','fruits','seed','seeds','pollen',
+              'vascular bundle','vascular bundles','xylem','phloem',
+              'tap root','tap roots','fibrous root system','fibrous roots','fibrous root'],
     fungi:   ['fungus','fungi','fungal','hypha','hyphae','mycelium','yeast','mould','moulds','mushroom','mushrooms','saprophyte','saprophytes','saprotroph','saprotrophs'],
     prokaryotes: ['prokaryote','prokaryotes','prokaryotic','bacterium','bacteria','bacterial','plasmid','plasmids','circular dna'],
     protoctists: ['protoctist','protoctists','amoeba','paramecium','alga','algae','plasmodium','seaweed','seaweeds'],
@@ -96,6 +101,41 @@
     ['plasmids', 'prokaryotes', 'Small extra rings of DNA in a bacterium: <b>plasmids</b>. The main DNA is one circle, free in the cytoplasm.'],
     ['protein coat', 'viruses', 'A virus is genetic material inside a <b>protein coat</b>, and nothing else. No cytoplasm, no membrane, no cell.']
   ].forEach(function (e) { var p = pic(e[1], e[2]); if (p) PEEK[e[0]] = p; });
+
+  /* ---------- words that need a picture of their OWN ----------
+     The entries above borrow the group's photograph, which is right for "feathers" and wrong
+     for "hyphae": a mushroom is not a picture of a hypha. These carry their own file. A word a
+     student has never met is a word they need to SEE — click it, and there it is.
+     Every one is public domain, CC0 or CC BY; the source is in assets/photos/CREDITS.md. */
+  [
+    ['hyphae', 'peek-hyphae-900.jpg',
+     '<b>Hyphae</b>: the threads a fungus is made of. Look along one — the cross-walls divide it into cells, joined end to end. That is the answer to "how many cells?": many, but in threads rather than in blocks of tissue.',
+     'Branching fungal hyphae · Ajay Kumar Chaurasiya · CC BY 4.0 · Wikimedia Commons'],
+    ['hypha', 'peek-hyphae-900.jpg',
+     '<b>A hypha</b>: one of the threads a fungus is made of, divided by cross-walls into cells joined end to end.',
+     'Branching fungal hyphae · Ajay Kumar Chaurasiya · CC BY 4.0 · Wikimedia Commons'],
+    ['mycelium', 'peek-hyphae-900.jpg',
+     'A <b>mycelium</b> is the whole tangle of these hyphae — the body of the fungus, mostly hidden in the soil, the log or the food. The mushroom is only the part that makes spores.',
+     'Branching fungal hyphae · Ajay Kumar Chaurasiya · CC BY 4.0 · Wikimedia Commons'],
+    ['cotyledon', 'peek-cotyledon-900.jpg',
+     '<b>Cotyledons</b>, or seed leaves: the first leaves, already packed inside the seed. These two belong to a pumpkin seedling — two of them, so it is a dicotyledon. The leaves that come after them look quite different.',
+     'Cotyledon leaves of a field pumpkin · Juliancolton · public domain · Wikimedia Commons'],
+    ['cotyledons', 'peek-cotyledon-900.jpg',
+     '<b>Cotyledons</b>, or seed leaves: the first leaves, already packed inside the seed. Two of them makes a dicotyledon; one makes a monocotyledon.',
+     'Cotyledon leaves of a field pumpkin · Juliancolton · public domain · Wikimedia Commons'],
+    ['seed leaves', 'peek-cotyledon-900.jpg',
+     '<b>Seed leaves</b> are cotyledons — the first leaves, already inside the seed before it grows. Count them: one or two is how monocotyledons and dicotyledons are told apart.',
+     'Cotyledon leaves of a field pumpkin · Juliancolton · public domain · Wikimedia Commons'],
+    ['stigma', 'peek-stigma-900.jpg',
+     'The <b>stigma</b>: the sticky tip of the female part of a flower, where pollen lands. The yellow grains on this dandelion stigma are pollen.',
+     'Dandelion flower stigma with pollen · CC BY 4.0 · Wikimedia Commons'],
+    ['vascular bundle', 'peek-vascular-900.jpg',
+     'A <b>vascular bundle</b>: the plumbing of a plant, seen in a slice across the stem. Each bundle carries xylem, which takes water up, and phloem, which carries food.',
+     'Vascular bundle in a monocotyledon stem · CC0 · Wikimedia Commons'],
+    ['vascular bundles', 'peek-vascular-900.jpg',
+     '<b>Vascular bundles</b>: the plumbing of a plant, seen in a slice across the stem. Scattered through the stem in monocotyledons, in a ring in dicotyledons.',
+     'Vascular bundle in a monocotyledon stem · CC0 · Wikimedia Commons']
+  ].forEach(function (e) { PEEK[e[0]] = [e[1], e[2], e[3]]; });
 
   /* The people. A scientist named in the text is clickable: their portrait, what they did,
      and why it still shows up in the names students write. */

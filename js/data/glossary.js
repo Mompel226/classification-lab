@@ -181,6 +181,11 @@ window.GLOSSARY = [
   "def": "Chemical digestion is the breakdown of large, insoluble molecules into small, soluble molecules, carried out by enzymes."
  },
  {
+  "term": "chitin",
+  "def": "The tough material a fungal cell wall is made of — and the same material as an arthropod’s exoskeleton. It is not cellulose, which is what a plant cell wall is made of.",
+  "ext": true
+ },
+ {
   "term": "chloroplast",
   "def": "A structure in plant cells (and in some protoctists) that contains chlorophyll and carries out photosynthesis."
  },
@@ -393,6 +398,11 @@ window.GLOSSARY = [
   "def": "Plant material, mostly cellulose, that is not digested; it adds bulk so that peristalsis can move food along, and helps prevent constipation."
  },
  {
+  "term": "fibrous root system",
+  "def": "Many roots of about the same thickness spreading out from the base of the stem, with no single main root. Monocotyledons have one.",
+  "sup": true
+ },
+ {
   "term": "fish",
   "def": "A vertebrate with wet scales, fins and gills, which lays soft eggs in water. Its body temperature follows the surroundings."
  },
@@ -404,6 +414,11 @@ window.GLOSSARY = [
  {
   "term": "frond",
   "def": "The leaf of a fern, usually divided into many leaflets and unrolling from a coil as it grows.",
+  "sup": true
+ },
+ {
+  "term": "fruit",
+  "def": "The ripened ovary of a flower, holding the seeds that formed inside it.",
   "sup": true
  },
  {
@@ -672,6 +687,11 @@ window.GLOSSARY = [
   ]
  },
  {
+  "term": "ovary",
+  "def": "In a flower, the part that holds the ovules; after fertilisation it becomes the fruit and the ovules become the seeds. In an animal, the organ that makes egg cells.",
+  "sup": true
+ },
+ {
   "term": "pancreatic juice",
   "def": "The alkaline fluid the pancreas secretes into the duodenum; it contains amylase, protease (trypsin) and lipase."
  },
@@ -843,6 +863,11 @@ window.GLOSSARY = [
   "def": "To release a useful substance made by a gland or cell. The pancreas secretes pancreatic juice into the duodenum; secreting is not the same as excreting, which is getting rid of waste."
  },
  {
+  "term": "seed",
+  "def": "A fertilised ovule: a young plant and a store of food, inside a protective coat.",
+  "sup": true
+ },
+ {
   "term": "sensitivity",
   "def": "The ability to detect and respond to changes in the internal or external environment."
  },
@@ -873,6 +898,11 @@ window.GLOSSARY = [
   ]
  },
  {
+  "term": "stigma",
+  "def": "The sticky tip of the female part of a flower, where pollen lands.",
+  "sup": true
+ },
+ {
   "term": "stimulus",
   "def": "A change in the internal or external environment that an organism can detect — light, temperature, touch, a chemical. Plural: stimuli."
  },
@@ -897,6 +927,11 @@ window.GLOSSARY = [
  {
   "term": "swallowing",
   "def": "The reflex that pushes the bolus from the mouth, through the pharynx, into the oesophagus."
+ },
+ {
+  "term": "tap root",
+  "def": "One main root growing straight down with smaller roots branching from it. Dicotyledons have one.",
+  "sup": true
  },
  {
   "term": "taxonomy",
@@ -926,6 +961,11 @@ window.GLOSSARY = [
  {
   "term": "urea",
   "def": "The waste product made in the liver from excess amino acids, removed from the blood by the kidneys and excreted in urine."
+ },
+ {
+  "term": "vascular bundle",
+  "def": "A strand of xylem and phloem running through a plant: xylem carries water up, phloem carries food. In a ring in a dicotyledon stem, scattered in a monocotyledon stem.",
+  "sup": true
  },
  {
   "term": "vertebrate",

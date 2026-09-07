@@ -88,3 +88,21 @@ original sources are not yet known, so they are credited as "from Dr Mompel's te
 collection". Before this repo is treated as fully sourced, each needs its real origin and
 licence written in here, the way every photograph above has. An earlier `Crustaceans.png` that
 carried a visible Dreamstime watermark was NOT published and was replaced by the crab.
+
+### Pictures behind a clickable word
+
+A word a student has never met needs a picture, not another sentence. These are opened by
+clicking the word itself (`PEEK` in `js/terms.js`). Unlike the others, they are not the tree's
+group photographs — a mushroom is not a picture of a hypha.
+
+| File | Source | Photographer | Licence |
+|---|---|---|---|
+| `peek-hyphae-900.jpg` | [Branching Fungal hyphae.jpg](https://commons.wikimedia.org/wiki/File:Branching_Fungal_hyphae.jpg) — branching hyphae with the cross-walls visible | Ajay Kumar Chaurasiya | CC BY 4.0 |
+| `peek-cotyledon-900.jpg` | [Cotyledon leaves of a field pumpkin.JPG](https://commons.wikimedia.org/wiki/File:Cotyledon_leaves_of_a_field_pumpkin.JPG) — a seedling with its two seed leaves | Juliancolton | Public domain |
+| `peek-stigma-900.jpg` | [Dandelion flower stigma with pollen.jpg](https://commons.wikimedia.org/wiki/File:Dandelion_flower_stigma_with_pollen.jpg) — a stigma with pollen grains on it | — | CC BY 4.0 |
+| `peek-vascular-900.jpg` | [Closed Collateral Vascular Bundle in Monocot Stem](https://commons.wikimedia.org/wiki/File:Closed_Collateral_Vascular_Bundle_in_Monocot_Stem_(35995829090).jpg) — a bundle in a slice across a stem | — | CC0 |
+
+**Still wanted.** `ovary`, `fruit`, `seed`, `tap root` and `fibrous root system` are clickable
+and give a definition, but have no picture yet. Each needs one public-domain, CC0 or CC BY
+photograph: a flower cut lengthways with the ovary showing, a fruit cut open with its seeds, a
+seed cut in half, and the two root systems side by side.
