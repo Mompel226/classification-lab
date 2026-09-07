@@ -895,6 +895,54 @@
     return box;
   }
 
+  /* ---------- keyrules: how to build one that gets the marks ----------
+     Their first assessment is to construct a key, and the thing that loses marks is not
+     biology — it is not knowing what a step is allowed to look like. So: one rule in large
+     type, the statement-or-question question answered flatly, and a short checklist with a
+     right and a wrong example on each line. Nothing here is prose to wade through. */
+  function keyrules(spec) {
+    var box = h('div', 'widget'); if (spec.group) box.setAttribute('data-group', spec.group);
+    box.appendChild(head(spec.title || 'Building a key that gets full marks', spec.ask || '', null));
+    var wrap = h('div', 'krules');
+
+    wrap.appendChild(h('div', 'krules__one',
+      '<span class="krules__oneh">The one rule</span>' +
+      '<span class="krules__onet">' + esc(spec.one) + '</span>'));
+
+    /* the two layouts, side by side, so the yes/no question answers itself */
+    var forms = h('div', 'krules__forms');
+    forms.innerHTML =
+      '<div class="krf">' +
+        '<div class="krf__h">Printed as numbered pairs</div>' +
+        '<div class="krf__couplet"><span class="krf__n">1 (a)</span><span>has wings</span><span class="krf__go">go to 2</span></div>' +
+        '<div class="krf__couplet"><span class="krf__n">1 (b)</span><span>has no wings</span><span class="krf__go">go to 3</span></div>' +
+      '</div>' +
+      '<div class="krf">' +
+        '<div class="krf__h">Printed as a tree</div>' +
+        '<div class="krf__tree">' +
+          '<div class="krf__box">has wings</div>' +
+          '<div class="krf__arms"><span>yes</span><span>no</span></div>' +
+          '<div class="krf__ends"><span>go to 2</span><span>go to 3</span></div>' +
+        '</div>' +
+      '</div>';
+    wrap.appendChild(forms);
+    wrap.appendChild(h('p', 'krules__both', spec.both));
+
+    var list = h('ol', 'krules__list');
+    (spec.rules || []).forEach(function (r) {
+      var li = h('li', 'krule');
+      li.innerHTML = '<span class="krule__t">' + esc(r.t) + '</span>' +
+        (r.yes ? '<span class="krule__eg krule__eg--yes"><i>✓</i>' + esc(r.yes) + '</span>' : '') +
+        (r.no ? '<span class="krule__eg krule__eg--no"><i>✗</i>' + esc(r.no) + '</span>' : '');
+      list.appendChild(li);
+    });
+    wrap.appendChild(list);
+    if (spec.last) wrap.appendChild(h('div', 'krules__last', esc(spec.last)));
+    box.appendChild(wrap);
+    if (spec.note) box.appendChild(h('p', 'widget__note', spec.note));
+    return box;
+  }
+
   /* ---------- keybad: a key that does not work, and why ----------
      The faults are the ones examiners actually report: statements that overlap so an organism
      fits both, statements about two different features so an organism fits neither, words that
@@ -1168,7 +1216,7 @@
   };
   function svgFor(name) { return DIAGRAMS[name] ? DIAGRAMS[name].svg : ''; }
 
-  var MAKERS = { letters: letters, finder: finder, drawphotos: drawphotos, dna: dna, keyrun: keyrun, keybad: keybad, binomial: binomial, kingdoms: kingdoms, table: table, photo: photo };
+  var MAKERS = { keyrules: keyrules, letters: letters, finder: finder, drawphotos: drawphotos, dna: dna, keyrun: keyrun, keybad: keybad, binomial: binomial, kingdoms: kingdoms, table: table, photo: photo };
   global.Learn = {
     /* Drop the entries whose picture has left the page. Called from paintPanel AFTER the old
        station is cleared and BEFORE the new one is built — the only moment when isConnected
