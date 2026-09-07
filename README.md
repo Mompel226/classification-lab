@@ -88,14 +88,28 @@ show), `js/terms.js` (the colour language), `css/app.css`.
 ## How a station knows its saved answers are still valid
 
 A saved answer is filed by the question's POSITION in the station, and positions are not
-stable. So each station's record carries a fingerprint of the question set it was made
-against — the number of questions and their types, in order. If that changes, the record is
-dropped and the station is answered again: losing one station's answers is a far smaller harm
-than handing in a score that was never earned.
+stable: remove one question and everything after it shifts up. So each station's record carries
+a fingerprint of the question set it was made against — the number of questions, and a hash of
+everything a student reads in each one, in order:
 
-The fingerprint was once the FIRST LETTER of each type, which could not tell `mcq` from
-`match` — five of these ten stations mix them. That is closed: the whole type name is
-recorded, and any record still written in the old form no longer matches and is dropped.
+    9:1lebgp3
+
+If that changes, the record for that station is dropped and the station is answered again.
+Losing one station's answers is a far smaller harm than handing in a score that was never
+earned.
+
+**This means editing a question resets that station** — rewording a prompt, adding an option,
+reordering them, changing a label. A typo fix costs that station's progress for anyone who has
+already answered it. That is the intended trade.
+
+The fingerprint deliberately ignores the answer key `k`: it is salted afresh on every build, so
+hashing it would wipe every record on every deploy whether anything had changed or not. A plain
+rebuild with no content change leaves every fingerprint identical — verified in both labs.
+
+Two earlier versions were weaker and are gone. The first was the FIRST LETTER of each question
+type, which could not tell `mcq` from `match`; the second was the full type names, which could
+not see a reworded question at all. Records in either old form no longer match anything and are
+dropped.
 
 ## About the pictures
 
