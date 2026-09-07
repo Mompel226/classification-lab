@@ -29,7 +29,7 @@ window.TREE = {
 
   groups: [
     /* ---- Animals ---- */
-    { id:'animals', kind:'kingdom', parent:'root', label:'Animals', ring:'Animals',
+    { id:'animals', kind:'kingdom', parent:'root', label:'Animals', ring:'Animals (kingdom)',
       img:{ base:'assets/photos/animals', alt:'A lion in the Serengeti', caption:'A lion in the Serengeti', credit:'Ankit Gita from Mumbai, Maharashtra, India, India · CC BY 2.0 · Wikimedia Commons', url:'https://commons.wikimedia.org/wiki/File%3ALion%2C_Serengeti_National_Park_%2848788336273%29.jpg' },
       feats:['Many cells, each with a nucleus and no cell wall.',
              'Feed on other organisms.',
@@ -37,7 +37,7 @@ window.TREE = {
       eg:'everything on the two branches above, and also snails, worms, starfish and jellyfish',
       real:'Animals and fungi are closer to each other than either is to plants. The syllabus asks only about vertebrates and arthropods, but a snail is just as much an animal.' },
 
-    { id:'vertebrates', kind:'group', parent:'animals', label:'Vertebrates', ring:'Vertebrates',
+    { id:'vertebrates', kind:'group', parent:'animals', label:'Vertebrates', ring:'Vertebrates (subphylum)',
       img:{ base:'assets/photos/vertebrates', alt:'A snake skeleton: the backbone, bone by bone', caption:'A snake skeleton: the backbone, bone by bone', credit:'dbking · CC BY 2.0 · Wikimedia Commons', url:'https://commons.wikimedia.org/wiki/File%3ASnake_skeleton.jpg' },
       feats:['A backbone, and an internal skeleton of bone or cartilage.'],
       eg:'mammals, birds, reptiles, amphibians, fish' },
@@ -73,7 +73,7 @@ window.TREE = {
       eg:'perch, salmon, shark, goldfish',
       sil:{ file:'fish', name:'Perca fluviatilis, perch', by:'Ando', licence:'Public Domain Mark 1.0', url:'https://www.phylopic.org/images/bbc78f09-18e1-4e4d-9e77-c6f9daee33c1' } },
 
-    { id:'arthropods', kind:'group', parent:'animals', label:'Arthropods', ring:'Arthropods',
+    { id:'arthropods', kind:'group', parent:'animals', label:'Arthropods', ring:'Arthropods (phylum)',
       img:{ base:'assets/photos/arthropods', alt:'Stag beetle', caption:'Stag beetle', credit:'Flocci Nivis · CC BY 4.0 · Wikimedia Commons', url:'https://commons.wikimedia.org/wiki/File%3A20200529_Lucanus_cervus_02.jpg' },
       feats:['Jointed legs.', 'A body in segments.', 'A hard outer skeleton, the exoskeleton.'],
       eg:'myriapods, insects, arachnids, crustaceans' },
@@ -103,7 +103,7 @@ window.TREE = {
       sil:{ file:'crustaceans', name:'Carcinus maenas, shore crab', by:'Caleb M. Gordon', licence:'CC0 1.0', url:'https://www.phylopic.org/images/a34e9df9-d549-4ba2-a648-7785a84206e5' } },
 
     /* ---- Plants ---- */
-    { id:'plants', kind:'kingdom', parent:'root', label:'Plants', ring:'Plants', shift:-8,
+    { id:'plants', kind:'kingdom', parent:'root', label:'Plants', ring:'Plants (kingdom)', shift:-8,
       img:{ base:'assets/photos/plants', alt:'Rainforest trees, seen from the ground', caption:'Rainforest trees, seen from the ground', credit:'Rohitjahnavi · CC0 · Wikimedia Commons', url:'https://commons.wikimedia.org/wiki/File%3ACanopy_shyness_Malaysian_rainforest_Dryabalonops_aromatica_IMG20250930121416_Canopy_Shyness_01.jpg' },
       feats:['Many cells, each with a nucleus, a cell wall made of cellulose, and chloroplasts.',
              'Make their own food by photosynthesis.',
@@ -117,7 +117,7 @@ window.TREE = {
       eg:'bracken, male fern, tree ferns',
       sil:{ file:'ferns', name:'Polypodium vulgare, common polypody', by:'Guillaume Dera', licence:'CC0 1.0', url:'https://www.phylopic.org/images/ee243ea1-c311-4fa2-b730-928b80117515' } },
 
-    { id:'flowering', kind:'group', parent:'plants', label:'Flowering plants', ring:'Flowering plants', shift:6,
+    { id:'flowering', kind:'group', parent:'plants', label:'Flowering plants', ring:'Flowering plants (group)', shift:6,
       img:{ base:'assets/photos/flowering', alt:'Wildflowers', caption:'Wildflowers', credit:'Peter Cooper Jr. · CC0 · Wikimedia Commons', url:'https://commons.wikimedia.org/wiki/File%3ABlanket_flowers%2C_Cathleen_Kuehl_Memorial_Wildflower_Meadow_2026-08-01.jpg' },
       feats:['Reproduce by flowers; the seeds form inside an ovary.'],
       eg:'monocotyledons and dicotyledons' },
