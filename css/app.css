@@ -1114,6 +1114,23 @@ svg.lit .kl--all.is-on{opacity:1}
 .plan__draw{margin:0}
 .plan__draw figcaption{font-size:13px;color:#3C3C3C;line-height:1.45;margin-top:8px}
 .plan__draw .finder__stage{background:#fff}
+/* SOLD — how the department marks a biological drawing. Deliberately small: it sits under the
+   drawing as a reminder, and opens only if the student wants the reasons. */
+.sold{margin:10px 0 0;border-top:1px dashed var(--edge);padding-top:8px}
+.sold__row{display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+.sold__score{font-size:12.5px;font-weight:700;letter-spacing:.05em;color:var(--green);margin-right:2px}
+.sold__c{display:inline-flex;align-items:center;gap:4px;font-size:11.5px;color:#8A8A8A;
+  border:1px solid var(--edge);border-radius:var(--r-pill);padding:2px 8px}
+.sold__c.is-on{color:var(--green);border-color:var(--green);background:rgba(20,87,43,.06)}
+.sold__c i{font-style:normal;font-weight:700}
+.sold__more{margin-top:7px}
+.sold__more summary{cursor:pointer;font-size:12px;color:var(--grey);list-style:none}
+.sold__more summary::-webkit-details-marker{display:none}
+.sold__more summary::before{content:"▸ ";color:var(--green)}
+.sold__more[open] summary::before{content:"▾ "}
+.sold__more ul{margin:6px 0 0;padding-left:18px}
+.sold__more li{font-size:12.5px;line-height:1.5;margin-bottom:6px;color:#3C3C3C}
+.sold__rule{color:var(--grey)}
 .diag{margin:0}
 .diag__svg{width:100%;max-width:560px;height:auto;display:block;margin:0 auto;font-family:var(--font)}
 .diag figcaption{font-size:13px;color:#3C3C3C;line-height:1.45;margin-top:6px}

@@ -240,10 +240,17 @@
        sixth of the picture wide, centred on the pin. Tighter than this (it was a twentieth)
        and every crop was an unreadable patch of pixels: a leg became blank paper, a thorax
        a black smudge. It is cropped from the 1400 px file, so it stays sharp. */
-    var ZOOM_W = 64, ZOOM_FRAC = 0.26;
+    var ZOOM_W = 64, ZOOM_FRAC = 0.13;
     function zoomInto(i) {
       var z = zooms[i], sb = stage.getBoundingClientRect(); if (!z || !opts.zoom || !sb.width) return;
-      var bgW = ZOOM_W / ZOOM_FRAC, bgH = bgW * (sb.height / sb.width);
+      /* How much of the picture the close-up beside a name shows, as a fraction of its width.
+         A quarter was far too wide for anything small: on the virus micrograph the particle,
+         the host cell and the budding particles all came back as the same blue-and-yellow
+         patch, which teaches nothing. The default is now tight, and a spot naming something
+         LARGE — a whole cell, a body part that fills the frame — widens it with its own `z`,
+         so the thing is still whole and still centred. */
+      var frac = spots[i].z || ZOOM_FRAC;
+      var bgW = ZOOM_W / frac, bgH = bgW * (sb.height / sb.width);
       /* A picture much wider than it is tall — the centipede, lying along its length — scales
          to a strip SHORTER than the crop window, and the window then fills with black above
          and below the animal. Grow the whole picture until the window fits inside it. */
@@ -309,11 +316,14 @@
 
     var wrap = h('details', 'diag__wrap'); wrap.open = true;
     wrap.innerHTML = '<summary>' + esc(spec.planSummary ||
-      (dg && dr ? 'The same body plan — as a diagram, and as a scientific drawing'
+      (dg && dr ? 'The same body plan — as a scientific drawing, and as a diagram'
                 : dg ? (dg.summary || 'The same body plan as a labelled diagram')
                      : 'The same body plan as a scientific drawing')) + '</summary>';
 
+    /* The DRAWING comes first. It is the thing being examined, and a student should meet the
+       real skill before they meet a diagram made to explain the anatomy. */
     var views = [];
+    if (dr) views.push(drawingView(dr));
     if (dg) {
       var fig = h('figure', 'diag', dg.svg +
         (/grey label/.test(dg.caption) ? '<p class="diag__key"><b>Green</b> — a word you need for 0610. <i>Grey</i> — not needed; it is there only so the picture makes sense.</p>' : '') +
@@ -321,7 +331,6 @@
       views.push({ key: 'diagram', tab: 'Diagram',
                    hint: 'Drawn for this lab, so nothing is hidden by the angle.', el: fig });
     }
-    if (dr) views.push(drawingView(dr));
 
     var panels = h('div', 'plan__panels');
     views.forEach(function (v) { v.panel = h('div', 'plan__panel'); v.panel.appendChild(v.el); panels.appendChild(v.panel); });
@@ -358,6 +367,38 @@
     return wrap;
   }
 
+  /* ---------- SOLD: how a biological drawing is marked ----------
+     Size · Outline · Labels · Detail · Detail — five marks, the way the department marks a
+     drawing. It is shown small under each drawing, with the reason for every letter, so a
+     student sees the same criteria they will be marked against and can see them being met.
+     A letter is only ticked if the drawing really does it: the score is a judgement, not a
+     decoration, and a drawing that fails one says so. */
+  var SOLD = [
+    ['S', 'Size',    'Large — it fills the space it is given. A small drawing cannot be labelled.'],
+    ['O', 'Outline', 'One continuous line. No sketching, no hairy lines, no shading for effect.'],
+    ['L', 'Labels',  'Ruled label lines, horizontal, touching the structure, never crossing, the names in a column.'],
+    ['D', 'Detail',  'The main structures are all there, and in the right proportions.'],
+    ['D', 'Detail',  'The finer structures that say which specimen this is.']
+  ];
+  function soldBadge(sp) {
+    var keys = ['s', 'o', 'l', 'd1', 'd2'];
+    var got = keys.map(function (k) { return sp[k] ? 1 : 0; });
+    var score = sp.score != null ? sp.score : got.reduce(function (a, b) { return a + b; }, 0);
+    var box = h('div', 'sold');
+    box.innerHTML =
+      '<div class="sold__row"><b class="sold__score">SOLD ' + score + '/5</b>' +
+      SOLD.map(function (c, i) {
+        return '<span class="sold__c' + (got[i] ? ' is-on' : '') + '">' +
+               '<i>' + c[0] + '</i>' + esc(c[1]) + (got[i] ? ' \u2713' : ' \u2717') + '</span>';
+      }).join('') + '</div>' +
+      '<details class="sold__more"><summary>how this drawing scores, and what the letters mean</summary><ul>' +
+      SOLD.map(function (c, i) {
+        return '<li><b>' + c[0] + ' — ' + esc(c[1]) + '</b> <span class="sold__rule">' + esc(c[2]) + '</span>' +
+               '<br>' + (sp[keys[i]] ? esc(sp[keys[i]]) : '<i>not shown on this drawing</i>') + '</li>';
+      }).join('') + '</ul></details>';
+    return box;
+  }
+
   /* a real scientific drawing, labelled the same way the photograph is */
   function drawingView(dr) {
     var fig = h('figure', 'plan__draw');
@@ -382,6 +423,7 @@
        tall leaves the name column taller than the picture, and the ruled lines were then drawn
        straight across the button and the credit. */
     fig.appendChild(tools);
+    if (dr.sold) fig.appendChild(soldBadge(dr.sold));
     if (dr.caption) fig.appendChild(h('figcaption', null, esc(dr.caption)));
     return { key: 'drawing', tab: 'Scientific drawing', el: fig,
              hint: dr.hint || 'A real drawing of one specimen: outline only, no shading for effect, every label ruled and horizontal.',
