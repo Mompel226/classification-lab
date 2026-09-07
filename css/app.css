@@ -1103,6 +1103,17 @@ svg.lit .kl--all.is-on{opacity:1}
 .diag__wrap summary{cursor:pointer;font-size:12.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--green);padding:10px 0;list-style:none}
 .diag__wrap summary::-webkit-details-marker{display:none}
 .diag__wrap summary::before{content:"▸ "} .diag__wrap[open] summary::before{content:"▾ "}
+/* ---------- the body plan, two ways: my diagram, or a real scientific drawing ---------- */
+.plan__tabs{display:flex;gap:6px;margin:2px 0 8px;flex-wrap:wrap}
+.plan__tab{border:1px solid var(--edge);background:var(--card-2);color:#3C3C3C;border-radius:var(--r-pill);
+  padding:5px 14px;font:inherit;font-size:13.5px;font-weight:600;cursor:pointer;transition:.15s}
+.plan__tab:hover{border-color:var(--green);color:var(--green)}
+.plan__tab.is-on{background:var(--green);border-color:var(--green);color:#fff}
+.plan__hint{margin:0 0 10px;font-size:12.5px;color:var(--grey);line-height:1.45}
+.plan__panel[hidden]{display:none}
+.plan__draw{margin:0}
+.plan__draw figcaption{font-size:13px;color:#3C3C3C;line-height:1.45;margin-top:8px}
+.plan__draw .finder__stage{background:#fff}
 .diag{margin:0}
 .diag__svg{width:100%;max-width:560px;height:auto;display:block;margin:0 auto;font-family:var(--font)}
 .diag figcaption{font-size:13px;color:#3C3C3C;line-height:1.45;margin-top:6px}

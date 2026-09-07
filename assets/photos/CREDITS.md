@@ -68,3 +68,23 @@ Commons, CC BY 4.0, shown full frame at 900 and 1400 px wide.
 from his whole-class feedback on biological drawing (Y11 Plants, "WCF - Bio Drawing Improvement"):
 the first attempt with its faults, and the same slice drawn to the rules. The four labelled diagrams
 of arthropod body plans (`js/learn.js`, `Learn.DIAGRAMS`) and the MRS GREN animations are original to this lab.
+
+### The four arthropod scientific drawings
+
+`draw-insect-*`, `draw-arachnid-*`, `draw-crustacean-*`, `draw-myriapod-*` are the drawings
+Dr Mompel supplied as good examples of the skill Paper 6 examines. Originals are kept in
+`classification-lab-source/drawings/`, and `tools/prep-drawing.py` makes the four published
+files from each: it trims the margin, lifts the paper to white, and never crops the animal.
+
+| File | Source file | What was done to it |
+|---|---|---|
+| `draw-insect-*` | `Wasp.jpg` | trimmed and whitened only |
+| `draw-arachnid-*` | `Arachnids.webp` | panel B (the spider) cropped out; a stray label, the panel letter "B" and three fragments of the neighbouring insets painted out; enlarged with the line contrast restored |
+| `draw-crustacean-*` | `Crustaceans.png` | a solid black block in the bottom-right corner painted out |
+| `draw-myriapod-*` | `Myriapod.jpeg` | turned 90° so it lies along its length like the photograph above it, and enlarged from 76 px wide with the line contrast restored |
+
+**Provenance still to record.** These came from Dr Mompel's teaching collection and their
+original sources are not yet known, so they are credited as "from Dr Mompel's teaching
+collection". Before this repo is treated as fully sourced, each needs its real origin and
+licence written in here, the way every photograph above has. An earlier `Crustaceans.png` that
+carried a visible Dreamstime watermark was NOT published and was replaced by the crab.
