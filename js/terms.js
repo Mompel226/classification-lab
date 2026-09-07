@@ -86,11 +86,11 @@
     ['fronds', 'ferns', '<b>Fronds</b>: the leaves of a fern. Spores are made in sporangia on the underside.'],
     ['fiddlehead', 'ferns', 'A young frond, still unrolling: the <b>fiddlehead</b>.'],
     ['exoskeleton', 'arthropods', 'The <b>exoskeleton</b>: a hard skeleton on the outside, jointed so the animal can move. It cannot grow, so an arthropod moults.'],
-    ['compound eye', 'insects', '<b>Compound eyes</b>: many small lenses, each pointing a slightly different way. Insects have them; spiders do not.'],
-    ['compound eyes', 'insects', '<b>Compound eyes</b>: many small lenses, each pointing a slightly different way. Insects have them; spiders do not.'],
+    ['compound eye', 'insects', '<b>Compound eyes</b>: many small lenses, each pointing a slightly different way. Insects have them, and so do crustaceans; spiders do not — theirs are simple eyes.'],
+    ['compound eyes', 'insects', '<b>Compound eyes</b>: many small lenses, each pointing a slightly different way. Insects have them, and so do crustaceans; spiders do not — theirs are simple eyes.'],
     ['antennae', 'insects', '<b>Antennae</b>: feelers on the head, for touch and smell. One pair in insects and myriapods, two pairs in crustaceans, none in arachnids.'],
     ['cephalothorax', 'arachnids', 'The <b>cephalothorax</b>: an arachnid’s head and thorax fused into one part, carrying all eight legs. The abdomen is the second part.'],
-    ['scales', 'reptiles', 'Dry <b>scales</b>: a waterproof skin, which is why reptiles can live and lay their eggs on dry land.'],
+    ['scales', 'reptiles', 'Dry <b>scales</b>: a waterproof skin, which is why a reptile can live away from water. Its eggs survive on dry land for a separate reason — they have a waterproof shell of their own.'],
     ['feathers', 'birds', '<b>Feathers</b>, and front limbs that are wings. No other group has feathers.'],
     ['fins', 'fish', '<b>Fins</b> and wet scales; gills for breathing under water.'],
     ['gills', 'fish', '<b>Gills</b> take oxygen from water. Fish keep them all their lives; amphibians only as larvae.'],
@@ -99,7 +99,7 @@
     ['mycelium', 'fungi', 'A <b>mycelium</b> is the mass of hyphae that makes up the body of a fungus, mostly hidden in the soil or the food.'],
     ['cilia', 'protoctists', '<b>Cilia</b>: rows of tiny hairs that beat to move a Paramecium through the water.'],
     ['plasmids', 'prokaryotes', 'Small extra rings of DNA in a bacterium: <b>plasmids</b>. The main DNA is one circle, free in the cytoplasm.'],
-    ['protein coat', 'viruses', 'A virus is genetic material inside a <b>protein coat</b>, and nothing else. No cytoplasm, no membrane, no cell.']
+    ['protein coat', 'viruses', 'A virus is genetic material inside a <b>protein coat</b>. That is all the exam asks for: no cytoplasm, no organelles, no cell. Some — HIV and influenza among them — also carry an outer envelope of membrane taken from the last cell they left.']
   ].forEach(function (e) { var p = pic(e[1], e[2]); if (p) PEEK[e[0]] = p; });
 
   /* ---------- words that need a picture of their OWN ----------
