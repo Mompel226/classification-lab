@@ -287,7 +287,7 @@
       pin.addEventListener('click', function () { toggle(i); });
       stage.appendChild(pin); pins.push(pin);
       var li = h('li', 'pins__item' + (sp.extra ? ' pins__item--extra' : ''), '<span class="n">' + (i + 1) + '</span><span class="pins__txt"><b>' + esc(sp.label) + '</b>' +
-        (sp.extra ? '<span class="pins__tag">good to know · not asked in 0610</span>' : '') +
+        (sp.extra ? '<span class="pins__tag">not in 0610</span>' : '') +
         (sp.note ? '<small>' + esc(sp.note) + '</small>' : '') + '</span>' + (opts.zoom ? '<span class="pins__zoom" aria-hidden="true"></span>' : ''));
       li.setAttribute('role', 'button'); li.tabIndex = 0;
       li.addEventListener('click', function () { toggle(i); });
