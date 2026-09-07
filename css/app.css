@@ -1334,10 +1334,11 @@ svg.lit .kl--all.is-on{opacity:1}
 .clado__what>summary::before{content:"\25B8";display:inline-block;margin-right:8px;transition:transform .15s}
 .clado__what[open]>summary::before{transform:rotate(90deg)}
 .clado__what>p{margin:0 0 9px;padding:0 13px;font-size:13.5px;line-height:1.55}
+.clado__what[open]>summary{border-bottom:1px solid var(--edge-2);margin-bottom:10px}
 .clado__what>p:last-child{padding-bottom:12px}
 
 /* ---- the same tree twice: the one figure that explains the two words ---- */
-.ccwrap{margin:14px 0 0;border:1px solid var(--edge);border-radius:12px;background:var(--card);padding:13px 14px 12px}
+.ccwrap{margin:2px 13px 4px;padding:0}
 .cc__title{font-size:10.5px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--grey);margin-bottom:10px}
 .cc{display:grid;grid-template-columns:1fr 1fr;gap:14px}
 @media (max-width:720px){ .cc{grid-template-columns:1fr;gap:16px} }

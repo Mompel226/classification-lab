@@ -588,12 +588,14 @@
   function dna(spec) {
     var box = h('div', 'widget'); if (spec.group) box.setAttribute('data-group', spec.group);
     box.appendChild(head(spec.title || 'DNA base sequences', spec.ask || 'The same stretch of one gene in several organisms. Press the buttons: dots hide what is the same, so the differences stand out; then count them.', 'Press the buttons'));
-    var v = seqView({ rows: spec.rows, title: spec.ruler || 'site' }, { tools: true });
 
-    /* A question FIRST, and the sequences only after it has been answered. Shown the other way
-       round, an alignment is a table to be looked at; asked first, it is the evidence that
-       settles something the student has just committed to. That is the whole point of the
-       widget, and it was missing. */
+    /* The evidence FIRST, then the question, then the numbers to check against. Asked before
+       the sequences are on the screen, a student is guessing from what they already know about
+       chimpanzees; asked after, they have had to look at the DNA — which is the entire point of
+       the activity. */
+    var v = seqView({ rows: spec.rows, title: spec.ruler || 'site' }, { tools: true });
+    box.appendChild(v);
+
     if (spec.question) {
       var q = h('div', 'dnaq');
       q.appendChild(h('p', 'dnaq__ask', mk(spec.question.ask)));
@@ -612,11 +614,9 @@
             else if (x === b) x.classList.add('is-wrong');
           });
           out.className = 'dnaq__out ' + (right ? 'is-ok' : 'is-no');
-          out.innerHTML = (right ? '<b>Now prove it.</b> ' : '<b>Have another look.</b> ') + mk(spec.question.why);
-          v.hidden = false;
-          /* The counts stay shut until the student has done the counting. Handed them with
-             the answer, the alignment below is a table to nod at; kept back, it is the thing
-             they have to work out, and the numbers are what they check themselves against. */
+          out.innerHTML = (right ? '<b>Yes.</b> ' : '<b>Have another look at the rows.</b> ') + mk(spec.question.why);
+          /* the numbers come last, so a student compares them with a count they have already
+             made rather than reading them instead of counting */
           if (spec.question.counts) {
             var d = h('details', 'dnaq__counts');
             d.innerHTML = '<summary>Check your counts</summary>' + mk(spec.question.counts);
@@ -627,21 +627,11 @@
       });
       q.appendChild(opts); q.appendChild(out);
       box.appendChild(q);
-      v.hidden = true;
     }
-    box.appendChild(v);
     if (spec.note) box.appendChild(h('p', 'widget__note', spec.note));
     return box;
   }
 
-  /* ---------- clado: reading a phylogenetic tree ----------
-     Daniel's own question from the Topic 1.2 deck: which primate evolved first, and which two
-     developed most recently from the same common ancestor as humans. A student who has never
-     been told what the junctions and the axis MEAN cannot answer either, so the diagram says
-     so on its face: every junction is a common ancestor, and down the page is back in time.
-
-     Drawn from the data, so a click can light a junction and its two branches together —
-     which is the whole idea a printed tree leaves silent. */
   /* ---------- the same tree twice: cladogram beside phylogenetic tree ----------
      Four apes, one branching order, two drawings. In the first the rungs are evenly spaced
      and mean nothing; in the second each rung sits at the time the split happened. Putting
@@ -809,15 +799,17 @@
     var say = h('p', 'clado__say', 'Every dot is a <b>common ancestor</b> — the point at which one group split into two. Click one.');
     plate.appendChild(say);
     box.appendChild(plate);
-    /* The difference between the two words is a difference you can SEE, so it is drawn: the
-       same four apes, the same branching order, twice. Only the height of the rungs changes.
-       Told in prose it is a paragraph nobody finishes; drawn, it is one glance. */
-    if (spec.compare) box.appendChild(cladoCompare(spec.compare));
-    if (spec.explain) {
-      var d = h('details', 'clado__what');
-      d.innerHTML = '<summary>' + esc(spec.explainTitle || 'So which is this one?') + '</summary>' +
-                    spec.explain.map(function (p) { return '<p>' + mk(p) + '</p>'; }).join('');
-      box.appendChild(d);
+    /* Everything about the two NAMES lives in one fold, and the fold comes after the questions.
+       Standing open between the tree and the task, it stopped a reader dead: they had come to
+       answer two questions and were handed a second diagram to study first. Folded, it is one
+       line until somebody wants it. */
+    var aside = null;
+    if (spec.compare || spec.explain) {
+      aside = h('details', 'clado__what');
+      var inner = '<summary>' + esc(spec.explainTitle || 'Cladogram or phylogenetic tree?') + '</summary>';
+      aside.innerHTML = inner;
+      if (spec.compare) aside.appendChild(cladoCompare(spec.compare));
+      (spec.explain || []).forEach(function (t) { aside.appendChild(h('p', null, mk(t))); });
     }
 
     plate.querySelectorAll('.clado__node').forEach(function (g) {
@@ -864,6 +856,7 @@
       box.appendChild(wrap);
     });
 
+    if (aside) box.appendChild(aside);
     if (spec.note) box.appendChild(h('p', 'widget__note', spec.note));
     return box;
   }
