@@ -85,18 +85,17 @@ This lab's own files: `js/app.js` (wiring, progress, hand-in), `js/plate.js` (th
 `js/learn.js` (the widgets and the drawings), `js/engine-ext.js` (grid, hotspot, and what a question can
 show), `js/terms.js` (the colour language), `css/app.css`.
 
-## Before the next content change ships
+## How a station knows its saved answers are still valid
 
-`js/app.js` still carries `sigLegacy`. It is there only so that the 2026-09-07 deploy, which
-changed no question, reset nobody's saved progress. **Delete it, and the
-`progress[id].sig !== old` branch beside it, before you deploy any change to a station's
-question set.** The fingerprint used to be the first letter of each question type, and `mcq`
-and `match` both begin with m — five of the ten stations mix them, so swapping one for the
-other in the same slot would leave a student's record in place and credit them for a question
-they never saw.
+A saved answer is filed by the question's POSITION in the station, and positions are not
+stable. So each station's record carries a fingerprint of the question set it was made
+against — the number of questions and their types, in order. If that changes, the record is
+dropped and the station is answered again: losing one station's answers is a far smaller harm
+than handing in a score that was never earned.
 
-Deleting it means the next deploy that changes a station's questions resets that station for
-everyone who has already answered it. That is correct and intended — but choose when.
+The fingerprint was once the FIRST LETTER of each type, which could not tell `mcq` from
+`match` — five of these ten stations mix them. That is closed: the whole type name is
+recorded, and any record still written in the old form no longer matches and is dropped.
 
 ## About the pictures
 
