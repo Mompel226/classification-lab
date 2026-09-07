@@ -1326,3 +1326,12 @@ svg.lit .kl--all.is-on{opacity:1}
 .cladoq__out.is-ok{color:var(--green-2)}
 .cladoq__out.is-no{color:var(--red)}
 @media (max-width:620px){ .clado__tip{font-size:9.5px} }
+
+/* the two names for a branching diagram, kept out of the way until asked for */
+.clado__what{margin:11px 0 0;border:1px solid var(--edge);border-radius:10px;background:var(--card-2)}
+.clado__what>summary{cursor:pointer;padding:9px 13px;font-weight:700;font-size:13.5px;list-style:none}
+.clado__what>summary::-webkit-details-marker{display:none}
+.clado__what>summary::before{content:"\25B8";display:inline-block;margin-right:8px;transition:transform .15s}
+.clado__what[open]>summary::before{transform:rotate(90deg)}
+.clado__what>p{margin:0 0 9px;padding:0 13px;font-size:13.5px;line-height:1.55}
+.clado__what>p:last-child{padding-bottom:12px}
