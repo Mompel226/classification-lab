@@ -105,6 +105,15 @@
     return { img: im, base: base, credit: (alt && !spec.img ? esc(alt) + ' · ' : '') + (url ? '<a href="' + esc(url) + '" target="_blank" rel="noopener">' + esc(credit) + '</a>' : esc(credit)) };
   }
 
+  /* every pinned picture on screen, so one listener can lay them all out again */
+  var LIVE = [];
+  window.addEventListener('resize', function () {
+    for (var i = LIVE.length - 1; i >= 0; i--) {
+      if (!LIVE[i].box.isConnected) { LIVE.splice(i, 1); continue; }
+      LIVE[i].layout();
+    }
+  });
+
   /* ---------- pins on a picture, named in a column, joined by ruled lines ----------
      Used by the finder and by the drawings. Nothing is written on the picture: a pin carries a
      number, its name sits in a column beside the picture at the same height as the pin — the
@@ -238,7 +247,10 @@
     });
     var im = stage.querySelector('img');
     if (im) { im.addEventListener('load', layout); if (im.complete) setTimeout(layout, 0); }
-    window.addEventListener('resize', layout);
+    /* One resize listener for the page, not one per widget. Each widget used to add its own
+       and never take it away, so every station a student opened left more behind. LIVE holds
+       the ones still on screen; anything detached is dropped the next time the window moves. */
+    LIVE.push({ box: box, layout: layout });
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(layout);
     setTimeout(layout, 50);
     return { toggle: toggle, layout: layout, count: function () { return Object.keys(found).length; },
