@@ -79,7 +79,7 @@ window.GLOSSARY = [
  },
  {
   "term": "backbone",
-  "def": "The column of small bones (vertebrae) along the back of a vertebrate, around the nerve cord."
+  "def": "The column of small units (vertebrae) along the back of a vertebrate, around the nerve cord. They are bone in most vertebrates and cartilage in sharks and rays."
  },
  {
   "term": "balanced diet",
@@ -171,7 +171,7 @@ window.GLOSSARY = [
  },
  {
   "term": "characteristic",
-  "def": "One of the seven processes that every living organism carries out — movement, respiration, sensitivity, growth, reproduction, excretion and nutrition. All living organisms share all seven, so a characteristic never tells one group from another; that is what a feature does.",
+  "def": "One of the seven processes that every living organism carries out — movement, respiration, sensitivity, growth, reproduction, excretion and nutrition. All living organisms share all seven, so naming a characteristic never picks out a group on its own; that is what a feature does. The way a characteristic is carried out can differ, and nutrition is the example: autotrophic in plants, heterotrophic in animals and fungi.",
   "also": [
    "feature"
   ]
@@ -226,7 +226,7 @@ window.GLOSSARY = [
  },
  {
   "term": "compound eye",
-  "def": "An eye made of many small lenses, each facing a slightly different way. Insects have them."
+  "def": "An eye made of many small lenses, each facing a slightly different way. Insects and crustaceans have them; arachnids have simple eyes instead."
  },
  {
   "term": "concentration",
@@ -404,7 +404,7 @@ window.GLOSSARY = [
  },
  {
   "term": "fish",
-  "def": "A vertebrate with wet scales, fins and gills, which lays soft eggs in water. Its body temperature follows the surroundings."
+  "def": "A vertebrate with wet scales, fins and gills kept all its life. Most lay soft eggs in water and fertilise them outside the body; sharks fertilise internally and many bear live young. Body temperature follows the surroundings."
  },
  {
   "term": "flowering plant",
@@ -577,7 +577,7 @@ window.GLOSSARY = [
  },
  {
   "term": "mammal",
-  "def": "A vertebrate with hair or fur that feeds its young on milk from mammary glands, gives birth to live young, breathes with lungs and keeps a constant body temperature."
+  "def": "A vertebrate with hair or fur that feeds its young on milk from mammary glands, breathes with lungs and keeps a constant body temperature. Fertilisation is internal and almost all give birth to live young; the platypus and the echidnas lay eggs."
  },
  {
   "term": "mammary glands",
@@ -663,7 +663,7 @@ window.GLOSSARY = [
  },
  {
   "term": "nutrition",
-  "def": "The taking in of materials for energy, growth and development. Plants take in carbon dioxide, water and mineral ions; animals take in organic substances and water."
+  "def": "The taking in of materials for energy, growth and development. Plants take in carbon dioxide, water and mineral ions; animals take in organic substances, mineral ions and water."
  },
  {
   "term": "oesophagus",
