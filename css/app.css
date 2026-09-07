@@ -893,7 +893,7 @@ svg.lit .kl--all.is-on{opacity:1}
 @keyframes intake{0%{transform:translateX(0);opacity:0}30%{opacity:1}100%{transform:translateX(22px);opacity:0}}
 
 /* the feature finder: a photograph beside the list of features to find */
-.finder{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(190px,1fr);gap:14px;align-items:start}
+.finder{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(190px,1fr);gap:30px;align-items:start}
 .finder__stage{position:relative;line-height:0;border-radius:var(--r);overflow:visible;background:#1B2226}
 .finder__stage img{width:100%;height:auto;display:block;border-radius:var(--r)}
 .finder__stage img[width]{aspect-ratio:attr(width) / attr(height)}
@@ -1046,8 +1046,8 @@ svg.lit .kl--all.is-on{opacity:1}
    that starts at the pin's rim. A second click takes the line away. */
 .pins{position:relative}
 .pins__lines{position:absolute;left:0;top:0;pointer-events:none;overflow:visible;z-index:3}
-.pins__halo{stroke:#fff;stroke-width:4;stroke-linecap:round;opacity:.9}
-.pins__line{stroke:#14572B;stroke-width:1.5;stroke-linecap:round}
+.pins__halo{stroke:#fff;stroke-width:4;stroke-linecap:round;stroke-linejoin:round;fill:none;opacity:.9}
+.pins__line{stroke:#14572B;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;fill:none}
 .pin{position:absolute;width:22px;height:22px;transform:translate(-50%,-50%);border-radius:50%;border:1.5px solid #fff;z-index:4;
   background:rgba(20,87,43,.62);color:#fff;font:700 11px/1 var(--font);display:grid;place-items:center;cursor:pointer;padding:0;
   box-shadow:0 0 0 0 rgba(255,255,255,.6);animation:pulse 2s ease-out infinite}
@@ -1065,12 +1065,12 @@ svg.lit .kl--all.is-on{opacity:1}
 .pin--fault.is-found{background:#fff;color:var(--bad);border-color:var(--bad)}
 .finder__list.is-column{position:relative}
 .finder__list.is-column .pins__item{left:0;right:0}
-.pins__item{display:flex;gap:9px;align-items:center;font-size:13.5px;line-height:1.35;padding:6px 8px 6px 9px;border:1px solid var(--edge);border-radius:var(--r);background:#fff;transition:border-color .15s,background .15s;cursor:pointer;min-height:44px}
+.pins__item{display:flex;gap:8px;align-items:center;font-size:13px;line-height:1.3;padding:4px 8px 4px 8px;border:1px solid var(--edge);border-radius:var(--r);background:#fff;transition:border-color .15s,background .15s;cursor:pointer;min-height:38px}
 .pins__item b{color:var(--green)}
 .pins__item small{display:block;color:var(--grey);font-size:12px}
 .pins__item .n{flex:none;width:20px;height:20px;border-radius:50%;background:var(--edge-2);color:var(--grey);font-size:11px;font-weight:700;display:grid;place-items:center}
 .pins__txt{flex:1;min-width:0}
-.pins__zoom{display:none;flex:none;width:64px;height:64px;border-radius:8px;border:1px solid var(--edge);background-color:#1B2226;background-repeat:no-repeat}
+.pins__zoom{display:none;flex:none;width:54px;height:54px;border-radius:8px;border:1px solid var(--edge);background-color:#1B2226;background-repeat:no-repeat}
 .pins__item.is-found{border-color:#A9D6BA;background:var(--ok-tint)}
 .pins__item.is-found .n{background:var(--ok);color:#fff}
 .pins__item.is-found .pins__zoom{display:block}

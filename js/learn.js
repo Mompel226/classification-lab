@@ -138,18 +138,36 @@
       var py = spots.map(function (sp) { return sb.top + sp.y / 100 * sb.height - lb.top; });
       var px = spots.map(function (sp) { return sb.left + sp.x / 100 * sb.width - lb.left; });
       order = spots.map(function (sp, i) { return i; }).sort(function (a, b) { return py[a] - py[b]; });
+      /* Every label wants to sit exactly level with its pin, so its leader line comes out
+         horizontal. Only labels that would overlap are moved, and then equally — one up, one
+         down — so the pair stays centred on where they wanted to be and both lines stay close
+         to level. Stacking them downwards, as this did at first, tilted every line below the
+         first one. */
       function place() {
-        var cur = 0, out = [];
-        order.forEach(function (i) { var want = py[i] - H[i] / 2, y = Math.max(want, cur); out[i] = y; cur = y + H[i] + gap; });
+        var top = order.map(function (i) { return py[i] - H[i] / 2; });
+        for (var pass = 0; pass < 80; pass++) {
+          var moved = false;
+          for (var k = 0; k + 1 < order.length; k++) {
+            var over = (top[k] + H[order[k]] + gap) - top[k + 1];
+            if (over > 0.5) { top[k] -= over / 2; top[k + 1] += over / 2; moved = true; }
+          }
+          if (top[0] < 0) { var d = -top[0]; for (var m = 0; m < top.length; m++) top[m] += d; moved = true; }
+          /* The column may run past the foot of the picture. Squeezing it back inside would
+             drag every label away from its pin and tilt the lines, which is the one thing
+             this layout exists to avoid, so the widget simply grows instead. */
+          if (!moved) break;
+        }
+        var out = [];
+        order.forEach(function (i, k) { out[i] = top[k]; });
         return out;
       }
       Y = place();
-      for (var pass = 0; pass < 20; pass++) {
+      for (var pass2 = 0; pass2 < 20; pass2++) {
         var swapped = false;
-        for (var k = 0; k < order.length && !swapped; k++) for (var m = k + 1; m < order.length && !swapped; m++) {
-          var i = order[k], j = order[m];
-          if (crosses({ x: px[i], y: py[i] }, { x: 0, y: Y[i] + H[i] / 2 }, { x: px[j], y: py[j] }, { x: 0, y: Y[j] + H[j] / 2 })) {
-            order[k] = j; order[m] = i; swapped = true;
+        for (var k2 = 0; k2 + 1 < order.length && !swapped; k2++) {
+          var i2 = order[k2], j2 = order[k2 + 1];
+          if (crosses({ x: px[i2], y: py[i2] }, { x: 0, y: Y[i2] + H[i2] / 2 }, { x: px[j2], y: py[j2] }, { x: 0, y: Y[j2] + H[j2] / 2 })) {
+            order[k2] = j2; order[k2 + 1] = i2; swapped = true;
           }
         }
         Y = place();
@@ -170,16 +188,20 @@
         var a = pin.getBoundingClientRect(), c = items[i].getBoundingClientRect();
         var x1 = a.left + a.width / 2 - b.left, y1 = a.top + a.height / 2 - b.top;
         var x2 = c.left - b.left, y2 = c.top + c.height / 2 - b.top;
-        var dx = x2 - x1, dy = y2 - y1, len = Math.sqrt(dx * dx + dy * dy) || 1, r = a.width / 2;
-        x1 += dx / len * r; y1 += dy / len * r;                 /* the line starts at the pin's rim, so the number stays readable */
-        out += '<line class="pins__halo" x1="' + x1 + '" y1="' + y1 + '" x2="' + x2 + '" y2="' + y2 + '"/>' +
-               '<line class="pins__line" x1="' + x1 + '" y1="' + y1 + '" x2="' + x2 + '" y2="' + y2 + '"/>';
+        /* The last stretch into the name is horizontal, the way a ruled label line is drawn,
+           and the rest is one straight run from the pin's rim to where that stretch starts. */
+        var elbow = Math.min(38, Math.max(14, (x2 - x1) * 0.34));
+        var xe = x2 - elbow;
+        var dx = xe - x1, dy = y2 - y1, len = Math.sqrt(dx * dx + dy * dy) || 1, r = a.width / 2 + 1;
+        x1 += dx / len * r; y1 += dy / len * r;                 /* start at the pin's rim, so the number stays readable */
+        var pts = x1 + ',' + y1 + ' ' + (xe > x1 ? xe : x1) + ',' + y2 + ' ' + x2 + ',' + y2;
+        out += '<polyline class="pins__halo" points="' + pts + '"/><polyline class="pins__line" points="' + pts + '"/>';
       });
       lines.innerHTML = out;
     }
     function zoomInto(i) {
       var z = zooms[i], sb = stage.getBoundingClientRect(); if (!z || !opts.zoom || !sb.width) return;
-      var mag = 2.6, w = 64;
+      var mag = 2.6, w = 54;
       z.style.backgroundImage = 'url("' + opts.zoom + '")';
       z.style.backgroundSize = (mag * sb.width) + 'px auto';
       z.style.backgroundPosition = (-(spots[i].x / 100 * mag * sb.width - w / 2)) + 'px ' + (-(spots[i].y / 100 * mag * sb.height - w / 2)) + 'px';
