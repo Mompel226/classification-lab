@@ -38,6 +38,7 @@
     var snow = document.getElementById('snow');
     if (snow) global.TreeDraw.snow(snow, 40);
     if (whole) whole.addEventListener('click', function () { flyHome(); });
+    if (hint) hint.textContent = 'Click a branch to open its station';
     window.addEventListener('resize', function () { if (tag) tag.classList.remove('on'); });
   }
 
@@ -74,19 +75,42 @@
     setTimeout(function () { if (whole) whole.hidden = !tree.isZoomed(); }, still ? 0 : 760);
   }
 
-  /* one group, named and pinned: the student clicked it on the tree or in the text */
+  /* one group, named and pinned: the student clicked it on the tree or in the text.
+     The camera goes to a box round the group itself. Framing everything that is lit does
+     not work here: lighting a tip also lights its kingdom's ring label, which is a wide arc,
+     so the box came out as big as the whole tree and nothing appeared to move. */
+  function boxOf(id) {
+    var g = tree.G[id], size = 380;
+    var a = g.a != null ? g.a : tree.angle(id);
+    var rad = id === 'viruses' ? (g.r || 190) : tree.R.tip;
+    var p = tree.P(a, rad);
+    var box = { x: p[0] - size / 2, y: p[1] - size * 0.42, w: size, h: size };
+    /* keep it inside the drawing, so the flight never shows empty water */
+    box.x = Math.max(tree.FULL.x, Math.min(box.x, tree.FULL.x + tree.FULL.w - size));
+    box.y = Math.max(tree.FULL.y, Math.min(box.y, tree.FULL.y + tree.FULL.h - size));
+    return box;
+  }
   function focus(id) {
     if (!tree || !tree.G[id]) return;
     var r = tree.light(id);
     var g = tree.G[id];
     say(g.label, id === 'viruses' ? (T.viruses && T.viruses.path) || '' : (tree.pathOf(id).join(' · ') || 'Kingdom'), r.colour);
-    tree.flyTo(tree.boxOfLit(260), function () { tree.pin(tree.elFor('group', id), g.label, r.colour); });
+    tree.flyTo(boxOf(id), function () { tree.pin(tree.elFor('group', id), g.label, r.colour); if (whole) whole.hidden = !tree.isZoomed(); });
     if (whole) whole.hidden = false;
   }
 
+  /* "Whole tree" pulls the camera all the way back and leaves the station's branches lit,
+     so the student can see where they are on the tree. It used to call showStation, which
+     flew straight back in to the branch — the button appeared to do nothing. */
   function flyHome() {
     if (!tree) return;
-    if (current) showStation(current); else { tree.clear(); tree.flyTo(tree.FULL); }
+    if (tag) tag.classList.remove('on');
+    tree.flyTo(tree.FULL, function () { if (whole) whole.hidden = !tree.isZoomed(); });
+    if (whole) whole.hidden = true;
+    if (current) {
+      var ids = groupsOf(current);
+      say(current.name, ids.length ? 'the whole tree · ' + ids.length + (ids.length === 1 ? ' branch lit' : ' branches lit') : (current.plateNote || 'the whole tree'), null);
+    }
   }
 
   global.Plate = { init: init, showStation: showStation, focus: focus, home: flyHome,
