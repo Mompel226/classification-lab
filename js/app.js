@@ -203,6 +203,7 @@
 
   function paintLearn(pane, st) {
     if (window.Terms) window.Terms.setStation(st.id);
+    WIDGET_CTX.station = st.id;      /* a widget that keeps state needs a name that survives a repaint */
     var M = window.Terms ? window.Terms.mark : esc;
     var widgets = (st.learn && st.learn.interact) || [];
 
