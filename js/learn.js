@@ -280,7 +280,7 @@
     if (spec.diagram && DIAGRAMS[spec.diagram]) {
       var dg = DIAGRAMS[spec.diagram];
       var dwrap = h('details', 'diag__wrap'); dwrap.open = true;
-      dwrap.innerHTML = '<summary>The same body plan as a labelled diagram</summary>';
+      dwrap.innerHTML = '<summary>' + esc(dg.summary || 'The same body plan as a labelled diagram') + '</summary>';
       var fig = h('figure', 'diag', dg.svg +
         (/grey label/.test(dg.caption) ? '<p class="diag__key"><b>Green</b> — a word you need for 0610. <i>Grey</i> — not needed; it is there only so the picture makes sense.</p>' : '') +
         '<figcaption>' + esc(dg.caption) + '</figcaption>');
@@ -608,6 +608,24 @@
         lab(210, 56, 340, 30, 'antennae — two pairs, one short') + lab(196, 58, 340, 52, 'eye on a stalk', 'extra') + lab(326, 84, 340, 96, 'claw — the first pair of legs') +
         lab(220, 100, 340, 124, 'exoskeleton over the body') + lab(294, 174, 340, 180, 'walking legs — four more pairs') + lab(170, 206, 340, 232, 'the abdomen is folded under the body') +
         '<text class="diag__title" x="8" y="280">A crab, from above</text></svg>' },
+    virus: { summary: 'What no photograph can show, drawn', caption: 'A virus, drawn: genetic material — DNA or RNA — inside a coat made of protein units, and nothing else. No cytoplasm, no membrane, no cell. Neither feature can be seen in a photograph, which is why this is drawn. The grey label is not asked for by 0610.',
+      svg: '<svg viewBox="0 0 520 250" class="diag__svg" role="img" aria-label="A labelled diagram of a virus: genetic material inside a protein coat">' +
+        (function () { var s2 = '', i, a, x, y;
+          for (i = 0; i < 18; i++) { a = i * 20 * Math.PI / 180; x = 150 + 78 * Math.sin(a); y = 118 - 78 * Math.cos(a);
+            s2 += '<circle class="diag__unit" cx="' + f1(x) + '" cy="' + f1(y) + '" r="13"/>'; }
+          return s2; })() +
+        '<circle class="diag__inside" cx="150" cy="118" r="66"/>' +
+        '<path class="diag__gene" d="M112 96 C132 78 158 118 178 100 C198 82 206 122 186 138 C166 154 140 126 120 142 C104 155 96 122 112 96 Z"/>' +
+        (function () { var s3 = '', i, a, x1, y1, x2, y2;
+          for (i = 0; i < 18; i++) { a = (i * 20 + 10) * Math.PI / 180; x1 = 150 + 88 * Math.sin(a); y1 = 118 - 88 * Math.cos(a); x2 = 150 + 102 * Math.sin(a); y2 = 118 - 102 * Math.cos(a);
+            s3 += '<path class="diag__spike" d="M' + f1(x1) + ' ' + f1(y1) + ' L' + f1(x2) + ' ' + f1(y2) + '"/><circle class="diag__spike-t" cx="' + f1(x2) + '" cy="' + f1(y2) + '" r="4"/>'; }
+          return s3; })() +
+        lab(150, 52, 300, 44, 'protein coat — many protein units') +
+        lab(168, 118, 300, 106, 'genetic material — DNA or RNA') +
+        lab(214, 178, 300, 168, 'surface proteins', null, true) +
+        '<path class="diag__scale" d="M60 214 H240 M60 208 V220 M240 208 V220"/>' +
+        '<text class="diag__scalelab" x="150" y="234" text-anchor="middle">about 100 nm across</text>' +
+        '<text class="diag__title" x="8" y="242">A virus, drawn</text></svg>' },
     myriapod: { caption: 'A centipede, from above: a head with one pair of antennae, then many similar segments with one pair of jointed legs on each (a millipede has two pairs). The grey labels are there to complete the picture; 0610 does not ask for them.',
       svg: '<svg viewBox="0 0 450 210" class="diag__svg" role="img" aria-label="A labelled diagram of a centipede from above">' +
         '<g class="diag__legs">' + legs20() + '<path d="M332 105 L364 90 L392 96"/><path d="M332 105 L364 120 L392 114"/></g>' +
