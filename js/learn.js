@@ -642,6 +642,83 @@
 
      Drawn from the data, so a click can light a junction and its two branches together —
      which is the whole idea a printed tree leaves silent. */
+  /* ---------- the same tree twice: cladogram beside phylogenetic tree ----------
+     Four apes, one branching order, two drawings. In the first the rungs are evenly spaced
+     and mean nothing; in the second each rung sits at the time the split happened. Putting
+     them side by side is the whole explanation — the shapes differ, the ORDER does not. */
+  function cladoCompare(c) {
+    var tips = c.tips || [], splits = c.splits || [];       /* splits: [{at: mya, joins: i}] oldest last */
+    var W = 300, H = 214, PAD = 46, TOP = 42, FOOT = 30;
+    var xOf = function (i) { return PAD + i * ((W - 2 * PAD) / Math.max(1, tips.length - 1)); };
+    var maxMya = c.maxMya || 18;
+
+    function draw(rowY, kind, top) {
+      var T = top == null ? TOP : top;
+      /* rowY(k) gives the y of split k; everything else is shared, which is the point */
+      var out = '';
+      var xm = [];                                          /* x of each split, right to left */
+      for (var k = splits.length - 1; k >= 0; k--) xm[k] = 0;
+      /* the ladder: split 0 joins the last two tips, each later one adds the tip to its left */
+      var acc = (xOf(tips.length - 2) + xOf(tips.length - 1)) / 2;
+      xm[0] = acc;
+      for (var k = 1; k < splits.length; k++) { acc = (xOf(tips.length - 2 - k) + acc) / 2; xm[k] = acc; }
+      /* tips */
+      tips.forEach(function (t, i) {
+        var joins = i >= tips.length - 2 ? 0 : (tips.length - 2 - i);
+        out += '<line class="cc__tw" x1="' + xOf(i) + '" y1="' + T + '" x2="' + xOf(i) + '" y2="' + rowY(joins) + '"/>';
+        out += '<text class="cc__tip" x="' + xOf(i) + '" y="' + (TOP - 9) + '">' + esc(t) + '</text>';
+      });
+      /* rungs */
+      for (var k = 0; k < splits.length; k++) {
+        var y = rowY(k);
+        var left = k === 0 ? xOf(tips.length - 2) : xm[k - 1];
+        var right = k === 0 ? xOf(tips.length - 1) : xOf(tips.length - 2 - k);
+        out += '<line class="cc__bar" x1="' + Math.min(left, right) + '" y1="' + y + '" x2="' + Math.max(left, right) + '" y2="' + y + '"/>';
+        if (k > 0) out += '<line class="cc__bar" x1="' + xm[k - 1] + '" y1="' + rowY(k - 1) + '" x2="' + xm[k - 1] + '" y2="' + y + '"/>';
+        out += '<circle class="cc__dot' + (kind === 'time' ? ' cc__dot--time' : '') + '" cx="' + xm[k] + '" cy="' + y + '" r="4.5"/>';
+        if (kind === 'time')
+          out += '<text class="cc__mya" x="' + (xm[k] - 9) + '" y="' + (y + 4) + '">' + splits[k].at + '</text>';
+      }
+      out += '<line class="cc__bar" x1="' + xm[splits.length - 1] + '" y1="' + rowY(splits.length - 1) +
+             '" x2="' + xm[splits.length - 1] + '" y2="' + (rowY(splits.length - 1) + 14) + '"/>';
+      return out;
+    }
+
+    var even = function (k) { return TOP + 34 + k * 34; };
+    var timeY = function (k) { return TOP + 18 + (splits[k].at / maxMya) * (H - TOP - FOOT - 26); };
+
+    var wrap = h('div', 'cc');
+    wrap.innerHTML =
+      '<div class="cc__one">' +
+        '<div class="cc__h">Cladogram</div>' +
+        '<svg class="cc__svg" viewBox="0 0 ' + W + ' ' + H + '" aria-label="The same four apes drawn as a cladogram, rungs evenly spaced">' +
+          draw(even, 'even') +
+          '<text class="cc__foot" x="' + (W / 2) + '" y="' + (H - 8) + '">rungs evenly spaced — the heights mean nothing</text>' +
+        '</svg>' +
+      '</div>' +
+      '<div class="cc__one">' +
+        '<div class="cc__h cc__h--time">Phylogenetic tree</div>' +
+        '<svg class="cc__svg" viewBox="0 0 ' + W + ' ' + H + '" aria-label="The same four apes drawn as a phylogenetic tree, each split at the time it happened">' +
+          '<line class="cc__axis" x1="30" y1="' + (TOP + 18) + '" x2="30" y2="' + (H - FOOT + 2) + '"/>' +
+          /* a scale with real ticks, or the numbers on the rungs are just decoration */
+          [0, 5, 10, 15].map(function (t) {
+            var y = TOP + 18 + (t / maxMya) * (H - TOP - FOOT - 26);
+            return '<line class="cc__tick" x1="30" y1="' + y + '" x2="' + (W - 8) + '" y2="' + y + '"/>' +
+                   '<text class="cc__ticks" x="26" y="' + (y + 3.5) + '">' + t + '</text>';
+          }).join('') +
+          '<text class="cc__axist" x="9" y="' + ((TOP + H) / 2) + '" transform="rotate(-90 9 ' + ((TOP + H) / 2) + ')">million years ago</text>' +
+          '<text class="cc__now" x="' + (W - 8) + '" y="' + (TOP + 13) + '">today</text>' +
+          draw(timeY, 'time', TOP + 18) +
+          '<text class="cc__foot" x="' + (W / 2) + '" y="' + (H - 8) + '">each rung sits at the time that split happened</text>' +
+        '</svg>' +
+      '</div>';
+    var note = h('p', 'cc__say', mk(c.say || ''));
+    var box2 = h('div', 'ccwrap');
+    box2.appendChild(h('div', 'cc__title', esc(c.title || 'The same four apes, drawn twice')));
+    box2.appendChild(wrap); box2.appendChild(note);
+    return box2;
+  }
+
   function clado(spec) {
     var box = h('div', 'widget'); if (spec.group) box.setAttribute('data-group', spec.group);
     box.appendChild(head(spec.title || 'Reading a phylogenetic tree',
@@ -732,10 +809,13 @@
     var say = h('p', 'clado__say', 'Every dot is a <b>common ancestor</b> — the point at which one group split into two. Click one.');
     plate.appendChild(say);
     box.appendChild(plate);
-    /* the two names for a diagram like this, and which one this is */
+    /* The difference between the two words is a difference you can SEE, so it is drawn: the
+       same four apes, the same branching order, twice. Only the height of the rungs changes.
+       Told in prose it is a paragraph nobody finishes; drawn, it is one glance. */
+    if (spec.compare) box.appendChild(cladoCompare(spec.compare));
     if (spec.explain) {
       var d = h('details', 'clado__what');
-      d.innerHTML = '<summary>' + esc(spec.explainTitle || 'Cladogram or phylogenetic tree?') + '</summary>' +
+      d.innerHTML = '<summary>' + esc(spec.explainTitle || 'So which is this one?') + '</summary>' +
                     spec.explain.map(function (p) { return '<p>' + mk(p) + '</p>'; }).join('');
       box.appendChild(d);
     }

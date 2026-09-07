@@ -1335,3 +1335,25 @@ svg.lit .kl--all.is-on{opacity:1}
 .clado__what[open]>summary::before{transform:rotate(90deg)}
 .clado__what>p{margin:0 0 9px;padding:0 13px;font-size:13.5px;line-height:1.55}
 .clado__what>p:last-child{padding-bottom:12px}
+
+/* ---- the same tree twice: the one figure that explains the two words ---- */
+.ccwrap{margin:14px 0 0;border:1px solid var(--edge);border-radius:12px;background:var(--card);padding:13px 14px 12px}
+.cc__title{font-size:10.5px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--grey);margin-bottom:10px}
+.cc{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media (max-width:720px){ .cc{grid-template-columns:1fr;gap:16px} }
+.cc__one{min-width:0}
+.cc__h{font-size:13.5px;font-weight:800;color:var(--teal);margin:0 0 2px;letter-spacing:.01em}
+.cc__h--time{color:var(--amber)}
+.cc__svg{width:100%;height:auto;display:block;background:var(--card-2);border:1px solid var(--edge-2);border-radius:9px}
+.cc__tip{font:700 10px var(--font);fill:var(--ink);text-anchor:middle}
+.cc__tw,.cc__bar{stroke:#9FB3BE;stroke-width:1.4;fill:none}
+.cc__dot{fill:#fff;stroke:var(--teal);stroke-width:1.6}
+.cc__dot--time{fill:var(--amber);stroke:var(--amber)}
+.cc__mya{font:800 9px var(--font);fill:var(--amber);text-anchor:end}
+.cc__axis{stroke:#CFD9DE;stroke-width:1.1}
+.cc__axist{font:700 8px var(--font);fill:var(--grey);letter-spacing:.07em;text-anchor:middle;text-transform:uppercase}
+.cc__foot{font:600 9.5px var(--font);fill:var(--grey);text-anchor:middle}
+.cc__tick{stroke:#E6DFD1;stroke-width:1;stroke-dasharray:2 3}
+.cc__ticks{font:700 8px var(--font);fill:var(--grey);text-anchor:end}
+.cc__now{font:700 8px var(--font);fill:var(--grey);text-anchor:end;letter-spacing:.06em;text-transform:uppercase}
+.cc__say{margin:11px 0 0;font-size:13.5px;line-height:1.55;color:var(--ink)}
