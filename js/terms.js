@@ -218,7 +218,7 @@
   function jump(list, st) { list.forEach(function (w) { JUMP[w] = st; }); }
   jump(['movement','respiration','sensitivity','growth','reproduction','excretion','nutrition','characteristics','characteristic','metabolism','dry mass','stimulus','stimuli'], 'alive');
   jump(['species','genus','genera','binomial system','binomial','binomial name','binomial names','scientific name','scientific names','classification','classification system',
-        'classification systems','classify','classified','classifying','taxonomy','taxon','taxa','phylum','phyla','class','order','family','linnaeus','fertile offspring','interbreed','feature','features','morphology','anatomy'], 'naming');
+        'classification systems','classify','classified','classifying','taxonomy','taxon','taxa','phylum','phyla','class','order','family','linnaeus','fertile offspring','interbreed','feature','features'], 'naming');
   jump(['dna','base sequence','base sequences','bases','evolutionary relationships','evolutionary relationship','common ancestor','ancestor','ancestry'], 'dna');
   jump(['dichotomous key','dichotomous keys'], 'keys');
   jump(['kingdom','kingdoms','five kingdoms','animal','animals','animal kingdom','plant kingdom','fungus','fungi','fungal','prokaryote','prokaryotes','prokaryotic','bacterium','bacteria','bacterial',
@@ -308,7 +308,10 @@
         act = ' data-gloss="' + esc(DEFINED[low]) + '" tabindex="0" role="button"';
         cls = ' is-gloss';
       }
-      if (e[2]) return '<b class="tc tc--' + cat + cls + '"' + act + '><i class="tc__n">' + CATS[cat].n + '</i>' + m + '</b>';
+      /* A category chip prints its letter inside the same element, so reading the term off
+         textContent yields "Nnutrition". Carry the word itself. */
+      if (e[2]) return '<b class="tc tc--' + cat + cls + '"' + act + (act ? ' data-term="' + esc(m) + '"' : '') +
+        '><i class="tc__n">' + CATS[cat].n + '</i>' + m + '</b>';
       return '<b class="t t--' + cat + cls + '"' + act + '>' + m + '</b>';
     }));
   }
