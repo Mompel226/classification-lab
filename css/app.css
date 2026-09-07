@@ -1287,3 +1287,37 @@ svg.lit .kl--all.is-on{opacity:1}
 .lt__remember{margin:8px 0 0;padding:7px 10px;border-left:3px solid var(--amber);
   background:var(--amber-tint);border-radius:0 8px 8px 0;font-size:13.5px;line-height:1.45}
 .lt__remember>b{color:var(--amber);font-weight:800;letter-spacing:.02em}
+
+/* the answer's evidence, kept shut until the student has done the counting */
+.dnaq__counts{margin:10px 0 0;border:1px solid var(--edge);border-radius:10px;background:var(--card-2)}
+.dnaq__counts>summary{cursor:pointer;padding:9px 13px;font-weight:700;font-size:13.5px;list-style:none}
+.dnaq__counts>summary::-webkit-details-marker{display:none}
+.dnaq__counts>summary::before{content:"\25B8";display:inline-block;margin-right:8px;transition:transform .15s}
+.dnaq__counts[open]>summary::before{transform:rotate(90deg)}
+.dnaq__counts>p,.dnaq__counts{font-size:13.5px;line-height:1.5}
+.dnaq__counts>*:not(summary){padding:0 13px 11px}
+
+/* ---- clado: a phylogenetic tree you can interrogate ---- */
+.clado{margin-top:10px;border:1px solid var(--edge);border-radius:12px;background:var(--card-2);padding:12px 10px 10px}
+.clado__svg{width:100%;height:auto;display:block}
+.clado__tip{font:600 11.5px var(--font);fill:var(--ink);text-anchor:middle}
+.clado__tw{stroke:#9FB3BE;stroke-width:1.4}
+.clado__tw.is-on{stroke:var(--green-2);stroke-width:2.6}
+.clado__bar,.clado__stem{stroke:#9FB3BE;stroke-width:1.4;fill:none}
+.clado__node{cursor:pointer}
+.clado__node:focus-visible{outline:2px solid var(--green);outline-offset:2px}
+.clado__dot{fill:#FFFFFF;stroke:#7E96A3;stroke-width:1.6}
+.clado__node:hover .clado__dot{stroke:var(--green-2);r:7}
+.clado__node.is-on .clado__dot{fill:var(--amber);stroke:var(--amber)}
+.clado__node.is-on .clado__bar,.clado__node.is-on .clado__stem{stroke:var(--amber);stroke-width:2.6}
+.clado__axis{stroke:#C6D2D8;stroke-width:1.2}
+.clado__arrow{fill:#C6D2D8}
+.clado__axist{font:700 9.5px var(--font);fill:var(--grey);letter-spacing:.08em;text-anchor:middle;text-transform:uppercase}
+.clado__say{margin:10px 2px 0;font-size:13.5px;line-height:1.5;color:var(--ink)}
+.cladoq{margin-top:13px}
+.cladoq__ask{margin:0 0 8px;font-size:14px;font-weight:650;line-height:1.45}
+.cladoq__opts{display:flex;flex-wrap:wrap;gap:7px}
+.cladoq__out{margin:9px 0 0;font-size:13.5px;line-height:1.5}
+.cladoq__out.is-ok{color:var(--green-2)}
+.cladoq__out.is-no{color:var(--red)}
+@media (max-width:620px){ .clado__tip{font-size:9.5px} }

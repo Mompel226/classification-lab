@@ -155,3 +155,12 @@ quality" — and a close-up whose whole job is to show a texture has to be sharp
 | File | Source | Photographer | Licence |
 |---|---|---|---|
 | `peek-wet-scales-*` | [Erwin NFH rainbow trout scales 7 March 2022.png](https://commons.wikimedia.org/wiki/File:Erwin_NFH_rainbow_trout_scales_7_March_2022.png) — rainbow trout scales, Erwin National Fish Hatchery | Ryan Hagerty/USFWS | Public domain |
+
+| File | Source | Photographer | Licence |
+|---|---|---|---|
+| `peek-cotyledon-*` | [Germinació Phaseolus4.JPG](https://commons.wikimedia.org/wiki/File:Germinaci%C3%B3_Phaseolus4.JPG) — a bean germinating, cotyledons above ground | Victor M. Vicente Selvas | Public domain |
+| `peek-whale-tail-*` | [Humpback Whale Tail Flukes 2 (221991224).jpg](https://commons.wikimedia.org/wiki/File:Humpback_Whale_Tail_Flukes_2_(221991224).jpg) — a humpback's tail clear of the water | Tony Hisgett | CC BY 2.0 |
+
+The pumpkin-seedling cotyledon picture it replaces was too dark to read, and a whale sentence
+was showing a perch's dorsal fin. Reusing a photograph for a second animal is worse than
+finding a new one.

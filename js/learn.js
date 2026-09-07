@@ -612,8 +612,16 @@
             else if (x === b) x.classList.add('is-wrong');
           });
           out.className = 'dnaq__out ' + (right ? 'is-ok' : 'is-no');
-          out.innerHTML = (right ? '<b>Yes — and now prove it.</b> ' : '<b>Have another look.</b> ') + mk(spec.question.why);
+          out.innerHTML = (right ? '<b>Now prove it.</b> ' : '<b>Have another look.</b> ') + mk(spec.question.why);
           v.hidden = false;
+          /* The counts stay shut until the student has done the counting. Handed them with
+             the answer, the alignment below is a table to nod at; kept back, it is the thing
+             they have to work out, and the numbers are what they check themselves against. */
+          if (spec.question.counts) {
+            var d = h('details', 'dnaq__counts');
+            d.innerHTML = '<summary>Check your counts</summary>' + mk(spec.question.counts);
+            q.appendChild(d);
+          }
         });
         opts.appendChild(b);
       });
@@ -622,6 +630,119 @@
       v.hidden = true;
     }
     box.appendChild(v);
+    if (spec.note) box.appendChild(h('p', 'widget__note', spec.note));
+    return box;
+  }
+
+  /* ---------- clado: reading a phylogenetic tree ----------
+     Daniel's own question from the Topic 1.2 deck: which primate evolved first, and which two
+     developed most recently from the same common ancestor as humans. A student who has never
+     been told what the junctions and the axis MEAN cannot answer either, so the diagram says
+     so on its face: every junction is a common ancestor, and down the page is back in time.
+
+     Drawn from the data, so a click can light a junction and its two branches together —
+     which is the whole idea a printed tree leaves silent. */
+  function clado(spec) {
+    var box = h('div', 'widget'); if (spec.group) box.setAttribute('data-group', spec.group);
+    box.appendChild(head(spec.title || 'Reading a phylogenetic tree',
+      spec.ask || 'Every place two lines meet is a common ancestor. Down the page is back in time. Click a junction to light the groups that share it.', 'Click a junction'));
+
+    var tips = spec.tips || [];                 /* left to right along the top */
+    var nodes = spec.nodes || [];               /* {at: depth 1..n, from: tip index, to: tip index, of: 'name'} */
+    var W = 640, PAD = 46, TOP = 56, ROW = 30;
+    var depth = nodes.reduce(function (a, n) { return Math.max(a, n.at); }, 1);
+    var H = TOP + (depth + 1) * ROW + 26;
+    var xOf = function (i) { return PAD + i * ((W - 2 * PAD) / Math.max(1, tips.length - 1)); };
+    var yOf = function (d) { return TOP + d * ROW; };
+
+    var svg = '<svg class="clado__svg" viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="' +
+      esc(spec.alt || 'A phylogenetic tree of the primates') + '">';
+    /* time arrow down the left */
+    svg += '<line class="clado__axis" x1="16" y1="' + (TOP - 12) + '" x2="16" y2="' + (H - 18) + '"/>' +
+           '<polygon class="clado__arrow" points="16,' + (H - 12) + ' 12,' + (H - 22) + ' 20,' + (H - 22) + '"/>' +
+           '<text class="clado__axist" x="10" y="' + ((TOP + H) / 2) + '" transform="rotate(-90 10 ' + ((TOP + H) / 2) + ')">longer ago</text>';
+    /* each tip drops from its label to its first junction */
+    tips.forEach(function (t, i) {
+      var first = nodes.filter(function (n) { return i >= n.from && i <= n.to; })
+                       .reduce(function (a, n) { return Math.min(a, n.at); }, 99);
+      svg += '<line class="clado__tw" data-tip="' + i + '" x1="' + xOf(i) + '" y1="' + (TOP - 16) +
+             '" x2="' + xOf(i) + '" y2="' + yOf(first) + '"/>';
+      /* "New World monkey" beside "Old World monkey" collides at this width, so a long name
+         is set over two lines rather than shrunk until nobody can read it */
+      var words = String(t).split(' ');
+      if (words.length > 1 && t.length > 9) {
+        var half = words.length > 2 ? words.slice(0, words.length - 1).join(' ') : words[0];
+        var rest = words.length > 2 ? words[words.length - 1] : words.slice(1).join(' ');
+        svg += '<text class="clado__tip" x="' + xOf(i) + '" y="' + (TOP - 36) + '">' + esc(half) + '</text>' +
+               '<text class="clado__tip" x="' + xOf(i) + '" y="' + (TOP - 24) + '">' + esc(rest) + '</text>';
+      } else {
+        svg += '<text class="clado__tip" x="' + xOf(i) + '" y="' + (TOP - 24) + '">' + esc(t) + '</text>';
+      }
+    });
+    /* each junction: the bar, and the stem down to the one below it */
+    nodes.forEach(function (n, k) {
+      var y = yOf(n.at);
+      svg += '<g class="clado__node" data-node="' + k + '" tabindex="0" role="button" aria-label="' + esc(n.of || 'common ancestor') + '">';
+      svg += '<line class="clado__bar" x1="' + xOf(n.from) + '" y1="' + y + '" x2="' + xOf(n.to) + '" y2="' + y + '"/>';
+      var below = nodes.filter(function (o) { return o.at > n.at && o.from <= n.from && o.to >= n.to; })
+                       .sort(function (a, b) { return a.at - b.at; })[0];
+      var mid = (xOf(n.from) + xOf(n.to)) / 2;
+      if (below) svg += '<line class="clado__stem" x1="' + mid + '" y1="' + y + '" x2="' + mid + '" y2="' + yOf(below.at) + '"/>';
+      svg += '<circle class="clado__dot" cx="' + mid + '" cy="' + y + '" r="6"/>';
+      svg += '</g>';
+    });
+    svg += '</svg>';
+
+    var plate = h('div', 'clado');
+    plate.innerHTML = svg;
+    var say = h('p', 'clado__say', 'Every dot is a <b>common ancestor</b> — the point at which one group split into two. Click one.');
+    plate.appendChild(say);
+    box.appendChild(plate);
+
+    plate.querySelectorAll('.clado__node').forEach(function (g) {
+      function light() {
+        plate.querySelectorAll('.clado__node').forEach(function (x) { x.classList.remove('is-on'); });
+        plate.querySelectorAll('.clado__tw').forEach(function (x) { x.classList.remove('is-on'); });
+        g.classList.add('is-on');
+        var n = nodes[+g.getAttribute('data-node')];
+        for (var i = n.from; i <= n.to; i++) {
+          var tw = plate.querySelector('.clado__tw[data-tip="' + i + '"]');
+          if (tw) tw.classList.add('is-on');
+        }
+        say.innerHTML = '<b>' + esc(tips[n.from]) + '</b> to <b>' + esc(tips[n.to]) + '</b> all descend from this one ancestor' +
+          (n.of ? ' — ' + esc(n.of) : '') + '. Anything joining lower down shares an older ancestor still.';
+      }
+      g.addEventListener('click', light);
+      g.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); light(); } });
+    });
+
+    /* the two questions */
+    (spec.questions || []).forEach(function (q) {
+      var wrap = h('div', 'cladoq');
+      wrap.appendChild(h('p', 'cladoq__ask', mk(q.ask)));
+      var opts = h('div', 'cladoq__opts');
+      var out = h('p', 'cladoq__out');
+      var done = false;
+      q.options.forEach(function (o) {
+        var b = h('button', 'wbtn', esc(o)); b.type = 'button';
+        b.addEventListener('click', function () {
+          if (done) return;
+          done = true;
+          Array.prototype.forEach.call(opts.children, function (x) {
+            x.disabled = true;
+            if (x.textContent === q.answer) x.classList.add('is-right');
+            else if (x === b) x.classList.add('is-wrong');
+          });
+          var right = o === q.answer;
+          out.className = 'cladoq__out ' + (right ? 'is-ok' : 'is-no');
+          out.innerHTML = (right ? '<b>Yes.</b> ' : '<b>Not that one.</b> ') + mk(q.why);
+        });
+        opts.appendChild(b);
+      });
+      wrap.appendChild(opts); wrap.appendChild(out);
+      box.appendChild(wrap);
+    });
+
     if (spec.note) box.appendChild(h('p', 'widget__note', spec.note));
     return box;
   }
@@ -1219,7 +1340,7 @@
   };
   function svgFor(name) { return DIAGRAMS[name] ? DIAGRAMS[name].svg : ''; }
 
-  var MAKERS = { keyrules: keyrules, letters: letters, finder: finder, drawphotos: drawphotos, dna: dna, keyrun: keyrun, keybad: keybad, binomial: binomial, kingdoms: kingdoms, table: table, photo: photo };
+  var MAKERS = { clado: clado, keyrules: keyrules, letters: letters, finder: finder, drawphotos: drawphotos, dna: dna, keyrun: keyrun, keybad: keybad, binomial: binomial, kingdoms: kingdoms, table: table, photo: photo };
   global.Learn = {
     /* Drop the entries whose picture has left the page. Called from paintPanel AFTER the old
        station is cleared and BEFORE the new one is built — the only moment when isConnected
