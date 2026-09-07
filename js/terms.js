@@ -63,7 +63,7 @@
               'spore','spores','magnification','specimen','specimens','metabolism','dry mass','stimulus','stimuli','organism','organisms',
               'feature','features','characteristic','characteristics','exoskeleton','backbone','antenna','antennae','compound eye','compound eyes',
               'cephalothorax','abdomen','thorax','scales','feathers','fins','gills','lungs','moist skin','lateral line','segment','segments','segmented',
-              'jointed legs','jointed limbs','wings','cilia','flagellum','flagella','habitat','xylem','phloem','sporangium','sporangia','fiddlehead',
+              'jointed legs','jointed limbs','wings','wing','wet scales','dry scales','cilia','flagellum','flagella','habitat','xylem','phloem','sporangium','sporangia','fiddlehead',
               'parallel veins','network of veins','net-like veins','waterproof','internal fertilisation','external fertilisation','warm-blooded','cold-blooded',
               'mammary glands','milk','multicellular','unicellular','single-celled','parasite','parasites','pathogen','pathogens']
   };
@@ -110,7 +110,7 @@
      'The <b>cephalothorax</b>: the front body part of a spider, head and thorax fused into one, with all eight legs attached to it. The rounded abdomen behind it is the second part.',
      'Garden spider · Joe Holt · CC BY 4.0 · Wikimedia Commons'],
     ['scales', 'peek-scales-900.jpg',
-     'Dry <b>scales</b>, close up on an iguana: a waterproof skin, which is why a reptile can live away from water. Its eggs survive on dry land for a separate reason — they have a waterproof shell of their own.',
+     '<b>Scales</b> come in two kinds. These are a reptile’s: horny, dry and waterproof, which is why it can live away from water. A fish’s are thin, wet and slippery. A reptile’s eggs survive on dry land for a separate reason — they have a waterproof shell of their own.',
      'Green iguana · Wilfredor · CC0 · Wikimedia Commons'],
     ['feathers', 'peek-feathers-900.jpg',
      '<b>Feathers</b>, close up on the wing of a bald eagle: separate, overlapping, and light. No other group has them, and the front limbs they grow on are wings.',
@@ -163,7 +163,42 @@
     ['vascular bundles', 'peek-vascular-900.jpg',
      '<b>Vascular bundles</b>: the plumbing of a plant, seen in a slice across the stem. Scattered through the stem in monocotyledons, in a ring in dicotyledons.',
      'Vascular bundle in a monocotyledon stem · CC0 · Wikimedia Commons']
+,
+    ['wings', 'peek-wing-insect-900.jpg',
+     '<b>Wings</b> are not one structure. In an insect they are thin membranes stiffened by veins, growing from the thorax — this is a wasp’s. In a bird or a bat the wing IS the front limb, with bones inside it. They do the same job and are built quite differently, which is why a shared feature is not by itself evidence of relationship.',
+     'Common wasp · bemma · CC BY 4.0 · Wikimedia Commons'],
+    ['wing', 'peek-wing-insect-900.jpg',
+     'An insect <b>wing</b>: a thin membrane stiffened by veins, growing from the thorax. A bird’s wing is a different thing — the front limb itself, with bones inside.',
+     'Common wasp · bemma · CC BY 4.0 · Wikimedia Commons'],
+    ['wet scales', 'peek-wet-scales-900.jpg',
+     '<b>Wet scales</b>: thin overlapping plates in the skin of a fish, kept slippery by mucus. Not the same as a reptile’s dry scales, which are horny and waterproof.',
+     'Perca fluviatilis · Enrico Tomschke · CC BY 4.0 · Wikimedia Commons'],
+    ['dry scales', 'peek-scales-900.jpg',
+     '<b>Dry scales</b>: a horny waterproof skin, here on an iguana, which is why a reptile can live away from water. A fish’s scales are wet and slippery instead.',
+     'Green iguana · Wilfredor · CC0 · Wikimedia Commons']
   ].forEach(function (e) { PEEK[e[0]] = [e[1], e[2], e[3]]; });
+
+  /* ---------- the same word, different station ----------
+     A link that is right in one place can be wrong in another. Clicking "wings" beside the
+     eagle sent a reader to the arthropods station, which teaches that a bird's wing is an
+     arthropod feature — and this lab spends a whole station saying that a shared feature is
+     not evidence of relationship. CONTEXT[station][word] replaces whatever the word would
+     otherwise do, and only on that station. */
+  var CONTEXT = {
+    vertebrates: {
+      'wings': ['peek-wing-bird-900.jpg',
+        'A bird\u2019s <b>wings</b> ARE its front limbs: the same bones as your arm, carrying feathers. An insect\u2019s wings are something else entirely, thin membranes growing from the thorax, and the animal still has all six of its legs. Same job, different structure.',
+        'Bald eagle \u00b7 Andy Morffew \u00b7 CC BY 2.0 \u00b7 Wikimedia Commons'],
+      'wing': ['peek-wing-bird-900.jpg',
+        'A bird\u2019s <b>wing</b> is its front limb \u2014 the same bones as your arm, carrying feathers.',
+        'Bald eagle \u00b7 Andy Morffew \u00b7 CC BY 2.0 \u00b7 Wikimedia Commons']
+    },
+    arthropods: {
+      'gills': ['peek-gills-900.jpg',
+        '<b>Gills</b> take oxygen from water. This drawing is a FISH\u2019s \u2014 five arches of filaments in a chamber behind the gill cover. Crustaceans have gills too, doing the same job, but they are different structures and they sit tucked under the edge of the carapace.',
+        'US Fish Commission \u00b7 public domain \u00b7 Wikimedia Commons']
+    }
+  };
 
   /* The people. A scientist named in the text is clickable: their portrait, what they did,
      and why it still shows up in the names students write. */
@@ -191,7 +226,11 @@
         'cell wall','cell walls','nucleus','nuclei','chloroplast','chloroplasts','cellulose','multicellular','unicellular','single-celled','circular dna',
         'autotrophic nutrition','heterotrophic nutrition','saprotrophic nutrition','parasitic nutrition','autotrophic','heterotrophic','saprotrophic','autotroph','autotrophs','heterotroph','heterotrophs','photosynthesis'], 'kingdoms');
   jump(['vertebrate','vertebrates','mammal','mammals','bird','birds','reptile','reptiles','amphibian','amphibians','fish','fishes','backbone','lungs','warm-blooded','cold-blooded','mammary glands','milk','lateral line','internal fertilisation','external fertilisation'], 'vertebrates');
-  jump(['arthropod','arthropods','myriapod','myriapods','insect','insects','arachnid','arachnids','crustacean','crustaceans','centipede','centipedes','millipede','millipedes','spider','spiders','crab','crabs','abdomen','thorax','segment','segments','segmented','jointed legs','jointed limbs','wings'], 'arthropods');
+  jump(['arthropod','arthropods','myriapod','myriapods','insect','insects','arachnid','arachnids','crustacean','crustaceans','centipede','centipedes','millipede','millipedes','spider','spiders','crab','crabs','abdomen','thorax','segment','segments','segmented','jointed legs','jointed limbs'], 'arthropods');
+  /* 'wings' is deliberately NOT in that list. A bird's wing and a wasp's wing do the same job
+     and are not the same structure, and this lab teaches exactly that: similar features are
+     not evidence of relationship. The word opens a picture instead, and on the vertebrates
+     station it opens a bird's wing. */
   jump(['plant','plants','fern','ferns','flowering plant','flowering plants','monocotyledon','monocotyledons','monocot','monocots','dicotyledon','dicotyledons','dicot','dicots','cotyledon','cotyledons',
         'spore','spores','sporangium','sporangia','xylem','phloem','parallel veins','network of veins','net-like veins'], 'plants');
   jump(['virus','viruses','host cell','host cells'], 'viruses');
@@ -251,9 +290,11 @@
       var first = !quiet && !(seen && seen[low]);
       if (seen) seen[low] = true;
       if (!first) return m;
-      if (PEEK[low]) {
-        act = ' data-peek="' + PEEK[low][0] + '" data-note="' + esc(PEEK[low][1]) + '"' +
-              (PEEK[low][2] ? ' data-credit="' + esc(PEEK[low][2]) + '"' : '') + ' tabindex="0" role="button"';
+      var ctx = (CONTEXT[here] || {})[low];
+      if (ctx || PEEK[low]) {
+        var pk = ctx || PEEK[low];
+        act = ' data-peek="' + pk[0] + '" data-note="' + esc(pk[1]) + '"' +
+              (pk[2] ? ' data-credit="' + esc(pk[2]) + '"' : '') + ' tabindex="0" role="button"';
         cls = ' is-peek';
       } else if (JUMP[low] === here) {
         /* the station being read is the one that teaches this word: no link, no glossary
