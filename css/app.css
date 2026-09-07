@@ -273,7 +273,7 @@ h1,h2,h3,h4{margin:0;font-weight:700;line-height:1.25}
   overflow:hidden;animation:peekIn .14s ease-out
 }
 @keyframes peekIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
-.peek img{width:100%;max-width:100%;display:block;background:#fff}
+.peek img{width:100%;height:auto;max-width:100%;display:block;background:#fff}
 /* Two views of one thing, side by side — a real tooth beside the drawing of
    it, or the two radiographs together. They stack on a narrow screen, where
    side-by-side would make each half too small to read. */
@@ -623,6 +623,12 @@ h1,h2,h3,h4{margin:0;font-weight:700;line-height:1.25}
   box-shadow:var(--shadow-lg);opacity:0;pointer-events:none;transition:.28s;z-index:60;max-width:88vw;text-align:center
 }
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+#updBar{bottom:calc(var(--rail-h, 64px) + 66px)}  /* clear of a station-complete toast */
+.bootnote{margin:40px 0;color:var(--grey);font-size:15px}
+/* <picture> is display:inline by default. .finder__stage is position:relative and every pin
+   is placed from stage.getBoundingClientRect() as a percentage, so an inline wrapper's
+   baseline gap would drift every pin off the feature it names. */
+picture{display:block;line-height:0}
 
 /* ---------- Responsive ---------- */
 @media (max-width:1000px){
