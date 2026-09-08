@@ -1292,16 +1292,6 @@ svg.lit .kl--all.is-on{opacity:1}
 .lt__remember{margin:8px 0 0;padding:7px 10px;border-left:3px solid var(--amber);
   background:var(--amber-tint);border-radius:0 8px 8px 0;font-size:13.5px;line-height:1.45}
 .lt__remember>b{color:var(--amber);font-weight:800;letter-spacing:.02em}
-
-/* the answer's evidence, kept shut until the student has done the counting */
-.dnaq__counts{margin:10px 0 0;border:1px solid var(--edge);border-radius:10px;background:var(--card-2)}
-.dnaq__counts>summary{cursor:pointer;padding:9px 13px;font-weight:700;font-size:13.5px;list-style:none}
-.dnaq__counts>summary::-webkit-details-marker{display:none}
-.dnaq__counts>summary::before{content:"\25B8";display:inline-block;margin-right:8px;transition:transform .15s}
-.dnaq__counts[open]>summary::before{transform:rotate(90deg)}
-.dnaq__counts>p,.dnaq__counts{font-size:13.5px;line-height:1.5}
-.dnaq__counts>*:not(summary){padding:0 13px 11px}
-
 /* ---- clado: a phylogenetic tree you can interrogate ---- */
 .clado{margin-top:10px;border:1px solid var(--edge);border-radius:12px;background:var(--card-2);padding:12px 10px 10px}
 .clado__svg{width:100%;height:auto;display:block}
