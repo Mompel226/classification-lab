@@ -581,6 +581,11 @@
   function syncEnabled() { return !!((window.LAB_CONFIG || {}).submitUrl && window.LabSync); }
 
   function haveToken() { return !!(signIn && signIn.token && signIn.exp * 1000 > Date.now() + 60000); }
+  /* A Google sign-in lasts about an hour and a lab takes longer than that, so by the time a
+     student presses Hand in the token they hold is often dead. Try once for a fresh one. If
+     Google will not give it, the hand-in goes anyway and the server's refusal is shown, which
+     beats a dead end. */
+  var askedAgain = false;
 
   /* Ask Google for a sign-in, then come back and finish. One Tap can be refused by the
      browser, so say what to do instead rather than leaving a dead button. */
@@ -617,8 +622,11 @@
     })
       .then(function (r) { return r.ok ? r.json() : null; })
       .then(function (j) {
+        /* `why:'not signed in'` comes from the token check, NOT the class list — the records
+           are not consulted about who is on it here. Saying "you are not on the class list"
+           sent students to their teacher over a sign-in that had simply run out. */
         if (!j || !j.ok) { toast(j && j.why === 'not signed in'
-          ? 'That account is not on your teacher\u2019s class list, so nothing is kept for it.'
+          ? 'Your sign-in has run out. Sign in again, then press Sync.'
           : 'Could not reach your teacher\u2019s records just now.'); return; }
         var mine = j.labs && j.labs[LAB_ID];
         applySnap(mine && mine.snap, quiet);
@@ -705,12 +713,36 @@
       var nf = document.getElementById('subName'); if (nf) nf.focus();
     }
   }
+  /* What the server says when it will not record a hand-in. Its own words are shown for
+     anything not listed, so a new answer is never swallowed. */
+  function whyNot(reply) {
+    var r = String(reply || '').trim();
+    if (/^not recorded: sign-in is not set up/.test(r))
+      return 'Your work was sent, but the records are not set up to accept sign-ins yet, so nothing was saved. Show your teacher this message.';
+    if (/^not recorded: not signed in/.test(r))
+      return 'Your sign-in had run out, so nothing was saved. Sign in again and press Hand in once more.';
+    if (/^not recorded: not on this class list/.test(r))
+      return 'That account is not on the class list, so nothing was saved for it. Your code is still your receipt.';
+    if (/^busy/.test(r))
+      return 'The records were busy. Press Hand in once more.';
+    if (/^rejected/.test(r))
+      return 'The records would not accept this hand-in: ' + r.replace(/^rejected:\s*/, '') + '.';
+    if (/^unknown lab/.test(r))
+      return 'The records do not know this lab yet. Show your teacher this message.';
+    return 'Nothing was saved. The records answered: \u201c' + r + '\u201d.';
+  }
+
   function doSubmit() {
     var name = signIn ? signIn.name : ((document.getElementById('subName') || {}).value || '');
     var form = (document.getElementById('subForm') || {}).value || '';
     var msg = document.getElementById('subMsg');
     var go = document.getElementById('subGo');
     if (name.trim().length < 3) { msg.className = 'submsg no'; msg.textContent = 'Please type your full name.'; return; }
+    if (signIn && !haveToken() && !askedAgain) {
+      askedAgain = true;
+      msg.className = 'submsg'; msg.textContent = 'Your sign-in has run out \u2014 asking Google for a new one\u2026';
+      signInThen(doSubmit); return;
+    }
     var t = totals();
     var code = completionCode(name, form, t.done + '/' + t.total);
     var perStation = {};
@@ -727,17 +759,19 @@
     var url = (window.LAB_CONFIG || {}).submitUrl;
     go.disabled = true;
     msg.className = 'submsg'; msg.textContent = url ? 'Sending…' : 'Generating your code…';
-    /* The POST goes out with mode:'no-cors', so the reply is opaque: this page cannot tell a
-       real 200 from an error page or a school portal's login screen. It never claims a
-       delivery it cannot know. */
-    function finish(sent, offline) {
+    /* `why` is the server saying it would not record this, in words a student can act on;
+       `blind` means the reply could not be read at all and nothing should be claimed. */
+    function finish(sent, offline, why, blind) {
       go.disabled = false; go.style.display = 'none';
-      msg.className = 'submsg ok';
-      var head = sent ? '<b>Handed in.</b> '
+      msg.className = why ? 'submsg no' : 'submsg ok';
+      var head = why ? '<b>Not saved.</b> '
+               : sent ? '<b>Handed in.</b> '
                : offline ? '<b>You are offline — nothing was sent yet.</b> '
                : '<b>Could not reach the server.</b> ';
-      var tail = sent
-        ? (signIn ? 'If you are on Dr Mompel&rsquo;s class list it should now be in his records. Your code is your receipt — keep it whether or not it arrived.' : 'Your code is your receipt — keep it.')
+      var tail = why ? why
+        : sent
+        ? (blind ? 'Your work went out, but this device could not read the answer, so keep your code as the receipt.'
+                 : (signIn ? 'It is now in Dr Mompel&rsquo;s records. Your code is your receipt — keep it.' : 'Your code is your receipt — keep it.'))
         : offline ? 'Your work is saved on this device. Keep the code, and hand in again once you are back online.'
         : 'Paste this into the Google Classroom assignment to hand in.';
       msg.innerHTML = head + 'Your completion code is<div class="code">' + code + '</div>' + tail;
@@ -745,8 +779,26 @@
     }
     if (!url) { finish(false); return; }
     if (navigator.onLine === false) { finish(false, true); return; }
-    fetch(url, { method:'POST', mode:'no-cors', headers:{ 'Content-Type':'text/plain;charset=utf-8' }, body:JSON.stringify(payload) })
-      .then(function () { finish(true); }).catch(function () { finish(false); });
+    /* The reply is read, not assumed. This used to go out with mode:'no-cors', which made the
+       answer unreadable, so the page said "Handed in." whether the work had been recorded or
+       refused — the one failure a student can do nothing about because they never hear of it.
+       Sync already reads this same endpoint, so reading it here costs nothing. If the read
+       itself fails, fall back to the old blind send rather than losing the hand-in. */
+    fetch(url, { method:'POST', mode:'cors',
+                 headers:{ 'Content-Type':'text/plain;charset=utf-8' },
+                 body:JSON.stringify(payload) })
+      .then(function (r) { return r.text(); })
+      .then(function (reply) {
+        if (/^recorded/.test(String(reply || '').trim())) { finish(true); return; }
+        finish(true, false, whyNot(reply));
+      })
+      .catch(function () {
+        fetch(url, { method:'POST', mode:'no-cors',
+                     headers:{ 'Content-Type':'text/plain;charset=utf-8' },
+                     body:JSON.stringify(payload) })
+          .then(function () { finish(true, false, null, true); })
+          .catch(function () { finish(false); });
+      });
   }
 
   /* ---------- clicking a highlighted word ---------- */
