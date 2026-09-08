@@ -314,6 +314,11 @@ window.GLOSSARY = [
   "def": "The first part of the small intestine, where bile and pancreatic juice are added to the chyme."
  },
  {
+  "term": "ectotherm",
+  "def": "An animal whose body temperature follows the temperature of its surroundings — reptiles, amphibians and fish. It warms up by moving into the sun and cools by moving into shade, so it needs far less food than an endotherm of the same size. The older word is cold-blooded, which is misleading: a lizard in the sun is warmer than you are.",
+  "ext": true
+ },
+ {
   "term": "egestion",
   "def": "Egestion is the passing out of food that has not been digested or absorbed, as faeces, through the anus. It is not excretion, because that material was never inside the body’s cells."
  },
@@ -329,6 +334,11 @@ window.GLOSSARY = [
  {
   "term": "enamel",
   "def": "The hard outer layer of a tooth, made of calcium salts; it is the hardest substance in the body and protects the tooth from wear and acid."
+ },
+ {
+  "term": "endotherm",
+  "def": "An animal that keeps a constant body temperature using heat released by its own metabolism — mammals and birds. It stays active in the cold, and pays for it: an endotherm needs several times the food an ectotherm of the same size needs. The older word is warm-blooded.",
+  "ext": true
  },
  {
   "term": "enterocyte",

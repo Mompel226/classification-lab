@@ -186,3 +186,18 @@ is thousands of hyphae, so showing the same few threads for both taught the oppo
 | `peek-plasmodium-*` | [Microphotographs of Plasmodium vivax in Giemsa-stained thin blood films.jpg](https://commons.wikimedia.org/wiki/File:Microphotographs_of_Plasmodium_vivax_in_Giemsa-stained_thin_blood_films.jpg) — one panel: a parasite inside a red blood cell | Chavatte, Tan, Snounou & Lin | CC BY 4.0 |
 | `peek-mycelium-*` | [Hongo en placa de petri.jpg](https://commons.wikimedia.org/wiki/File:Hongo_en_placa_de_petri.jpg) — a colony spreading across a dish | Bjjff | CC0 |
 
+### Three photographs that replaced a reuse or a drawing
+
+The teacher's rule, and it is the right one: reusing a picture for a second structure is worse
+than finding a new one, and a drawing is not a photograph.
+
+| File | Source | Photographer | Licence |
+|---|---|---|---|
+| `peek-compound-eye-*` | [Big eyed fly ZS PMax UDR.jpg](https://commons.wikimedia.org/wiki/File:Big_eyed_fly_2020-08-28-10.45.55_ZS_PMax_UDR_(50287567652).jpg) — one eye filling the frame, the ommatidia a visible mesh | USGS Bee Inventory and Monitoring Lab | Public domain |
+| `peek-cephalothorax-*` | [Lycosa erythrognatha female dorsal.jpg](https://commons.wikimedia.org/wiki/File:Lycosa_erythrognatha_female_dorsal.jpg) — a wolf spider from above, both body parts and all eight legs | João P. Burini | CC BY 4.0 |
+| `peek-gills-*` | [Pike head anathomy.jpg](https://commons.wikimedia.org/wiki/File:Pike_head_anathomy.jpg) — one gill arch out of a pike, filaments and all | Gammazoni | Public domain |
+
+The gill arch replaced a nineteenth-century engraving. It is cropped from a dissection plate of
+eight numbered parts; the crop starts to the RIGHT of that plate's own "2." so the number is
+out of frame — nothing was painted over, and the specimen is untouched.
+
