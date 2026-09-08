@@ -614,14 +614,9 @@
             else if (x === b) x.classList.add('is-wrong');
           });
           out.className = 'dnaq__out ' + (right ? 'is-ok' : 'is-no');
+          /* No list of the counts afterwards: "Count the differences" above will do it for
+             them, so printing the same four numbers again is the answer twice. */
           out.innerHTML = (right ? '<b>Yes.</b> ' : '<b>Have another look at the rows.</b> ') + mk(spec.question.why);
-          /* the numbers come last, so a student compares them with a count they have already
-             made rather than reading them instead of counting */
-          if (spec.question.counts) {
-            var d = h('details', 'dnaq__counts');
-            d.innerHTML = '<summary>Check your counts</summary>' + mk(spec.question.counts);
-            q.appendChild(d);
-          }
         });
         opts.appendChild(b);
       });
