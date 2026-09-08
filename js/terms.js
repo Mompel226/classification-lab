@@ -98,17 +98,17 @@
      'The <b>exoskeleton</b>, close up: a hard skeleton on the OUTSIDE, here the carapace of a crab. It is jointed so the animal can move, and it cannot grow — an arthropod has to shed it and harden a new one.',
      'Four-toothed shore crab · Museums Victoria · CC BY 4.0 · Wikimedia Commons'],
     ['compound eye', 'peek-compound-eye-900.jpg',
-     '<b>Compound eyes</b>: the two large curved eyes on this wasp\u2019s head. Each is made of many small lenses, every one pointing a slightly different way. Insects and crustaceans have them; spiders have simple eyes instead.',
-     'Common wasp · bemma · CC BY 4.0 · Wikimedia Commons'],
+     'A <b>compound eye</b>: not one lens but hundreds packed together, each a tiny eye of its own looking in its own direction. The fine mesh across this fly\u2019s eye is those units \u2014 every insect has a pair, and it is one of the features that puts an animal among the insects.',
+     'Big-eyed fly \u00b7 USGS Bee Inventory and Monitoring Lab \u00b7 public domain \u00b7 Wikimedia Commons'],
     ['compound eyes', 'peek-compound-eye-900.jpg',
-     '<b>Compound eyes</b>: many small lenses, each pointing a slightly different way. Insects and crustaceans have them; spiders have simple eyes instead.',
-     'Common wasp · bemma · CC BY 4.0 · Wikimedia Commons'],
+     '<b>Compound eyes</b>: not one lens but hundreds packed together, each a tiny eye looking in its own direction \u2014 the fine mesh you can see across this fly\u2019s eye. Insects have a pair of them.',
+     'Big-eyed fly \u00b7 USGS Bee Inventory and Monitoring Lab \u00b7 public domain \u00b7 Wikimedia Commons'],
     ['antennae', 'peek-antenna-900.jpg',
      '<b>Antennae</b>: feelers on the head, for touch and smell — here one of a centipede\u2019s pair, jointed bead by bead. One pair in insects and myriapods, two pairs in crustaceans, none in arachnids.',
      'Scolopendra canidens · Denis Potanin · CC BY 4.0 · Wikimedia Commons'],
     ['cephalothorax', 'peek-cephalothorax-900.jpg',
-     'The <b>cephalothorax</b>: the front body part of a spider, head and thorax fused into one, with all eight legs attached to it. The rounded abdomen behind it is the second part.',
-     'Garden spider · Joe Holt · CC BY 4.0 · Wikimedia Commons'],
+     'The <b>cephalothorax</b>: the front body part of an arachnid, head and thorax fused into one, carrying the eyes and all eight legs. The rounded abdomen behind it is the second part \u2014 two body parts in all, where an insect has three.',
+     'Wolf spider, Lycosa erythrognatha \u00b7 Jo\u00e3o P. Burini \u00b7 CC BY 4.0 \u00b7 Wikimedia Commons'],
     ['scales', 'peek-scales-900.jpg',
      '<b>Scales</b> come in two kinds. These are a reptile’s: horny, dry and waterproof, which is why it can live away from water. A fish’s are thin, wet and slippery. A reptile’s eggs survive on dry land for a separate reason — they have a waterproof shell of their own.',
      'Green iguana · Wilfredor · CC0 · Wikimedia Commons'],
@@ -119,8 +119,8 @@
      '<b>Fins</b>: a fan of thin rays in a web of skin — this is the spiny dorsal fin of a perch, ray by ray. Fins move a fish and hold it steady.',
      'Yellow perch, Perca flavescens · USFWS Mountain-Prairie · public domain · Wikimedia Commons'],
     ['gills', 'peek-gills-900.jpg',
-     '<b>Gills</b>: five arches of feathery filaments sitting in a chamber on each side of the head, behind the gill cover. Water is taken in at the mouth and pushed out over them, and oxygen passes into the blood. Fish keep gills all their lives; amphibians only as larvae.',
-     'US Fish Commission · public domain · Wikimedia Commons'],
+     '<b>Gills</b>: this is one gill arch lifted out of a pike, with its rows of fine red filaments. Water taken in at the mouth is pushed out over them and oxygen passes into the blood in the filaments, which are red because they are packed with it. A fish keeps its gills all its life; an amphibian has them only as a tadpole.',
+     'Pike dissection \u00b7 Gammazoni \u00b7 public domain \u00b7 Wikimedia Commons'],
     ['moist skin', 'peek-moist-skin-900.jpg',
      'A smooth, <b>moist skin</b>, close up on a tree frog. It takes in oxygen as well as the lungs do, and it dries out — which is why amphibians stay near water and lay their eggs in it.',
      'Red-eyed tree frog · Careyjamesbalboa · public domain · Wikimedia Commons'],
@@ -215,8 +215,8 @@
     },
     arthropods: {
       'gills': ['peek-gills-900.jpg',
-        '<b>Gills</b> take oxygen from water. This drawing is a FISH\u2019s \u2014 five arches of filaments in a chamber behind the gill cover. Crustaceans have gills too, doing the same job, but they are different structures and they sit tucked under the edge of the carapace.',
-        'US Fish Commission \u00b7 public domain \u00b7 Wikimedia Commons']
+        '<b>Gills</b> take oxygen from water. This is one arch out of a FISH, with its rows of red filaments. Crustaceans have gills too, doing the same job, but they are different structures and they sit tucked under the edge of the carapace.',
+        'Pike dissection \u00b7 Gammazoni \u00b7 public domain \u00b7 Wikimedia Commons']
     }
   };
 

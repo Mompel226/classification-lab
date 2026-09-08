@@ -1091,7 +1091,13 @@ svg.lit .kl--all.is-on{opacity:1}
 .pins__item small{display:block;color:var(--grey);font-size:12px}
 .pins__item .n{flex:none;width:20px;height:20px;border-radius:50%;background:var(--edge-2);color:var(--grey);font-size:11px;font-weight:700;display:grid;place-items:center}
 .pins__txt{flex:1;min-width:0;overflow-wrap:anywhere}
-.pins__zoom{display:none;flex:none;width:64px;height:64px;border-radius:8px;border:1px solid var(--edge);background-color:#1B2226;background-repeat:no-repeat}
+.pins__zoom{display:none;flex:none;width:64px;height:64px;border-radius:8px;border:1px solid var(--edge);background-color:#1B2226;background-repeat:no-repeat;position:relative;overflow:hidden}
+/* an overlay ON the close-up, never a retouch of the photograph itself */
+.pins__mark{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+/* dashed on purpose: it traces the feature without covering it, so a student still sees
+   the real thing between the dashes */
+.pins__markl{stroke:rgba(255,255,255,.9);stroke-width:2;stroke-linecap:round;stroke-dasharray:5 4;
+  filter:drop-shadow(0 0 1.6px rgba(0,0,0,.9))}
 .pins__item.is-found{border-color:#A9D6BA;background:var(--green-tint)}
 .pins__item.is-found .n{background:var(--green-2);color:#fff}
 .pins__item.is-found .pins__zoom{display:block}

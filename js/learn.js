@@ -288,7 +288,15 @@
       stage.appendChild(pin); pins.push(pin);
       var li = h('li', 'pins__item' + (sp.extra ? ' pins__item--extra' : ''), '<span class="n">' + (i + 1) + '</span><span class="pins__txt"><b>' + esc(sp.label) + '</b>' +
         (sp.extra ? '<span class="pins__tag">not in 0610</span>' : '') +
-        (sp.note ? '<small>' + esc(sp.note) + '</small>' : '') + '</span>' + (opts.zoom ? '<span class="pins__zoom" aria-hidden="true"></span>' : ''));
+        (sp.note ? '<small>' + esc(sp.note) + '</small>' : '') + '</span>' + (opts.zoom ? '<span class="pins__zoom" aria-hidden="true">' +
+          /* Some structures are real but faint — a fish\u2019s lateral line is a row of pores you
+             have to be told to look for. A spot can carry `mark`, drawn over its close-up in the
+             close-up\u2019s own percentage coordinates, so the picture is never retouched: the line
+             sits ON the photograph as an overlay, the way a pointer would. */
+          (sp.mark ? '<svg class="pins__mark" viewBox="0 0 100 100" preserveAspectRatio="none">' +
+            (sp.mark.line || []).map(function (l) {
+              return '<line class="pins__markl" x1="' + l[0] + '" y1="' + l[1] + '" x2="' + l[2] + '" y2="' + l[3] + '"/>';
+            }).join('') + '</svg>' : '') + '</span>' : ''));
       li.setAttribute('role', 'button'); li.tabIndex = 0;
       li.addEventListener('click', function () { toggle(i); });
       li.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(i); } });
