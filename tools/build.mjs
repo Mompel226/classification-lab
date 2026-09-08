@@ -132,10 +132,25 @@ for (const st of STATIONS) {
     if (t === 'blank') {
       p.text = a.text;
       p.hints = {}; p.k = {};
+      /* `anyOrder: [["1","2","3"]]` says those gaps are the items of a list, so the sentence
+         does not fix which item goes where — and the hint that would fix it is hidden behind a
+         button. Every gap keeps its OWN accepted words here; the page pairs each gap with a
+         different item of the list at marking time. Pouring the group's words into one shared
+         pool would look simpler and would be wrong: it would accept the same item named twice,
+         "fats" in one gap and "lipids" in another. */
+      const anyOrder = a.anyOrder || [];
+      const groupIx = g => anyOrder.findIndex(grp => grp.indexOf(g) >= 0);
       for (const [g, spec] of Object.entries(a.answers)) {
         p.hints[g] = spec.hint;
-        p.k[g] = await Promise.all(spec.accept.map(x => H([id, 'g' + g, norm(x)])));
+        /* The label a gap's words are hashed under normally carries the gap number, which would
+           lock each word to one box. An item of a list is hashed under the GROUP's label instead,
+           so the page can test a word typed in any gap of the group against it. Must stay
+           byte-identical to the labels in marking.js. */
+        const gi = groupIx(g);
+        const label = gi < 0 ? 'g' + g : 'grp' + gi + ':' + g;
+        p.k[g] = await Promise.all(spec.accept.map(x => H([id, label, norm(x)])));
       }
+      if (anyOrder.length) p.anyOrder = anyOrder;
       v.answers = Object.fromEntries(Object.entries(a.answers).map(([g, sp]) => [g, sp.accept[0]]));
 
     } else if (t === 'mcq') {
