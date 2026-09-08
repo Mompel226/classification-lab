@@ -119,8 +119,8 @@
      '<b>Fins</b>: a fan of thin rays in a web of skin — this is the spiny dorsal fin of a perch, ray by ray. Fins move a fish and hold it steady.',
      'Yellow perch, Perca flavescens · USFWS Mountain-Prairie · public domain · Wikimedia Commons'],
     ['gills', 'peek-gills-900.jpg',
-     '<b>Gills</b>: this is one gill arch lifted out of a pike, with its rows of fine red filaments. Water taken in at the mouth is pushed out over them and oxygen passes into the blood in the filaments, which are red because they are packed with it. A fish keeps its gills all its life; an amphibian has them only as a tadpole.',
-     'Pike dissection \u00b7 Gammazoni \u00b7 public domain \u00b7 Wikimedia Commons'],
+     '<b>Gills</b> sit in a chamber on each side of the head, behind the gill cover. This carp was born with a short cover, so its gills are in plain view \u2014 rows of fine red filaments, red because they are packed with blood. Water is taken in at the mouth and pushed out over them, and oxygen passes into the blood as it goes. A fish keeps its gills all its life; an amphibian has them only as a tadpole.',
+     'Common carp \u00b7 Guitardude012 \u00b7 CC BY 3.0 \u00b7 Wikimedia Commons'],
     ['moist skin', 'peek-moist-skin-900.jpg',
      'A smooth, <b>moist skin</b>, close up on a tree frog. It takes in oxygen as well as the lungs do, and it dries out — which is why amphibians stay near water and lay their eggs in it.',
      'Red-eyed tree frog · Careyjamesbalboa · public domain · Wikimedia Commons'],
@@ -215,8 +215,8 @@
     },
     arthropods: {
       'gills': ['peek-gills-900.jpg',
-        '<b>Gills</b> take oxygen from water. This is one arch out of a FISH, with its rows of red filaments. Crustaceans have gills too, doing the same job, but they are different structures and they sit tucked under the edge of the carapace.',
-        'Pike dissection \u00b7 Gammazoni \u00b7 public domain \u00b7 Wikimedia Commons']
+        '<b>Gills</b> take oxygen from water. These are a FISH\u2019s, in the chamber behind the gill cover \u2014 this carp was born with a short cover, so they show. Crustaceans have gills too, doing the same job, but they are different structures and they sit tucked under the edge of the carapace.',
+        'Common carp \u00b7 Guitardude012 \u00b7 CC BY 3.0 \u00b7 Wikimedia Commons']
     }
   };
 
