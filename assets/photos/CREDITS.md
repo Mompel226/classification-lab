@@ -195,9 +195,15 @@ than finding a new one, and a drawing is not a photograph.
 |---|---|---|---|
 | `peek-compound-eye-*` | [Big eyed fly ZS PMax UDR.jpg](https://commons.wikimedia.org/wiki/File:Big_eyed_fly_2020-08-28-10.45.55_ZS_PMax_UDR_(50287567652).jpg) — one eye filling the frame, the ommatidia a visible mesh | USGS Bee Inventory and Monitoring Lab | Public domain |
 | `peek-cephalothorax-*` | [Lycosa erythrognatha female dorsal.jpg](https://commons.wikimedia.org/wiki/File:Lycosa_erythrognatha_female_dorsal.jpg) — a wolf spider from above, both body parts and all eight legs | João P. Burini | CC BY 4.0 |
-| `peek-gills-*` | [Pike head anathomy.jpg](https://commons.wikimedia.org/wiki/File:Pike_head_anathomy.jpg) — one gill arch out of a pike, filaments and all | Gammazoni | Public domain |
+| `peek-gills-*` | [Carp gill defect.jpg](https://commons.wikimedia.org/wiki/File:Carp_gill_defect.jpg) — a live carp's head with the gill chamber in plain view | Guitardude012 | CC BY 3.0 |
 
-The gill arch replaced a nineteenth-century engraving. It is cropped from a dissection plate of
-eight numbered parts; the crop starts to the RIGHT of that plate's own "2." so the number is
-out of frame — nothing was painted over, and the specimen is untouched.
+Gills went through two replacements. It was a nineteenth-century engraving, which is not a
+photograph; then a gill arch lifted out of a pike, which showed the organ but not where it
+lives. It is now a whole carp's head with the gills in view, because the teacher wanted the
+relationship — head, cover, gills underneath — not the organ on its own.
+
+That carp was born with a SHORT GILL COVER, which is why nothing has to be held open, and the
+note says so: a reader must not think an uncovered gill chamber is normal. A photograph of a
+person lifting an operculum would have been the first choice, but every one on Commons is
+CC BY-SA, which this estate cannot publish.
 
