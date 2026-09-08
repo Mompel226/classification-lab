@@ -891,7 +891,21 @@
      branches are drawn with an empty box at the end of each — that fork is the choice in front
      of them. The branch NOT taken stays on the page, greyed, because seeing what you ruled out
      is half of what a key is for. */
-  function keyTree(key, path, current) {
+  /* Turn a step's first statement into the question a yes/no tree asks. "Body covered in
+     feathers" becomes "Body covered in feathers?", yes takes the a branch and no the b — which
+     is what a dichotomous key means, said the other way round. A step can override it with its
+     own `q` where a better phrasing exists. */
+  function asQuestion(st) {
+    if (st.q) return st.q;
+    var t = String(st.a.t).trim().replace(/\.$/, '');
+    return t.charAt(0).toUpperCase() + t.slice(1) + '?';
+  }
+
+  /* A key drawn two ways. Paired statements is how Cambridge prints a written key and how the
+     station teaches it; a question with yes and no on the branches is how most drawn keys look,
+     and a student said so. Neither is more correct — the toggle shows they are the same tree. */
+  function keyTree(key, path, current, mode) {
+    var asks = mode === 'yesno';
     var taken = {};                      /* step number -> the side taken there */
     (path || []).forEach(function (p) { taken[p.step] = p.side; });
 
@@ -913,21 +927,23 @@
       var kids = ['a', 'b'].map(function (side) {
         var chosen = taken[n] === side;
         var ruled = taken[n] != null && !chosen;
+        var lab = asks ? (side === 'a' ? 'yes' : 'no') : (n + side);
+        var txt = asks ? '' : esc(st[side].t);
         return '<div class="kt2__kid' + (chosen ? ' is-taken' : '') + (ruled ? ' is-out' : '') + '">' +
-                 '<div class="kt2__edge">' +
-                   '<span class="kt2__lab">' + n + side + '</span>' +
-                   '<span class="kt2__txt">' + esc(st[side].t) + '</span>' +
+                 '<div class="kt2__edge' + (asks ? ' kt2__edge--yn' : '') + '">' +
+                   '<span class="kt2__lab' + (asks ? ' kt2__lab--yn' : '') + '">' + lab + '</span>' +
+                   (txt ? '<span class="kt2__txt">' + txt + '</span>' : '') +
                  '</div>' +
                  target(st[side].go, chosen, atFork) +
                '</div>';
       }).join('');
-      return '<div class="kt2__node">' +
-               box('kt2__box--step' + (here ? ' is-here' : ''), esc(String(n))) +
-               '<div class="kt2__kids">' + kids + '</div>' +
-             '</div>';
+      var head = asks
+        ? box('kt2__box--ask' + (here ? ' is-here' : ''), '<span class="kt2__n">' + n + '</span>' + esc(asQuestion(st)))
+        : box('kt2__box--step' + (here ? ' is-here' : ''), esc(String(n)));
+      return '<div class="kt2__node">' + head + '<div class="kt2__kids">' + kids + '</div></div>';
     }
 
-    var wrap = h('div', 'kt2');
+    var wrap = h('div', 'kt2' + (asks ? ' kt2--yn' : ''));
     wrap.innerHTML = '<div class="kt2__start">Start</div>' +
                      '<div class="kt2__canvas"><svg class="kt2__lines" aria-hidden="true"></svg>' + step(1) + '</div>';
     return wrap;
@@ -1005,11 +1021,35 @@
       k.draw();                                    /* the widget knows its own route */
       for (i = 0; i < this.keys.length; i++) this.keys[i].el.classList.toggle('is-plated', this.keys[i].id === id);
     },
+    /* Statements or questions: the reader's choice, remembered, because a class that has been
+       taught one way should not have to switch it back on every station. */
+    mode: (function () {
+      try { return localStorage.getItem('labs.keyTreeMode.v1') === 'yesno' ? 'yesno' : 'statements'; }
+      catch (e) { return 'statements'; }
+    })(),
+    setMode: function (m) {
+      this.mode = m;
+      try { localStorage.setItem('labs.keyTreeMode.v1', m); } catch (e) {}
+      if (this.last) this.show(this.last.key, this.last.path, this.last.current, this.last.title);
+    },
     show: function (key, path, current, title) {
       var body = document.getElementById('keyPlateBody');
       if (!body) return;
+      this.last = { key: key, path: path, current: current, title: title };
       body.innerHTML = '';
-      var tree = keyTree(key, path, current);
+
+      var self = this;
+      var bar = h('div', 'kt2__modes');
+      [['statements', 'Paired statements'], ['yesno', 'Yes or no']].forEach(function (m) {
+        var b = h('button', 'kt2__mode' + (self.mode === m[0] ? ' is-on' : ''), esc(m[1]));
+        b.type = 'button';
+        b.setAttribute('aria-pressed', self.mode === m[0] ? 'true' : 'false');
+        b.addEventListener('click', function () { self.setMode(m[0]); });
+        bar.appendChild(b);
+      });
+      body.appendChild(bar);
+
+      var tree = keyTree(key, path, current, this.mode);
       body.appendChild(tree);
       drawKeyLines(tree);
       requestAnimationFrame(function () { drawKeyLines(tree); });   /* after the text has wrapped */
@@ -1021,9 +1061,11 @@
       var t = document.getElementById('keyPlateTitle');
       if (t && title) t.textContent = title;
       var n = document.getElementById('keyPlateNote');
-      if (n) n.textContent = (path && path.length)
-        ? 'Grey is the branch you ruled out. A key names one thing by ruling out everything else.'
-        : 'Choose a statement on the right, and the key draws itself here.';
+      if (n) n.textContent = this.mode === 'yesno'
+        ? 'The same key, asked as questions. Cambridge prints the paired-statement form, and both are worth being able to read.'
+        : ((path && path.length)
+          ? 'Grey is the branch you ruled out. A key names one thing by ruling out everything else.'
+          : 'Choose a statement on the right, and the key draws itself here.');
     },
     /* follow the reading position: the key nearest the top of the screen owns the plate */
     watch: function () {
