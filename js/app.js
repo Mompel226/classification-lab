@@ -543,6 +543,7 @@
     signIn = who;
     try { localStorage.setItem(SIGNIN_KEY, JSON.stringify(who)); } catch (e) {}
     if (document.getElementById('subWho')) fillSubmit();
+    if (afterSignIn) { var go = afterSignIn; afterSignIn = null; go(); }
   }
   function signInReady() { return !!((window.LAB_CONFIG || {}).googleClientId) && window.google && google.accounts && google.accounts.id; }
   function mountSignIn(el) {
@@ -559,6 +560,82 @@
     try { if (signInReady()) google.accounts.id.disableAutoSelect(); } catch (e) {}
     fillSubmit();
   }
+
+  /* ---------- carrying work between computers ----------
+     Progress lives in this browser, so another computer starts from nothing. What was HANDED
+     IN is in the teacher's spreadsheet, together with a note of which questions were right, so
+     signing in here brings it back. js/sync.js does the folding-in and only ever adds: a
+     question right on either machine stays right, so pressing Sync cannot lose anything. */
+  var LAB_ID = LAB;
+  var afterSignIn = null;
+
+  function snapshotNow() {
+    return (window.LabSync && window.LabSync.snapshot)
+      ? window.LabSync.snapshot(progress, S, ORDER, stationSig) : '';
+  }
+
+  function syncEnabled() { return !!((window.LAB_CONFIG || {}).submitUrl && window.LabSync); }
+
+  function haveToken() { return !!(signIn && signIn.token && signIn.exp * 1000 > Date.now() + 60000); }
+
+  /* Ask Google for a sign-in, then come back and finish. One Tap can be refused by the
+     browser, so say what to do instead rather than leaving a dead button. */
+  function signInThen(fn) {
+    afterSignIn = fn;
+    if (!signInReady()) { toast('Sign-in is not available here. Open Hand in and sign in there, then press Sync.'); return; }
+    try {
+      google.accounts.id.initialize({ client_id:(window.LAB_CONFIG || {}).googleClientId,
+                                      callback:onCredential, auto_select:true });
+      google.accounts.id.prompt(function (n) {
+        if (n && (n.isNotDisplayed && n.isNotDisplayed() || n.isSkippedMoment && n.isSkippedMoment())) {
+          toast('Google did not offer a sign-in. Open Hand in, sign in there, then press Sync.');
+        }
+      });
+    } catch (e) { toast('Could not open sign-in. Open Hand in and sign in there instead.'); }
+  }
+
+  function applySnap(snap, quiet) {
+    if (!snap) { if (!quiet) toast('Nothing has been handed in for this lab yet, so there is nothing to bring back.'); return; }
+    var res = window.LabSync.merge(progress, snap, S, stationSig);
+    if (res.added) { save(); reconcile(); paintHeader(); paintRail(); paintPanel(); refreshTabCount(); }
+    if (!quiet || res.added) toast(window.LabSync.say(res));
+  }
+
+  /* quiet: after a hand-in, say nothing unless something actually came back. */
+  function syncNow(quiet) {
+    if (!syncEnabled()) { toast('This lab is not set up to keep marks, so there is nothing to sync with.'); return; }
+    if (!haveToken()) { signInThen(function () { syncNow(quiet); }); return; }
+    var btn = document.getElementById('btnSync');
+    if (btn) { btn.disabled = true; btn.classList.add('is-busy'); }
+    fetch((window.LAB_CONFIG || {}).submitUrl, {
+      method:'POST', mode:'cors', headers:{ 'Content-Type':'text/plain;charset=utf-8' },
+      body: JSON.stringify({ action:'progress', token: signIn.token })
+    })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (j) {
+        if (!j || !j.ok) { toast(j && j.why === 'not signed in'
+          ? 'That account is not on your teacher\u2019s class list, so nothing is kept for it.'
+          : 'Could not reach your teacher\u2019s records just now.'); return; }
+        var mine = j.labs && j.labs[LAB_ID];
+        applySnap(mine && mine.snap, quiet);
+      })
+      .catch(function () { if (!quiet) toast('Could not reach your teacher\u2019s records just now.'); })
+      .then(function () { if (btn) { btn.disabled = false; btn.classList.remove('is-busy'); } });
+  }
+
+  (function () {
+    var btn = document.getElementById('btnSync');
+    if (!btn) return;
+    if (!syncEnabled()) return;                 /* no spreadsheet behind this lab: stay hidden */
+    btn.hidden = false;
+    btn.addEventListener('click', function () { syncNow(false); });
+    /* Already signed in and nothing done here yet? Bring their work back without being asked. */
+    if (haveToken()) {
+      var empty = true;
+      for (var k in progress) { var r = progress[k]; if (r && r.done && Object.keys(r.done).length) { empty = false; break; } }
+      if (empty) syncNow(true);
+    }
+  })();
 
   /* ---------- handing in ---------- */
   function completionCode(name, form, score) {
@@ -641,7 +718,8 @@
     var payload = { app:LAB, token: signIn ? signIn.token : '', name:name.trim(), form:form,
                     score:t.done, total:t.total, code:code, complete: t.done === t.total,
                     checks:t.checks, firstTime:t.first1, tried:t.tried,
-                    from: t.from ? new Date(t.from).toISOString() : '', stations:perStation, at:new Date().toISOString() };
+                    from: t.from ? new Date(t.from).toISOString() : '', stations:perStation,
+                    snap:snapshotNow(), at:new Date().toISOString() };
     var url = (window.LAB_CONFIG || {}).submitUrl;
     go.disabled = true;
     msg.className = 'submsg'; msg.textContent = url ? 'Sending…' : 'Generating your code…';

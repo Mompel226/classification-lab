@@ -59,6 +59,7 @@ if (!SHARED) {
   process.exit(1);
 }
 for (const [from, to] of [['engine/engine.js', 'js/engine.js'], ['engine/marking.js', 'js/marking.js'],
+                          ['engine/sync.js', 'js/sync.js'],
                           ['tree/tree.js', 'js/tree.js'], ['tree/tree-draw.js', 'js/tree-draw.js']]) {
   copyFileSync(resolve(SHARED, from), resolve(REPO, to));
 }
