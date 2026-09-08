@@ -170,3 +170,19 @@ covered the gill cover — so the one feature 0610 asks for on a fish, and the o
 in Topic 9 when the gills are a gas exchange surface, could not be pinned at all. The
 replacement is a whole yellow perch against black with every fin spread and the operculum in
 plain view. `peek-fins-*` and `peek-wet-scales-*` no longer come from this file.
+
+### The single-celled organisms, and a whole fungus
+
+Named in the text and never seen: a student meets "Amoeba", "Paramecium" and "Plasmodium" for
+the first time in one sentence, and yeast is the one fungus that is a single cell. Each now
+opens its own photograph. `peek-mycelium-*` replaced a reuse of the hyphae picture — a mycelium
+is thousands of hyphae, so showing the same few threads for both taught the opposite.
+
+| File | Source | Photographer | Licence |
+|---|---|---|---|
+| `peek-yeast-*` | [Yeast Cells in Wet Mount Microscopy of Culture.jpg](https://commons.wikimedia.org/wiki/File:Yeast_Cells_in_Wet_Mount_Microscopy_of_Culture.jpg) — oval cells, several budding | Ajay Kumar Chaurasiya | CC0 |
+| `peek-paramecium-*` | [Paramécium caudátum.jpg](https://commons.wikimedia.org/wiki/File:Param%C3%A9cium_caud%C3%A1tum.jpg) — a slipper-shaped ciliate | — | CC BY 4.0 |
+| `peek-amoeba-*` | [Ameboid Protozoa Amoeba proteus.jpg](https://commons.wikimedia.org/wiki/File:Ameboid_Protozoa_Amoeba_proteus_(37175354480).jpg) — pseudopodia extended | — | CC0 |
+| `peek-plasmodium-*` | [Microphotographs of Plasmodium vivax in Giemsa-stained thin blood films.jpg](https://commons.wikimedia.org/wiki/File:Microphotographs_of_Plasmodium_vivax_in_Giemsa-stained_thin_blood_films.jpg) — one panel: a parasite inside a red blood cell | Chavatte, Tan, Snounou & Lin | CC BY 4.0 |
+| `peek-mycelium-*` | [Hongo en placa de petri.jpg](https://commons.wikimedia.org/wiki/File:Hongo_en_placa_de_petri.jpg) — a colony spreading across a dish | Bjjff | CC0 |
+
