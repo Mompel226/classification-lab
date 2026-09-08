@@ -159,9 +159,20 @@
     lines.setAttribute('class', 'pins__lines'); lines.setAttribute('aria-hidden', 'true');
     box.appendChild(lines);
     var found = {}, pins = [], items = [], zooms = [], Y = [], order = [];
+    /* Whether the names can sit in a column beside the picture at all. The CSS switches on the
+       WINDOW width, which is the wrong measurement: the panel is a fraction of the window, so a
+       window can be wide while the widget is not. Measure the widget itself, and if there is not
+       room for a readable column, say so and let the names go under the picture — which always
+       works. Anything that leaves pins on a photograph with no names beside them is worse than
+       the plainer layout. */
+    var NARROW = 520, MIN_COL = 150;
     function stacked() {
+      var box = list.parentNode && list.parentNode.getBoundingClientRect();
+      if (box && box.width && box.width < NARROW) return true;
       var sb = stage.getBoundingClientRect(), lb = list.getBoundingClientRect();
-      return lb.top >= sb.bottom - 4;                 /* the column has dropped under the picture */
+      if (lb.top >= sb.bottom - 4) return true;       /* the column has dropped under the picture */
+      if (lb.width && lb.width < MIN_COL) return true; /* too narrow to read a name in */
+      return false;
     }
     function crosses(a, b, c, d) {
       function ccw(p, q, r) { return (r.y - p.y) * (q.x - p.x) > (q.y - p.y) * (r.x - p.x); }
@@ -169,7 +180,9 @@
     }
     function layout() {
       var sb = stage.getBoundingClientRect(), lb = list.getBoundingClientRect();
-      if (!sb.width || !sb.height || stacked()) {
+      var narrow = stacked();
+      if (list.parentNode) list.parentNode.classList.toggle('finder--narrow', narrow);
+      if (!sb.width || !sb.height || narrow) {
         items.forEach(function (li) { li.style.position = ''; li.style.top = ''; });
         list.style.minHeight = ''; list.classList.remove('is-column'); drawLines(); return;
       }
