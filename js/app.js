@@ -721,8 +721,12 @@
       return 'Your work was sent, but the records are not set up to accept sign-ins yet, so nothing was saved. Show your teacher this message.';
     if (/^not recorded: not signed in/.test(r))
       return 'Your sign-in had run out, so nothing was saved. Sign in again and press Hand in once more.';
-    if (/^not recorded: not on this class list/.test(r))
-      return 'That account is not on the class list, so nothing was saved for it. Your code is still your receipt.';
+    if (/^not recorded: not on this class list/.test(r)) {
+      var acc = r.match(/\(([^)]+)\)/);
+      return 'The account you signed in with' + (acc ? ' (' + acc[1] + ')' : '') +
+             ' is not on the class list, so nothing was saved for it. The list is matched on ' +
+             'email address, not on name. Your code is still your receipt.';
+    }
     if (/^busy/.test(r))
       return 'The records were busy. Press Hand in once more.';
     if (/^rejected/.test(r))
