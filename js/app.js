@@ -56,7 +56,11 @@
     var acts = st.activities || [];
     var body = acts.map(function (a) {
       var c = {};
-      Object.keys(a).sort().forEach(function (k) { if (k !== 'k') c[k] = a[k]; });
+      /* `k` holds the answer hashes and `anyOrder` is marking policy — neither is something a
+         student reads, and both change when marking is made more generous. Leaving them out
+         keeps a fixed question fingerprinted the same, so widening what an answer may say never
+         wipes anybody's ticks, and snapshots already saved in the spreadsheet still restore. */
+      Object.keys(a).sort().forEach(function (k) { if (k !== 'k' && k !== 'anyOrder') c[k] = a[k]; });
       return JSON.stringify(c);
     }).join('|');
     return acts.length + ':' + hash36(body);

@@ -278,6 +278,25 @@
     var card = shell(a, idx);
     var wrap = h('div', 'cloze');
     var inputs = {};
+
+    /* Gaps listed together in `anyOrder` are the items of a list, and marking lets them be
+       written in any order. The hints have to follow, or the help turns into a trap: a student
+       who put proteins in the third box and pressed its "?" would be told about fibre and
+       would "correct" a right answer. So a clue no longer belongs to a box. The group shares
+       one pile of clues; pressing any "?" in the group turns over the next one, still one at a
+       time, and every clue is labelled with the gaps it could belong to. */
+    var groups = a.anyOrder || [];
+    var piles = groups.map(function (g) {
+      return g.map(function (k) { return (a.hints || {})[k]; }).filter(Boolean);
+    });
+    function groupIx(k) {
+      for (var i = 0; i < groups.length; i++) if (groups[i].indexOf(k) >= 0) return i;
+      return -1;
+    }
+    function gapList(g) {
+      return g.length < 2 ? g[0] : g.slice(0, -1).join(', ') + ' and ' + g[g.length - 1];
+    }
+
     String(a.text).split(/(\{\d+\})/).forEach(function (p) {
       var m = p.match(/^\{(\d+)\}$/);
       if (!m) { wrap.appendChild(document.createTextNode(p)); return; }
@@ -289,20 +308,35 @@
       inputs[key] = inp;
       wrap.appendChild(inp);
       var hint = (a.hints || {})[key];
-      if (hint) {
+      var gi = groupIx(key);
+      var pile = gi >= 0 ? piles[gi] : null;
+      var label = gi >= 0 ? 'gaps ' + gapList(groups[gi]) + ', in any order' : 'gap ' + key;
+      if (hint || (pile && pile.length)) {
         var hb = h('button', 'hintbtn', '?');
         hb.type = 'button';
-        hb.title = 'Show a hint for this gap';
-        hb.setAttribute('aria-label', 'Hint for gap ' + key);
+        hb.title = pile ? 'Turn over a clue for these gaps' : 'Show a hint for this gap';
+        hb.setAttribute('aria-label', pile ? 'Hint for ' + label : 'Hint for gap ' + key);
         hb.addEventListener('click', function () {
-          if (hb.dataset.shown === '1') return;
-          hb.dataset.shown = '1';
-          card.insertBefore(h('span', 'hinttext', 'Hint (gap ' + key + '): ' + hint), card.querySelector('.act__foot'));
+          var clue;
+          if (pile) {
+            clue = pile.shift();                     /* shared pile: never tied to this box */
+            if (!clue) return;
+          } else {
+            if (hb.dataset.shown === '1') return;
+            hb.dataset.shown = '1';
+            clue = hint;
+          }
+          card.insertBefore(h('span', 'hinttext', 'Hint (' + label + '): ' + clue),
+                            card.querySelector('.act__foot'));
         });
         wrap.appendChild(hb);
       }
     });
     card.appendChild(wrap);
+    groups.forEach(function (g) {
+      card.appendChild(h('p', 'act__hint',
+        'Gaps ' + gapList(g) + ' are a list — write them in any order you like.'));
+    });
 
     foot(card, function () {
       var vals = {};

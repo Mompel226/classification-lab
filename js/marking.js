@@ -57,13 +57,57 @@
   function check(a, id, response) {
     if (a.type === 'blank') {
       var keys = Object.keys(a.k);
-      return Promise.all(keys.map(function (g) {
-        return H([id, 'g' + g, norm(response[g])]).then(function (h) {
-          return a.k[g].indexOf(h) >= 0;
+      var groups = a.anyOrder || [];
+      function groupIx(k) {
+        for (var i = 0; i < groups.length; i++) if (groups[i].indexOf(k) >= 0) return i;
+        return -1;
+      }
+      /* A gap's accepted words are hashed under a label, and the label normally carries the gap
+         number — which is exactly what has to change for a list. Gaps grouped by `anyOrder` are
+         hashed under the GROUP's label for each item instead, so a word typed in one gap can be
+         tested against another gap's words. Without this a "different order" answer could never
+         match anything. The labels here must stay byte-identical to tools/build.mjs. */
+      var jobs = [];
+      keys.forEach(function (g) {
+        var gi = groupIx(g);
+        if (gi < 0) { jobs.push({ g: g, m: null, label: 'g' + g }); return; }
+        groups[gi].forEach(function (m) { jobs.push({ g: g, m: m, label: 'grp' + gi + ':' + m }); });
+      });
+
+      return Promise.all(jobs.map(function (j) {
+        return H([id, j.label, norm(response[j.g])]);
+      })).then(function (hs) {
+        var gaps = {}, fits = {};
+        jobs.forEach(function (j, i) {
+          if (j.m === null) { gaps[j.g] = a.k[j.g].indexOf(hs[i]) >= 0; return; }
+          (fits[j.g] = fits[j.g] || {})[j.m] = (a.k[j.m] || []).indexOf(hs[i]) >= 0;
         });
-      })).then(function (oks) {
-        var right = oks.filter(Boolean).length, gaps = {};
-        keys.forEach(function (g, i) { gaps[g] = oks[i]; });
+
+        /* Marking a list is a matching, not a lookup: every gap in the group must be paired with
+           a DIFFERENT item of the list. That distinction is the whole point. Looking each gap up
+           on its own would accept "fats" and "lipids" as two separate items; the matching pairs
+           one of them with lipids, finds nothing left for the other, and marks that one wrong —
+           without the page ever learning what either word was. */
+        groups.forEach(function (group) {
+          var can = {};
+          group.forEach(function (g) {
+            can[g] = group.filter(function (m) { return (fits[g] || {})[m]; });
+          });
+          var heldBy = {};
+          function pair(g, tried) {
+            for (var i = 0; i < can[g].length; i++) {
+              var m = can[g][i];
+              if (tried[m]) continue;
+              tried[m] = 1;
+              /* the item is free, or the gap holding it can move along to another item */
+              if (heldBy[m] === undefined || pair(heldBy[m], tried)) { heldBy[m] = g; return true; }
+            }
+            return false;
+          }
+          group.forEach(function (g) { gaps[g] = pair(g, {}); });
+        });
+
+        var right = keys.filter(function (g) { return gaps[g]; }).length;
         return { correct: right === keys.length, score: right, total: keys.length, gaps: gaps };
       });
     }
