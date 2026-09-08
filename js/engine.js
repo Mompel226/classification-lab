@@ -185,7 +185,10 @@
     top.appendChild(h('span', 'act__n', 'Question ' + (idx + 1)));
     card.appendChild(top);
     if (a.prompt) card.appendChild(h('p', 'act__prompt', a.prompt));
-    if (a.img) card.appendChild(imgEl(a.img, a.imgCap));
+    /* A hotspot draws the SAME photograph itself, with its clickable regions on top. Drawn
+       here as well, the picture appeared twice in one question — the plain copy at its
+       natural width, overflowing the card, above the interactive one. */
+    if (a.img && a.type !== 'hotspot') card.appendChild(imgEl(a.img, a.imgCap));
     if (a.table) card.appendChild(tableEl(a.table));
     return card;
   }
