@@ -916,6 +916,9 @@ svg.lit .kl--all.is-on{opacity:1}
 .finder__credit a{color:inherit}
 .finder__list{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:6px}
 @media (max-width:620px){ .finder{grid-template-columns:1fr} }
+/* set by the widget itself when it measures too little room for a column of names —
+   the media query above asks the WINDOW, which is not the width that matters here */
+.finder.finder--narrow{grid-template-columns:1fr}
 
 /* a DNA alignment, the way MEGA shows one */
 .dna{overflow-x:auto;-webkit-overflow-scrolling:touch}
