@@ -1300,7 +1300,11 @@ svg.lit .kl--all.is-on{opacity:1}
 .clado__tw.is-on{stroke:var(--green-2);stroke-width:2.6}
 .clado__bar,.clado__stem{stroke:#9FB3BE;stroke-width:1.4;fill:none}
 .clado__node{cursor:pointer}
-.clado__node:focus-visible{outline:2px solid var(--green);outline-offset:2px}
+/* An outline on an SVG <g> is drawn as a rectangle around the whole branch — a green box
+   across the diagram, which is not what a selected junction should look like. The focus
+   ring goes on the dot itself instead, so a keyboard reader still sees where they are. */
+.clado__node{outline:none}
+.clado__node:focus-visible .clado__dot{stroke:var(--amber);stroke-width:3.4}
 .clado__dot{fill:#FFFFFF;stroke:#7E96A3;stroke-width:1.6}
 .clado__node:hover .clado__dot{stroke:var(--green-2);r:7}
 .clado__node.is-on .clado__dot{fill:var(--amber);stroke:var(--amber)}
