@@ -19,6 +19,14 @@ window.GLOSSARY = [
   "sup": true
  },
  {
+  "term": "adaptive feature",
+  "def": "An inherited feature that helps an organism to survive and reproduce in its environment."
+ },
+ {
+  "term": "air space",
+  "def": "A gap between the spongy mesophyll cells of a leaf, joined to the others and to the stomata, through which gases diffuse to and from every cell."
+ },
+ {
   "term": "alimentary canal",
   "def": "The continuous tube running from the mouth to the anus, through which food passes. The liver, pancreas, gall bladder and salivary glands are digestive organs but are not part of it."
  },
@@ -58,6 +66,10 @@ window.GLOSSARY = [
   "def": "A jointed feeler on the head of an arthropod, sensing touch and chemicals. Plural: antennae. Insects and myriapods have one pair, crustaceans two, arachnids none."
  },
  {
+  "term": "anther",
+  "def": "The part of a stamen that makes pollen grains."
+ },
+ {
   "term": "anus",
   "def": "The opening at the end of the alimentary canal through which faeces are egested."
  },
@@ -80,6 +92,11 @@ window.GLOSSARY = [
  {
   "term": "autotrophic nutrition",
   "def": "Making your own organic substances (food) from simple inorganic ones. In plants and the algae this is photosynthesis: carbon dioxide and water are built into glucose using energy from light. An organism that feeds this way is an autotroph.",
+  "sup": true
+ },
+ {
+  "term": "auxin",
+  "def": "A plant hormone made in the shoot tip. It diffuses through the plant, and it stimulates cell elongation; light and gravity make it unequally distributed, so one side of a shoot grows faster than the other and the shoot bends.",
   "sup": true
  },
  {
@@ -145,6 +162,10 @@ window.GLOSSARY = [
   "def": "A carbohydrate is a nutrient made of carbon, hydrogen and oxygen — sugars and starch. Carbohydrates are the body’s main source of energy, released in respiration; starchy foods such as rice, bread, pasta and potatoes are rich in them."
  },
  {
+  "term": "carpel",
+  "def": "The female part of a flower: the stigma, the style and the ovary, with the ovules inside the ovary."
+ },
+ {
   "term": "catabolic",
   "def": "Describes a reaction, or an enzyme, that breaks a larger molecule into smaller ones. Digestion is catabolic throughout. The opposite is anabolic: building a larger molecule from smaller ones.",
   "ext": true
@@ -156,6 +177,11 @@ window.GLOSSARY = [
    "enzyme",
    "consumed"
   ]
+ },
+ {
+  "term": "cell elongation",
+  "def": "Cells getting longer, which is how a shoot grows in length. Auxin stimulates it.",
+  "sup": true
  },
  {
   "term": "cell wall",
@@ -189,6 +215,10 @@ window.GLOSSARY = [
   "term": "chitin",
   "def": "The tough material a fungal cell wall is made of — and the same material as an arthropod’s exoskeleton. It is not cellulose, which is what a plant cell wall is made of.",
   "ext": true
+ },
+ {
+  "term": "chlorophyll",
+  "def": "A green pigment, found in chloroplasts, that transfers energy from light into energy in chemicals, for the synthesis of carbohydrates."
  },
  {
   "term": "chloroplast",
@@ -264,8 +294,21 @@ window.GLOSSARY = [
   "sup": true
  },
  {
+  "term": "cross-pollination",
+  "def": "The transfer of pollen grains from the anther of a flower to the stigma of a flower on a different plant of the same species.",
+  "sup": true
+ },
+ {
   "term": "crustacean",
   "def": "An arthropod with more than four pairs of legs and two pairs of antennae; most breathe with gills and live in water. Crabs, lobsters, shrimps, woodlice."
+ },
+ {
+  "term": "cuticle",
+  "def": "A waxy, waterproof layer on the outside of the epidermis of a leaf, which reduces water loss by evaporation."
+ },
+ {
+  "term": "de-starching",
+  "def": "Keeping a plant in the dark for about two days, so that its leaves use up their stored starch. Any starch found afterwards was made during the experiment."
  },
  {
   "term": "deficiency disease",
@@ -356,6 +399,10 @@ window.GLOSSARY = [
   ]
  },
  {
+  "term": "epidermis",
+  "def": "The single layer of cells that covers a leaf, above and below (and a root or a stem). It protects the leaf and, with its cuticle, reduces water loss; the lower epidermis carries most of the stomata."
+ },
+ {
   "term": "epiglottis",
   "def": "A flap of cartilage that folds down over the opening of the trachea during swallowing so that food enters the oesophagus."
  },
@@ -409,6 +456,10 @@ window.GLOSSARY = [
   "def": "Offspring that can themselves reproduce. Two organisms belong to one species if they can breed and their offspring are fertile — a mule is not, so horse and donkey are separate species."
  },
  {
+  "term": "fertilisation",
+  "def": "The fusion of the nucleus of a male gamete with the nucleus of a female gamete. In a flower, a pollen nucleus fuses with a nucleus in an ovule."
+ },
+ {
   "term": "fibre (roughage)",
   "def": "Plant material, mostly cellulose, that is not digested; it adds bulk so that peristalsis can move food along, and helps prevent constipation."
  },
@@ -418,8 +469,16 @@ window.GLOSSARY = [
   "sup": true
  },
  {
+  "term": "filament",
+  "def": "The stalk of a stamen, which holds the anther up where insects brush against it or the wind can shake it."
+ },
+ {
   "term": "fish",
   "def": "A vertebrate with wet scales, fins and gills kept all its life. Most lay soft eggs in water and fertilise them outside the body; sharks fertilise internally and many bear live young. Body temperature follows the surroundings."
+ },
+ {
+  "term": "flaccid",
+  "def": "A plant cell that has lost water, its contents no longer pressing on the cell wall. A plant whose cells are flaccid wilts."
  },
  {
   "term": "flowering plant",
@@ -433,8 +492,7 @@ window.GLOSSARY = [
  },
  {
   "term": "fruit",
-  "def": "The ripened ovary of a flower, holding the seeds that formed inside it.",
-  "sup": true
+  "def": "What the ovary of a flower becomes after fertilisation: a case holding the seeds that formed inside it."
  },
  {
   "term": "fungus",
@@ -450,6 +508,10 @@ window.GLOSSARY = [
   "def": "A group of closely related species. The first word of a scientific name, written with a capital letter: Panthera in Panthera leo. Plural: genera."
  },
  {
+  "term": "germination",
+  "def": "The start of growth of a seed into a seedling. It needs water, oxygen and a suitable temperature."
+ },
+ {
   "term": "glucose",
   "def": "The simple sugar the body runs on: small, soluble, and the monomer of starch, glycogen and cellulose. It is absorbed into the blood and used in respiration to release energy.",
   "also": [
@@ -463,8 +525,16 @@ window.GLOSSARY = [
   "def": "The storage carbohydrate of animals: a polymer of glucose (its monomer), made from excess glucose and stored in the liver and muscles."
  },
  {
+  "term": "gravitropism",
+  "def": "A response in which parts of a plant grow towards or away from gravity: roots grow towards it, shoots grow away from it. (Older books call it geotropism.)"
+ },
+ {
   "term": "growth",
   "def": "A permanent increase in size and dry mass. (Dry mass, so that water taken up does not count.)"
+ },
+ {
+  "term": "guard cell",
+  "def": "One of the pair of cells around a stoma. They take in water by osmosis, become turgid and curve apart, opening the stoma; they lose water, become flaccid and close it."
  },
  {
   "term": "gum",
@@ -496,13 +566,27 @@ window.GLOSSARY = [
   "def": "A living cell that a virus enters and uses to make copies of itself."
  },
  {
+  "term": "humidity",
+  "def": "How much water vapour the air holds. Humid air holds a lot, so the concentration gradient from inside the leaf to outside is smaller and transpiration is slower.",
+  "sup": true
+ },
+ {
   "term": "hydrochloric acid",
   "def": "The acid in gastric juice. 0610 gives it two functions: it kills harmful microorganisms in food, and it provides an acidic pH for optimum enzyme activity."
+ },
+ {
+  "term": "hydrogencarbonate indicator",
+  "def": "A solution that changes colour with the carbon dioxide dissolved in it: purple with less than air holds, orange-red at the amount in air, yellow with more. Used to show gas exchange in an aquatic plant in the light and in the dark."
  },
  {
   "term": "hydrolysis",
   "def": "A reaction in which a bond is broken by adding a molecule of water. Every digestive reaction is a hydrolysis: starch to maltose, protein to amino acids, fat to fatty acids and glycerol. The enzymes that catalyse it are called hydrolases.",
   "ext": true
+ },
+ {
+  "term": "hydrophyte",
+  "def": "A plant adapted to live in water, or in ground that is waterlogged.",
+  "sup": true
  },
  {
   "term": "hypha",
@@ -534,6 +618,10 @@ window.GLOSSARY = [
   "def": "Fertilisation inside the body of the female, as in mammals, birds and reptiles."
  },
  {
+  "term": "iodine solution",
+  "def": "The test for starch: orange-brown, it turns blue-black where starch is present."
+ },
+ {
   "term": "iron",
   "def": "A mineral ion needed to make haemoglobin, which carries oxygen. A lack of it causes anaemia. Found in red meat, beans and spinach."
  },
@@ -552,6 +640,16 @@ window.GLOSSARY = [
   "sup": true
  },
  {
+  "term": "lignin",
+  "def": "The hard, waterproof substance that thickens and strengthens the walls of xylem vessels, so they neither collapse nor leak.",
+  "sup": true
+ },
+ {
+  "term": "limiting factor",
+  "def": "The factor in shortest supply, which sets the rate of a process. For photosynthesis: light intensity, carbon dioxide concentration or temperature. Raising it speeds the process up until something else becomes the limit.",
+  "sup": true
+ },
+ {
   "term": "lipase",
   "def": "An enzyme that breaks fats and oils (lipids) down into fatty acids and glycerol. Made by the pancreas, and it works far faster after bile has emulsified the fat.",
   "also": [
@@ -567,6 +665,10 @@ window.GLOSSARY = [
  {
   "term": "lumen",
   "def": "The lumen is the space inside a tube such as the small intestine, where the food and the digestive juices mix."
+ },
+ {
+  "term": "magnesium ion",
+  "def": "A mineral ion taken in through the roots and used to make chlorophyll. (Too little, and the leaves turn yellow.)"
  },
  {
   "term": "magnification",
@@ -603,6 +705,10 @@ window.GLOSSARY = [
   "def": "The cutting and mixing of food with saliva by the teeth and tongue."
  },
  {
+  "term": "mesophyll",
+  "def": "The photosynthesising tissue inside a leaf, between the upper and lower epidermis: the palisade layer above and the spongy layer below."
+ },
+ {
   "term": "metabolism",
   "def": "All the chemical reactions going on inside the cells of an organism — the ones that build molecules and the ones that break them down."
  },
@@ -610,6 +716,10 @@ window.GLOSSARY = [
   "term": "microvilli",
   "def": "Microvilli are tiny folds of the cell membrane on each epithelial cell, which increase the surface area still further.",
   "sup": true
+ },
+ {
+  "term": "mineral ion",
+  "def": "An inorganic ion a plant takes in, dissolved in soil water, through its root hairs: nitrate ions and magnesium ions are the two the syllabus names."
  },
  {
   "term": "model",
@@ -656,6 +766,10 @@ window.GLOSSARY = [
   "def": "An arthropod with a body of many similar segments, each with jointed legs, and one pair of antennae. Centipedes and millipedes."
  },
  {
+  "term": "nectar",
+  "def": "A sugary liquid made by a flower from the glucose of photosynthesis, to attract insects; they carry pollen as they feed on it."
+ },
+ {
   "term": "negative control",
   "def": "A control set up so that it should give a negative result, because whatever is being tested for has been deliberately left out. If it gives a positive result instead, the apparatus, the reagents or the method is at fault, and the rest of the results cannot be trusted.",
   "also": [
@@ -671,6 +785,10 @@ window.GLOSSARY = [
   "term": "neutralise",
   "def": "To cancel out an acid using an alkali, raising the pH towards neutral or slightly alkaline.",
   "sup": true
+ },
+ {
+  "term": "nitrate ion",
+  "def": "A mineral ion taken in through the roots and used to make amino acids, and so proteins. (Too little, and growth is stunted and the leaves turn pale.)"
  },
  {
   "term": "nucleus",
@@ -703,8 +821,15 @@ window.GLOSSARY = [
  },
  {
   "term": "ovary",
-  "def": "In a flower, the part that holds the ovules; after fertilisation it becomes the fruit and the ovules become the seeds. In an animal, the organ that makes egg cells.",
-  "sup": true
+  "def": "In a flower, the swollen base of the carpel that holds the ovules; after fertilisation it becomes the fruit and the ovules become the seeds. In an animal, the organ that makes egg cells."
+ },
+ {
+  "term": "ovule",
+  "def": "A structure inside the ovary that contains the female gamete. After fertilisation it becomes a seed."
+ },
+ {
+  "term": "palisade mesophyll",
+  "def": "The layer of tightly packed, column-shaped cells under the upper epidermis of a leaf, holding most of its chloroplasts. Where most photosynthesis happens."
  },
  {
   "term": "pancreatic juice",
@@ -742,6 +867,10 @@ window.GLOSSARY = [
   "def": "The squeezing action of muscles that moves food along the oesophagus and intestines: the wall contracts behind the food and relaxes in front of it."
  },
  {
+  "term": "petal",
+  "def": "One of the parts of a flower around the stamens and carpels. Large, brightly coloured and often scented in an insect-pollinated flower, to attract insects; small and dull, or absent, in a wind-pollinated one."
+ },
+ {
   "term": "pharynx",
   "def": "The space at the back of the mouth and nose where the path of food and the path of air cross."
  },
@@ -751,7 +880,11 @@ window.GLOSSARY = [
  },
  {
   "term": "photosynthesis",
-  "def": "The process by which plants make glucose using energy from light: carbon dioxide + water → glucose + oxygen, with light absorbed by chlorophyll in the chloroplasts. It is how autotrophs feed."
+  "def": "The process by which plants synthesise carbohydrates from raw materials using energy from light: carbon dioxide + water → glucose + oxygen, in the presence of light and chlorophyll. The light is absorbed by chlorophyll in the chloroplasts. It is how autotrophs feed."
+ },
+ {
+  "term": "phototropism",
+  "def": "A response in which parts of a plant grow towards or away from the direction of the light source: a shoot grows towards the light."
  },
  {
   "term": "physical digestion",
@@ -766,6 +899,24 @@ window.GLOSSARY = [
   "term": "plasmid",
   "def": "A small circle of DNA in a bacterium, separate from the main circular DNA.",
   "sup": true
+ },
+ {
+  "term": "plumule",
+  "def": "The embryo shoot inside a seed, which grows up after the radicle.",
+  "ext": true
+ },
+ {
+  "term": "pollen grain",
+  "def": "The structure made by an anther that carries the male gamete, the pollen nucleus. Large, sticky or spiky in an insect-pollinated flower; small, smooth and light in a wind-pollinated one."
+ },
+ {
+  "term": "pollen tube",
+  "def": "A tube that grows from a pollen grain on the stigma, down through the style and into the ovule, carrying the pollen nucleus to the female gamete.",
+  "sup": true
+ },
+ {
+  "term": "pollination",
+  "def": "The transfer of pollen grains from an anther to a stigma."
  },
  {
   "term": "polymer",
@@ -783,6 +934,10 @@ window.GLOSSARY = [
    "negative control",
    "control"
   ]
+ },
+ {
+  "term": "potometer",
+  "def": "Apparatus for estimating the rate of transpiration: a cut shoot draws water along a capillary tube as it transpires, and the distance an air bubble moves in a set time is measured."
  },
  {
   "term": "premolar",
@@ -819,6 +974,11 @@ window.GLOSSARY = [
  {
   "term": "pulp",
   "def": "The pulp is the soft, living tissue in the centre of a tooth (filling the pulp cavity): blood vessels that supply the tooth, and nerves that detect pain, heat and cold."
+ },
+ {
+  "term": "radicle",
+  "def": "The embryo root inside a seed: the first part to grow out at germination.",
+  "ext": true
  },
  {
   "term": "reabsorbed",
@@ -858,6 +1018,14 @@ window.GLOSSARY = [
   "ext": true
  },
  {
+  "term": "root cortex",
+  "def": "The layer of cells in a root between the epidermis and the xylem, which water crosses from cell to cell on its way in from the root hairs."
+ },
+ {
+  "term": "root hair cell",
+  "def": "A cell on the surface of a root with a long, thin extension into the soil. The root hairs together give a large surface area, which increases the uptake of water (by osmosis) and mineral ions (by active transport)."
+ },
+ {
   "term": "saliva",
   "def": "Saliva is the watery fluid the salivary glands secrete into the mouth. It contains mucus, which lubricates the food, and the enzyme salivary amylase, which begins the digestion of starch."
  },
@@ -884,7 +1052,11 @@ window.GLOSSARY = [
  },
  {
   "term": "seed",
-  "def": "A fertilised ovule: a young plant and a store of food, inside a protective coat.",
+  "def": "What an ovule becomes after fertilisation: an embryo plant and a store of food inside a protective coat. It germinates when it has water, oxygen and a suitable temperature."
+ },
+ {
+  "term": "self-pollination",
+  "def": "The transfer of pollen grains from the anther of a flower to the stigma of the same flower, or of a different flower on the same plant.",
   "sup": true
  },
  {
@@ -892,8 +1064,27 @@ window.GLOSSARY = [
   "def": "The ability to detect and respond to changes in the internal or external environment."
  },
  {
+  "term": "sepal",
+  "def": "One of the small, green, leaf-like parts on the outside of a flower, which protect it while it is a bud."
+ },
+ {
+  "term": "shoot tip",
+  "def": "The growing end of a shoot, where auxin is made.",
+  "sup": true
+ },
+ {
+  "term": "sink",
+  "def": "A part of a plant that uses or stores sucrose or amino acids: a growing root or shoot tip, a fruit, a seed, or a storage organ filling up.",
+  "sup": true
+ },
+ {
   "term": "soluble",
   "def": "Able to dissolve in a liquid, usually water. Small food molecules such as glucose and amino acids are soluble, which is why they can be carried in the blood and cross the wall of the intestine."
+ },
+ {
+  "term": "source",
+  "def": "A part of a plant that releases sucrose or amino acids into the phloem: a leaf in the light, or a storage organ when its store is being used.",
+  "sup": true
  },
  {
   "term": "species",
@@ -904,9 +1095,17 @@ window.GLOSSARY = [
   "def": "The actual organism, or part of one, in front of you — the thing you observe and draw."
  },
  {
+  "term": "spongy mesophyll",
+  "def": "The loosely packed cells with air spaces between them in the lower half of a leaf. The air spaces let carbon dioxide diffuse to every cell, and water vapour and oxygen diffuse out."
+ },
+ {
   "term": "spore",
   "def": "A tiny reproductive cell that can grow into a new organism on its own, made by ferns and fungi.",
   "sup": true
+ },
+ {
+  "term": "stamen",
+  "def": "The male part of a flower: a filament holding up an anther."
  },
  {
   "term": "starch",
@@ -919,12 +1118,19 @@ window.GLOSSARY = [
  },
  {
   "term": "stigma",
-  "def": "The sticky tip of the female part of a flower, where pollen lands.",
-  "sup": true
+  "def": "The top of the carpel, often sticky, on which pollen grains land during pollination."
  },
  {
   "term": "stimulus",
   "def": "A change in the internal or external environment that an organism can detect — light, temperature, touch, a chemical. Plural: stimuli."
+ },
+ {
+  "term": "stoma",
+  "def": "A pore in the epidermis of a leaf, mostly on the lower surface, through which carbon dioxide diffuses in, oxygen diffuses out, and water vapour is lost. Plural: stomata."
+ },
+ {
+  "term": "style",
+  "def": "The stalk that holds the stigma above the ovary. The pollen tube grows down through it."
  },
  {
   "term": "substrate",
@@ -934,6 +1140,10 @@ window.GLOSSARY = [
    "enzyme",
    "complementary"
   ]
+ },
+ {
+  "term": "sucrose",
+  "def": "The sugar a plant transports: glucose made in photosynthesis is converted to sucrose and carried in the phloem to every part of the plant. (Chemically, one glucose joined to one fructose.)"
  },
  {
   "term": "surface area",
@@ -959,12 +1169,31 @@ window.GLOSSARY = [
   "ext": true
  },
  {
+  "term": "testa",
+  "def": "The seed coat: the tough protective covering of a seed, softened and split by water at germination.",
+  "ext": true
+ },
+ {
   "term": "thorax",
   "def": "The middle part of an insect’s body, between the head and the abdomen, to which the legs and wings are attached."
  },
  {
   "term": "trachea",
   "def": "The trachea (windpipe) is the tube that carries air from the throat down to the lungs; it is held open by rings of cartilage. It is part of the breathing system, not of the alimentary canal."
+ },
+ {
+  "term": "translocation",
+  "def": "The movement of sucrose and amino acids in the phloem, from sources to sinks.",
+  "sup": true
+ },
+ {
+  "term": "transpiration",
+  "def": "The loss of water vapour from leaves. Water evaporates from the surfaces of the mesophyll cells into the air spaces, and then diffuses out of the leaf through the stomata as water vapour."
+ },
+ {
+  "term": "transpiration pull",
+  "def": "The force that draws water up the xylem: water lost from the leaves pulls up the column of water molecules below it, and the column holds together because water molecules attract one another.",
+  "sup": true
  },
  {
   "term": "triglyceride",
@@ -975,17 +1204,28 @@ window.GLOSSARY = [
   ]
  },
  {
+  "term": "tropism",
+  "def": "A growth response in which part of a plant grows towards or away from a stimulus."
+ },
+ {
   "term": "trypsin",
   "def": "Trypsin is a protease made in the pancreas that works in the alkaline small intestine (optimum pH about 8). It cuts proteins and polypeptides into shorter pieces; enzymes on the epithelium finish the last cuts, and the IGCSE answer is ‘protein → amino acids’."
+ },
+ {
+  "term": "turgid",
+  "def": "A plant cell full of water, its contents pressing out on the cell wall. Turgid cells hold a plant firm."
  },
  {
   "term": "urea",
   "def": "The waste product made in the liver from excess amino acids, removed from the blood by the kidneys and excreted in urine."
  },
  {
+  "term": "variegated leaf",
+  "def": "A leaf with green parts and white parts. The white parts have no chlorophyll, which is what makes it the test for whether chlorophyll is needed for photosynthesis."
+ },
+ {
   "term": "vascular bundle",
-  "def": "A strand of xylem and phloem running through a plant: xylem carries water up, phloem carries food. In a ring in a dicotyledon stem, scattered in a monocotyledon stem.",
-  "sup": true
+  "def": "A strand of xylem and phloem running through a plant — a vein in a leaf. Xylem carries water and mineral ions and supports; phloem carries sucrose and amino acids. In a ring in a dicotyledon stem, scattered in a monocotyledon stem."
  },
  {
   "term": "vertebrate",
@@ -1018,7 +1258,22 @@ window.GLOSSARY = [
   "def": "Helps the body absorb calcium. A lack of it causes rickets. Found in oily fish and eggs, and made in the skin in sunlight."
  },
  {
+  "term": "wilting",
+  "def": "What happens when a plant loses water by transpiration faster than its roots take it in: the cells lose water and become flaccid, so the leaves and stem droop and the plant is no longer held firm.",
+  "sup": true
+ },
+ {
+  "term": "xerophyte",
+  "def": "A plant adapted to live where water is scarce: a desert, or a sand dune.",
+  "sup": true
+ },
+ {
   "term": "xylem",
   "def": "The tissue that carries water and mineral ions up a plant from the roots, and supports it."
+ },
+ {
+  "term": "xylem vessel",
+  "def": "One of the long, hollow tubes of the xylem: dead cells joined end to end with no cross walls and no cell contents, and thick walls stiffened with lignin.",
+  "sup": true
  }
 ];
