@@ -390,10 +390,13 @@
   /* The tab bar sticks to the top of that same box, so the first line a reader can actually
      read starts below it, not at the box's top edge. */
   function stickyInset(scroller) {
+    /* on a phone the plate is pinned above the notes, so the first readable line starts under it */
+    var inset = 0, plate = document.querySelector('.platecol');
+    if (plate && scroller.contains(plate) && window.getComputedStyle(plate).position === 'sticky') inset += Math.round(plate.getBoundingClientRect().height);
     var tabs = document.querySelector('#panelInner .tabs');
-    if (!tabs || window.getComputedStyle(tabs).position !== 'sticky') return 0;
+    if (!tabs || window.getComputedStyle(tabs).position !== 'sticky') return inset;
     var tr = tabs.getBoundingClientRect(), sr = topOf(scroller);
-    return tr.height && tr.top <= sr + tr.height + 2 ? Math.round(tr.height) : 0;
+    return inset + (tr.height && tr.top <= sr + tr.height + 2 ? Math.round(tr.height) : 0);
   }
   function topOf(scroller) {
     return scroller === document.scrollingElement || scroller === document.documentElement
@@ -1012,9 +1015,18 @@
       var goQuestions = function () {
         if (current == null) return;
         tab = 'do'; paintPanel();
-        var tabs = document.querySelector('#panelInner .tabs'); if (tabs && tabs.scrollIntoView) tabs.scrollIntoView({ block: 'start' });
+        var tabs = document.querySelector('#panelInner .tabs'); if (tabs) landOn(tabs, true);   /* lands below the pinned plate on a phone */
       };
       qStat.addEventListener('click', goQuestions);
+      /* on a phone the plate is pinned above the notes; this folds it to a strip for a reader who wants the notes alone */
+      var plate = document.querySelector('.platecol'), fold = document.getElementById('plateFold');
+      if (plate && fold) {
+        var FOLD_KEY = 'labs.plateFolded', foldedNow = false;
+        try { foldedNow = localStorage.getItem(FOLD_KEY) === '1'; } catch (e) {}
+        var paintFold = function () { plate.classList.toggle('is-folded', foldedNow); fold.setAttribute('aria-expanded', foldedNow ? 'false' : 'true'); fold.textContent = (foldedNow ? '▼ Show ' : '▲ Hide ') + fold.getAttribute('data-what'); };
+        paintFold();
+        fold.addEventListener('click', function () { foldedNow = !foldedNow; try { localStorage.setItem(FOLD_KEY, foldedNow ? '1' : '0'); } catch (e) {} paintFold(); });
+      }
       qStat.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); goQuestions(); } });
     }
     document.getElementById('btnReset').addEventListener('click', function () {
