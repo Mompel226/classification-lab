@@ -89,22 +89,27 @@
       '<td class="syl__s">' + (sec.supplement.length ? '<ol>' + sec.supplement.map(item).join('') + '</ol>' : '') + '</td>' +
       '</tr></tbody></table></div>';
   }
-  function topicIsOurs(t) {
-    return LAB_TOPICS.some(function (x) { x = String(x); return x === t.n || x.indexOf(t.n + '.') === 0; });
+  /* which of a topic's sections this lab teaches: the whole topic ("6"), or named sections ("14.5") */
+  function oursOf(t) {
+    var all = LAB_TOPICS.some(function (x) { return String(x) === t.n; });
+    return t.sections.filter(function (s) { return all || LAB_TOPICS.some(function (x) { return String(x) === s.n; }); });
   }
-  function topic(t, open) {
-    var ours = LAB_TOPICS.filter(function (x) { return String(x).indexOf(t.n + '.') === 0; });   /* "14.5": only that section is the lab's */
-    var secs = t.sections;
-    return '<details class="syl__topic" data-topic="' + esc(t.n) + '"' + (open ? ' open' : '') + '><summary>' + esc(t.n) + ' ' + esc(t.title) +
-      '<small>' + secs.length + (secs.length === 1 ? ' section' : ' sections') + (ours.length ? ' · this lab: ' + ours.map(esc).join(', ') : '') + '</small></summary>' +
+  /* a topic, or the part of it that is asked for: closed, so the reader chooses what to open */
+  function topic(t, secs, note) {
+    return '<details class="syl__topic" data-topic="' + esc(t.n) + '"><summary>' + esc(t.n) + ' ' + esc(t.title) +
+      '<small>' + (secs.length === t.sections.length ? secs.length + (secs.length === 1 ? ' section' : ' sections') : secs.map(function (s) { return s.n; }).join(', ') + (note ? ' · ' + note : '')) + '</small></summary>' +
       secs.map(section).join('') + '</details>';
   }
   function paint() {
     var v = version(); if (!v) { body.innerHTML = '<p class="syl__none">The syllabus is not loaded.</p>'; return; }
     versBar.querySelectorAll('.syl__ver').forEach(function (b) { b.setAttribute('aria-pressed', b.getAttribute('data-v') === v.id ? 'true' : 'false'); });
-    var ours = v.topics.filter(topicIsOurs), rest = v.topics.filter(function (t) { return !topicIsOurs(t); });
-    body.innerHTML = (ours.length ? '<div class="syl__group">This lab\'s topics</div>' + ours.map(function (t) { return topic(t, true); }).join('') + '<div class="syl__group">The rest of the syllabus</div>' : '') +
-      rest.map(function (t) { return topic(t, false); }).join('') +
+    var ours = [], rest = [];
+    v.topics.forEach(function (t) {
+      var mine = oursOf(t), others = t.sections.filter(function (s) { return mine.indexOf(s) < 0; });
+      if (mine.length) ours.push(topic(t, mine, mine.length < t.sections.length ? 'the part this lab teaches' : ''));
+      if (others.length) rest.push(topic(t, others, mine.length ? mine.map(function (s) { return s.n; }).join(', ') + ' above' : ''));
+    });
+    body.innerHTML = (ours.length ? '<div class="syl__group">This lab\'s topics</div>' + ours.join('') + '<div class="syl__group">The rest of the syllabus</div>' : '') + rest.join('') +
       '<p class="syl__foot">The statements are Cambridge\'s own, from the published syllabus for ' + esc(v.label) + ', numbered as it numbers them: Core is examined on Papers 1, 3 and 5 or 6; Supplement adds Papers 2 and 4. © Cambridge University Press &amp; Assessment. The official document: <a href="https://www.cambridgeinternational.org/programmes-and-qualifications/cambridge-igcse-biology-0610/" target="_blank" rel="noopener">cambridgeinternational.org</a>.</p>';
     filter();
   }
