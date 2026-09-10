@@ -1433,3 +1433,25 @@ svg.lit .kl--all.is-on{opacity:1}
 @media (max-width:540px){ .tool--whole:not([hidden]) ~ .platecol__hint{display:none} }
 /* the short button labels up to 1000px — placed after the base rule that hides them, which would otherwise win */
 @media (max-width:1000px){ .hbtn__long{display:none} .hbtn__short{display:inline;font-size:15px;font-weight:700} }
+
+/* up to 820px the header takes two rows — the name and byline above, the counts and buttons below — so the name is never cut short on an upright tablet */
+@media (max-width:820px){ .hdr{flex-wrap:wrap;row-gap:6px} .hdr__mark{flex:1 1 100%;overflow:visible} .hdr__spacer{display:none} .hdr__stats{flex:1 1 100%} }
+
+/* a tablet held flat (1024px) and every narrower screen: no subtitle, and a smaller name up to 1000px, so the name is never cut short */
+@media (max-width:1100px){ .hdr__sub{display:none} }
+@media (max-width:1000px){ .hdr__title{font-size:16px} }
+
+/* the compact header up to 1100px — a tablet held flat included — with the byline allowed onto a second line, so the name is never cut short.
+   Last in the file on purpose: the base rule that hides the short labels would otherwise win. */
+@media (max-width:1100px){
+  .badge{display:none} .stat__lbl{display:none} .stat{padding:4px 10px 4px 5px} .stat--stations{display:none}
+  .hbtn{padding:6px 11px} #btnHelp{width:32px;padding:0;display:grid;place-items:center;height:30px}
+  .hbtn__long{display:none} .hbtn__short{display:inline;font-size:15px;font-weight:700}
+  .hdr__title{font-size:16px} .hdr__mark{flex-wrap:wrap;row-gap:0}
+}
+
+/* folded: the column clips, so nothing of the drawing — not even a part that sets its own visibility — shows below the strip or catches a tap */
+@media (max-width:1000px) and (min-height:561px){ .platecol.is-folded{overflow:hidden} .platecol.is-folded .platewrap{pointer-events:none} .platecol.is-folded .platewrap *{visibility:hidden} }
+
+/* the pinned plate paints above everything in the notes — the numbered pins, tags and tab bar carry their own z-index — and below tooltips, toasts, sheets and modals */
+@media (max-width:1000px) and (min-height:561px){ .platecol{z-index:35} }
