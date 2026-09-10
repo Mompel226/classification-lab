@@ -1003,6 +1003,18 @@
       lb.hidden = true;
       Array.prototype.forEach.call(document.querySelectorAll('.tip.is-open'), function (el) { el.classList.remove('is-open'); });
     });
+    /* the questions count in the header opens this station's questions: students click it expecting them */
+    var qStat = document.querySelector('.hdr .stat[title="Questions answered correctly"]');
+    if (qStat) {
+      qStat.setAttribute('role', 'button'); qStat.tabIndex = 0; qStat.title = 'Open the questions for this station'; qStat.classList.add('stat--go');
+      var goQuestions = function () {
+        if (current == null) return;
+        tab = 'do'; paintPanel();
+        var tabs = document.querySelector('#panelInner .tabs'); if (tabs && tabs.scrollIntoView) tabs.scrollIntoView({ block: 'start' });
+      };
+      qStat.addEventListener('click', goQuestions);
+      qStat.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); goQuestions(); } });
+    }
     document.getElementById('btnReset').addEventListener('click', function () {
       if (!confirm('Clear all your answers and start again? This cannot be undone.')) return;
       progress = {};
