@@ -320,6 +320,8 @@
 
   var here = null, seen = null, quiet = false, wentTo = null;
   function setStation(id) { here = id; seen = Object.create(null); quiet = false; wentTo = Object.create(null); }
+  /* a widget built afresh (its reset) marks its words as it did the first time: forget what it introduced */
+  function unsee(words, jumps) { if (seen) (words || []).forEach(function (w) { delete seen[String(w).toLowerCase()]; }); if (wentTo) (jumps || []).forEach(function (j) { delete wentTo[j]; }); }
   function setQuiet(v) { quiet = !!v; }
 
   /* _like this_ underlines a phrase the syllabus wants written; the sentinels keep the
@@ -400,6 +402,37 @@
     return out;
   }
 
-  global.Terms = { setKnown:setKnown, isKnown:isKnown, forgetAll:forgetAll, knownCount:knownCount, mark:mark, legend:legend,
+  global.Terms = { unsee: unsee, setKnown:setKnown, isKnown:isKnown, forgetAll:forgetAll, knownCount:knownCount, mark:mark, legend:legend,
                    CATS:CATS, setStation:setStation, setQuiet:setQuiet, PEEK:PEEK, JUMP:JUMP };
 })(window);
+
+/* A number never parts from its unit at a line break — 20 °C, 5 min, 48 mm, 60 %, 4 marks, pH 2 — wherever the page
+   writes one: the theory, a question, the bench, a pop-up, the syllabus. The join is made in the text itself as the
+   page changes, so nothing that renders text has to remember to do it. */
+(function () {
+  var UNIT = /(\d)[ \t]+(%|°C|°|mm³\/min|mm\/min|mm³|mm|cm³|cm|dm³|m\b|km\b|µm\b|μm\b|nm\b|min\b|minutes?\b|seconds?\b|s\b|hours?\b|h\b|days?\b|weeks?\b|years?\b|kg\b|mg\b|g\b|ml\b|l\b|kPa\b|kJ\b|J\b|runs?\b|trials?\b|marks?\b|leaves\b|grams?\b|degrees?\b|metres?\b|litres?\b|per cent\b|chews?\b|drops?\b)/g;
+  var LEAD = /\b(pH|[Dd]ay|[Tt]ube|Paper|Topic|Question|Stage|Step|Figure|Fig\.)[ \t]+(\d)/g;
+  function fix(t) {
+    var p = t.parentNode; if (!p || p.nodeType !== 1) return;
+    var tag = p.tagName; if (tag === 'SCRIPT' || tag === 'STYLE' || tag === 'TEXTAREA' || tag === 'OPTION') return;
+    var v = t.nodeValue; if (!/\d/.test(v)) return;
+    var n = v.replace(UNIT, '$1\u00A0$2').replace(LEAD, '$1\u00A0$2');
+    if (n !== v) t.nodeValue = n;
+  }
+  function join(node) {
+    if (!node) return;
+    if (node.nodeType === 3) { fix(node); return; }
+    if (node.nodeType !== 1 && node.nodeType !== 11) return;
+    var w = document.createTreeWalker(node, NodeFilter.SHOW_TEXT), t, list = [];
+    while ((t = w.nextNode())) list.push(t);
+    list.forEach(fix);
+  }
+  function watch() {
+    join(document.body);
+    new MutationObserver(function (recs) {
+      recs.forEach(function (r) { if (r.type === 'characterData') fix(r.target); else for (var i = 0; i < r.addedNodes.length; i++) join(r.addedNodes[i]); });
+    }).observe(document.body, { subtree: true, childList: true, characterData: true });
+  }
+  if (document.body) watch(); else document.addEventListener('DOMContentLoaded', watch);
+  window.KeepUnits = { join: join };
+})();

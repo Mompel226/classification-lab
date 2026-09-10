@@ -1455,3 +1455,8 @@ svg.lit .kl--all.is-on{opacity:1}
 
 /* the pinned plate paints above everything in the notes — the numbered pins, tags and tab bar carry their own z-index — and below tooltips, toasts, sheets and modals */
 @media (max-width:1000px) and (min-height:561px){ .platecol{z-index:35} }
+/* the small reset in a widget's header */
+.widget__h .widget__reset{margin-left:auto;font:inherit;font-size:11px;font-weight:600;letter-spacing:.02em;text-transform:none;color:var(--grey);background:#fff;border:1px solid var(--edge);border-radius:var(--r-pill);padding:2px 9px;cursor:pointer}
+.widget__h .widget__try ~ .widget__reset{margin-left:0}
+.widget__h .widget__reset:hover{color:var(--ink);border-color:var(--green)}
+@media (max-width:540px){ .widget__h{row-gap:3px} .widget__h .widget__try,.widget__h .widget__reset{padding:1px 8px} }

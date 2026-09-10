@@ -28,6 +28,23 @@
   var GROUP = {};
   (T.groups || []).concat(T.viruses ? [T.viruses] : []).forEach(function (g) { GROUP[g.id] = g; });
 
+  /* the same header reset as labs-shared/engine/widgets.js gives its widgets; this lab builds its own */
+  /* A widget a reader clicks through — tubes pressed, pins opened, sliders moved — gets a small reset in its
+     header that builds it afresh in the same place. Pictures, videos, tables and the potometer (which has resets
+     of its own) do not. */
+  var NO_RESET = { video: 1, photo: 1, table: 1, potometer: 1 };
+  function addReset(spec, e, remake) {
+    if (NO_RESET[spec.type] || !e.querySelector) return;
+    var hd = e.querySelector('.widget__h'); if (!hd || !e.querySelector('button, input, select, [role="button"]')) return;
+    var b = h('button', 'widget__reset', '↺ Reset'); b.type = 'button'; b.title = 'Start this one again';
+    b.addEventListener('click', function () {
+      /* the words this one introduced are marked again when it is built again */
+      if (global.Terms && global.Terms.unsee) { var ws = [], js = []; Array.prototype.forEach.call(e.querySelectorAll('.t'), function (t) { ws.push(t.textContent); if (t.getAttribute('data-jump')) js.push(t.getAttribute('data-jump')); }); global.Terms.unsee(ws, js); }
+      if (typeof e.__onReset === 'function') e.__onReset();   /* state kept outside the node — a saved route — goes too */
+      var fresh = remake(); if (e.parentNode) e.parentNode.replaceChild(fresh, e); if (global.Learn && global.Learn.reap) global.Learn.reap();
+    });
+    hd.appendChild(b);
+  }
   function head(title, ask, tryWord) {
     var d = h('div', 'widget__h', esc(title) + (tryWord ? '<span class="widget__try">' + esc(tryWord) + '</span>' : ''));
     var frag = document.createDocumentFragment(); frag.appendChild(d);
@@ -1022,8 +1039,9 @@
     activeId: null,
     reset: function () { this.keys = []; this.activeId = null; },
     register: function (id, el, draw) {
+      this.keys = this.keys.filter(function (k) { return k.id !== id; });   /* a key built again (its reset) replaces the old one */
       this.keys.push({ id: id, el: el, draw: draw });
-      if (this.activeId == null) this.setActive(id);
+      if (this.activeId == null || this.activeId === id) this.setActive(id);
       this.watch();
     },
     setActive: function (id) {
@@ -1187,6 +1205,7 @@
     /* reading this key, or touching it, hands it the plate */
     box.addEventListener('mouseenter', claim);
     box.addEventListener('focusin', claim);
+    box.__onReset = function () { saveKeyPath(id, []); };   /* the reset forgets the route this key was on */
     if (global.KeyPlate) global.KeyPlate.register(id, box, plate);
     return box;
   }
@@ -1524,6 +1543,7 @@
       if (!mk) return h('p', 'widget__note', 'Unknown widget: ' + esc(spec.type));
       var el = mk(spec, ctx || {});
       if (spec.group && !el.getAttribute('data-group')) el.setAttribute('data-group', spec.group);
+      addReset(spec, el, function () { return global.Learn.widget(spec, ctx); });
       return el;
     },
     seqView: seqView, keyPrint: keyPrint, svgFor: svgFor, DIAGRAMS: DIAGRAMS, ICON: ICON
