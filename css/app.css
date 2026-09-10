@@ -64,6 +64,8 @@ h1,h2,h3,h4{margin:0;font-weight:700;line-height:1.25}
   border:1px solid rgba(255,255,255,.2);border-radius:var(--r-pill);padding:4px 12px 4px 6px;font-size:12.5px
 }
 .stat b{font-size:14px;font-variant-numeric:tabular-nums}
+.stat--go{cursor:pointer;transition:background .15s}
+.stat--go:hover,.stat--go:focus-visible{background:rgba(255,255,255,.26)}
 .ring{width:26px;height:26px;flex:none}
 .ring circle{fill:none;stroke-width:4}
 .ring .bg{stroke:rgba(255,255,255,.25)}
