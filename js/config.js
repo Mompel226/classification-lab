@@ -10,6 +10,7 @@ window.LAB_CONFIG = {
   submitUrl: 'https://script.google.com/macros/s/AKfycbzwjMHaa88OL_GzR8wZ2mV6a8rs1CKYahbW5iOTQPyzWzCGIrAZPApGsP2oujK34tRc/exec',
 
   /* Shown on the submission form so you can tell classes apart. */
+  syllabusTopics: ['1'],   /* the topics this lab teaches: they come first when the syllabus is opened from the badge */
   classes: ['9A', '9B', '9C', '9D', '9E', 'Other'],
 
   /* Signing in, so a hand-in can be attributed.
