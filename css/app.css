@@ -1401,3 +1401,5 @@ svg.lit .kl--all.is-on{opacity:1}
   .stat{padding:3px 9px 3px 4px}
   #btnReset .hbtn__long{display:none} #btnReset .hbtn__short{display:inline;font-size:13px;font-weight:600}
 }
+/* the other number of a term, printed small beside it in the glossary and on the key-word cards */
+.num{display:inline-block;margin-left:7px;font-size:11.5px;font-weight:500;color:var(--grey);vertical-align:1px;white-space:nowrap}
