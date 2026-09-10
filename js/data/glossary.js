@@ -20,11 +20,21 @@ window.GLOSSARY = [
  },
  {
   "term": "adaptive feature",
-  "def": "An inherited feature that helps an organism to survive and reproduce in its environment."
+  "def": "An inherited feature that helps an organism to survive and reproduce in its environment.",
+  "forms": [
+   "adaptation",
+   "adaptations"
+  ]
  },
  {
   "term": "air space",
   "def": "A gap between the spongy mesophyll cells of a leaf, joined to the others and to the stomata, through which gases diffuse to and from every cell."
+ },
+ {
+  "term": "alga",
+  "plural": "algae",
+  "def": "A protoctist that photosynthesises: a single cell, or a simple many-celled body such as a seaweed, with chloroplasts and a cell wall but no true roots, stems or leaves.",
+  "ext": true
  },
  {
   "term": "alimentary canal",
@@ -63,6 +73,7 @@ window.GLOSSARY = [
  },
  {
   "term": "antenna",
+  "plural": "antennae",
   "def": "A jointed feeler on the head of an arthropod, sensing touch and chemicals. Plural: antennae. Insects and myriapods have one pair, crustaceans two, arachnids none."
  },
  {
@@ -92,7 +103,12 @@ window.GLOSSARY = [
  {
   "term": "autotrophic nutrition",
   "def": "Making your own organic substances (food) from simple inorganic ones. In plants and the algae this is photosynthesis: carbon dioxide and water are built into glucose using energy from light. An organism that feeds this way is an autotroph.",
-  "sup": true
+  "sup": true,
+  "forms": [
+   "autotroph",
+   "autotrophs",
+   "autotrophic"
+  ]
  },
  {
   "term": "auxin",
@@ -102,6 +118,14 @@ window.GLOSSARY = [
  {
   "term": "backbone",
   "def": "The column of small units (vertebrae) along the back of a vertebrate, around the nerve cord. They are bone in most vertebrates and cartilage in sharks and rays."
+ },
+ {
+  "term": "bacterium",
+  "plural": "bacteria",
+  "def": "A prokaryote: a single cell with no nucleus, its DNA in one circular loop and often in small extra rings called plasmids, and a cell wall that is not made of cellulose. Bacteria make up the prokaryote kingdom.",
+  "forms": [
+   "bacterial"
+  ]
  },
  {
   "term": "balanced diet",
@@ -126,7 +150,14 @@ window.GLOSSARY = [
  },
  {
   "term": "binomial system",
-  "def": "An internationally agreed system in which the scientific name of an organism is made up of two parts showing the genus and species. Written in italics or underlined; genus with a capital, species in lower case."
+  "def": "An internationally agreed system in which the scientific name of an organism is made up of two parts showing the genus and species. Written in italics or underlined; genus with a capital, species in lower case.",
+  "forms": [
+   "binomial",
+   "binomial name",
+   "binomial names",
+   "scientific name",
+   "scientific names"
+  ]
  },
  {
   "term": "bird",
@@ -181,7 +212,10 @@ window.GLOSSARY = [
  {
   "term": "cell elongation",
   "def": "Cells getting longer, which is how a shoot grows in length. Auxin stimulates it.",
-  "sup": true
+  "sup": true,
+  "forms": [
+   "elongation"
+  ]
  },
  {
   "term": "cell wall",
@@ -235,6 +269,7 @@ window.GLOSSARY = [
  },
  {
   "term": "circular folds",
+  "singular": "circular fold",
   "def": "Circular folds are ridges running round the inside of the small intestine that roughly triple the surface area compared with a flat tube.",
   "ext": true
  },
@@ -244,7 +279,11 @@ window.GLOSSARY = [
  },
  {
   "term": "classification",
-  "def": "The grouping of organisms by the features that they share. Classification systems aim to reflect evolutionary relationships."
+  "def": "The grouping of organisms by the features that they share. Classification systems aim to reflect evolutionary relationships.",
+  "forms": [
+   "classification system",
+   "classification systems"
+  ]
  },
  {
   "term": "colon",
@@ -291,7 +330,11 @@ window.GLOSSARY = [
  {
   "term": "cotyledon",
   "def": "A seed leaf: the leaf, or pair of leaves, already formed inside a seed. Monocotyledons have one, dicotyledons two.",
-  "sup": true
+  "sup": true,
+  "forms": [
+   "seed leaf",
+   "seed leaves"
+  ]
  },
  {
   "term": "cross-pollination",
@@ -329,7 +372,11 @@ window.GLOSSARY = [
  {
   "term": "dicotyledon",
   "def": "A flowering plant with two cotyledons, broad leaves with a network of veins, and flower parts in fours or fives. Sunflowers, beans, roses, most trees.",
-  "sup": true
+  "sup": true,
+  "forms": [
+   "dicot",
+   "dicots"
+  ]
  },
  {
   "term": "diffusion",
@@ -400,7 +447,11 @@ window.GLOSSARY = [
  },
  {
   "term": "epidermis",
-  "def": "The single layer of cells that covers a leaf, above and below (and a root or a stem). It protects the leaf and, with its cuticle, reduces water loss; the lower epidermis carries most of the stomata."
+  "def": "The single layer of cells that covers a leaf, above and below (and a root or a stem). It protects the leaf and, with its cuticle, reduces water loss; the lower epidermis carries most of the stomata.",
+  "forms": [
+   "upper epidermis",
+   "lower epidermis"
+  ]
  },
  {
   "term": "epiglottis",
@@ -416,6 +467,7 @@ window.GLOSSARY = [
  },
  {
   "term": "evolutionary relationships",
+  "singular": "evolutionary relationship",
   "def": "How closely organisms are related by descent from common ancestors. Classification systems aim to reflect them.",
   "sup": true
  },
@@ -437,7 +489,13 @@ window.GLOSSARY = [
  },
  {
   "term": "fats and oils",
-  "def": "Fats and oils (lipids) are nutrients built from glycerol and fatty acids. They store energy, insulate the body and protect organs; butter, oils, nuts and oily fish are rich in them."
+  "def": "Fats and oils (lipids) are nutrients built from glycerol and fatty acids. They store energy, insulate the body and protect organs; butter, oils, nuts and oily fish are rich in them.",
+  "forms": [
+   "fat",
+   "fats",
+   "oil",
+   "oils"
+  ]
  },
  {
   "term": "feature",
@@ -461,12 +519,21 @@ window.GLOSSARY = [
  },
  {
   "term": "fibre (roughage)",
-  "def": "Plant material, mostly cellulose, that is not digested; it adds bulk so that peristalsis can move food along, and helps prevent constipation."
+  "def": "Plant material, mostly cellulose, that is not digested; it adds bulk so that peristalsis can move food along, and helps prevent constipation.",
+  "forms": [
+   "fibre",
+   "roughage",
+   "dietary fibre"
+  ]
  },
  {
   "term": "fibrous root system",
   "def": "Many roots of about the same thickness spreading out from the base of the stem, with no single main root. Monocotyledons have one.",
-  "sup": true
+  "sup": true,
+  "forms": [
+   "fibrous root",
+   "fibrous roots"
+  ]
  },
  {
   "term": "filament",
@@ -496,8 +563,12 @@ window.GLOSSARY = [
  },
  {
   "term": "fungus",
+  "plural": "fungi",
   "def": "An organism whose cells have a nucleus and a cell wall not made of cellulose, with no chloroplasts. Most are made of hyphae; yeast is a single cell. Fungi feed by saprotrophic nutrition. Plural: fungi.",
-  "sup": true
+  "sup": true,
+  "forms": [
+   "fungal"
+  ]
  },
  {
   "term": "gastric juice",
@@ -505,6 +576,7 @@ window.GLOSSARY = [
  },
  {
   "term": "genus",
+  "plural": "genera",
   "def": "A group of closely related species. The first word of a scientific name, written with a capital letter: Panthera in Panthera leo. Plural: genera."
  },
  {
@@ -554,7 +626,12 @@ window.GLOSSARY = [
  {
   "term": "heterotrophic nutrition",
   "def": "Taking in organic substances made by other organisms, and breaking them down to be absorbed and used. Animals, fungi and many prokaryotes and protoctists feed this way; each is a heterotroph.",
-  "sup": true
+  "sup": true,
+  "forms": [
+   "heterotroph",
+   "heterotrophs",
+   "heterotrophic"
+  ]
  },
  {
   "term": "holozoic nutrition",
@@ -590,6 +667,7 @@ window.GLOSSARY = [
  },
  {
   "term": "hypha",
+  "plural": "hyphae",
   "def": "One of the fine threads that make up the body of most fungi. Plural: hyphae; the mass of them is the mycelium.",
   "sup": true
  },
@@ -632,7 +710,10 @@ window.GLOSSARY = [
  },
  {
   "term": "kingdom",
-  "def": "The largest group in the classification used here. There are five: animal, plant, fungus, prokaryote and protoctist. Viruses belong to none."
+  "def": "The largest group in the classification used here. There are five: animal, plant, fungus, prokaryote and protoctist. Viruses belong to none.",
+  "forms": [
+   "five kingdoms"
+  ]
  },
  {
   "term": "lacteal",
@@ -668,7 +749,10 @@ window.GLOSSARY = [
  },
  {
   "term": "magnesium ion",
-  "def": "A mineral ion taken in through the roots and used to make chlorophyll. (Too little, and the leaves turn yellow.)"
+  "def": "A mineral ion taken in through the roots and used to make chlorophyll. (Too little, and the leaves turn yellow.)",
+  "forms": [
+   "magnesium"
+  ]
  },
  {
   "term": "magnification",
@@ -698,6 +782,7 @@ window.GLOSSARY = [
  },
  {
   "term": "mammary glands",
+  "singular": "mammary gland",
   "def": "The glands of a female mammal that make milk for the young."
  },
  {
@@ -706,7 +791,11 @@ window.GLOSSARY = [
  },
  {
   "term": "mesophyll",
-  "def": "The photosynthesising tissue inside a leaf, between the upper and lower epidermis: the palisade layer above and the spongy layer below."
+  "def": "The photosynthesising tissue inside a leaf, between the upper and lower epidermis: the palisade layer above and the spongy layer below.",
+  "forms": [
+   "mesophyll cell",
+   "mesophyll cells"
+  ]
  },
  {
   "term": "metabolism",
@@ -714,12 +803,18 @@ window.GLOSSARY = [
  },
  {
   "term": "microvilli",
+  "singular": "microvillus",
   "def": "Microvilli are tiny folds of the cell membrane on each epithelial cell, which increase the surface area still further.",
   "sup": true
  },
  {
   "term": "mineral ion",
   "def": "An inorganic ion a plant takes in, dissolved in soil water, through its root hairs: nitrate ions and magnesium ions are the two the syllabus names."
+ },
+ {
+  "term": "mitochondrion",
+  "plural": "mitochondria",
+  "def": "The part of a cell where aerobic respiration takes place, releasing the energy the cell uses. Cells that work hard — muscle, a root hair cell, the tail of a sperm — have many."
  },
  {
   "term": "model",
@@ -732,7 +827,11 @@ window.GLOSSARY = [
  {
   "term": "monocotyledon",
   "def": "A flowering plant with one cotyledon, long narrow leaves with parallel veins, and flower parts in threes. Grasses, cereals, lilies, orchids, palms.",
-  "sup": true
+  "sup": true,
+  "forms": [
+   "monocot",
+   "monocots"
+  ]
  },
  {
   "term": "monomer",
@@ -758,6 +857,7 @@ window.GLOSSARY = [
  },
  {
   "term": "mycelium",
+  "plural": "mycelia",
   "def": "The mass of hyphae that forms the body of a fungus, usually hidden in the soil or in what it feeds on.",
   "sup": true
  },
@@ -788,10 +888,14 @@ window.GLOSSARY = [
  },
  {
   "term": "nitrate ion",
-  "def": "A mineral ion taken in through the roots and used to make amino acids, and so proteins. (Too little, and growth is stunted and the leaves turn pale.)"
+  "def": "A mineral ion taken in through the roots and used to make amino acids, and so proteins. (Too little, and growth is stunted and the leaves turn pale.)",
+  "forms": [
+   "nitrate"
+  ]
  },
  {
   "term": "nucleus",
+  "plural": "nuclei",
   "def": "The part of a cell that contains the genetic material (DNA in chromosomes) and controls the cell. Present in animal, plant, fungal and protoctist cells; absent from prokaryotes."
  },
  {
@@ -829,7 +933,12 @@ window.GLOSSARY = [
  },
  {
   "term": "palisade mesophyll",
-  "def": "The layer of tightly packed, column-shaped cells under the upper epidermis of a leaf, holding most of its chloroplasts. Where most photosynthesis happens."
+  "def": "The layer of tightly packed, column-shaped cells under the upper epidermis of a leaf, holding most of its chloroplasts. Where most photosynthesis happens.",
+  "forms": [
+   "palisade cell",
+   "palisade cells",
+   "palisade layer"
+  ]
  },
  {
   "term": "pancreatic juice",
@@ -838,7 +947,10 @@ window.GLOSSARY = [
  {
   "term": "parasite",
   "def": "An organism that lives on or in another organism, its host, taking food from it and doing it harm. Parasites are found in several groups: animals such as the tapeworm and the flea, protoctists such as the malaria parasite, and many fungi.",
-  "sup": true
+  "sup": true,
+  "forms": [
+   "parasitic"
+  ]
  },
  {
   "term": "parasitic nutrition",
@@ -859,12 +971,16 @@ window.GLOSSARY = [
  },
  {
   "term": "periodontal fibres",
+  "singular": "periodontal fibre",
   "def": "Tough fibres between the cement and the jawbone that hold the tooth firmly in its socket and act as shock absorbers. (Not required by 0610.)",
   "ext": true
  },
  {
   "term": "peristalsis",
-  "def": "The squeezing action of muscles that moves food along the oesophagus and intestines: the wall contracts behind the food and relaxes in front of it."
+  "def": "The squeezing action of muscles that moves food along the oesophagus and intestines: the wall contracts behind the food and relaxes in front of it.",
+  "forms": [
+   "peristaltic"
+  ]
  },
  {
   "term": "petal",
@@ -887,6 +1003,11 @@ window.GLOSSARY = [
   "def": "A response in which parts of a plant grow towards or away from the direction of the light source: a shoot grows towards the light."
  },
  {
+  "term": "phylum",
+  "plural": "phyla",
+  "def": "The rank below kingdom: a kingdom is divided into phyla, a phylum into classes, and so on down through order, family and genus to species. The arthropods are one phylum of the animal kingdom."
+ },
+ {
   "term": "physical digestion",
   "def": "The breakdown of food into smaller pieces without chemical change to the food molecules."
  },
@@ -907,7 +1028,10 @@ window.GLOSSARY = [
  },
  {
   "term": "pollen grain",
-  "def": "The structure made by an anther that carries the male gamete, the pollen nucleus. Large, sticky or spiky in an insect-pollinated flower; small, smooth and light in a wind-pollinated one."
+  "def": "The structure made by an anther that carries the male gamete, the pollen nucleus. Large, sticky or spiky in an insect-pollinated flower; small, smooth and light in a wind-pollinated one.",
+  "forms": [
+   "pollen"
+  ]
  },
  {
   "term": "pollen tube",
@@ -946,7 +1070,10 @@ window.GLOSSARY = [
  {
   "term": "prokaryote",
   "def": "A single-celled organism with no nucleus: its DNA is a circle lying free in the cytoplasm, often with plasmids. A cell wall not made of cellulose; no mitochondria. Bacteria are prokaryotes.",
-  "sup": true
+  "sup": true,
+  "forms": [
+   "prokaryotic"
+  ]
  },
  {
   "term": "protease",
@@ -1019,11 +1146,18 @@ window.GLOSSARY = [
  },
  {
   "term": "root cortex",
-  "def": "The layer of cells in a root between the epidermis and the xylem, which water crosses from cell to cell on its way in from the root hairs."
+  "def": "The layer of cells in a root between the epidermis and the xylem, which water crosses from cell to cell on its way in from the root hairs.",
+  "forms": [
+   "cortex"
+  ]
  },
  {
   "term": "root hair cell",
-  "def": "A cell on the surface of a root with a long, thin extension into the soil. The root hairs together give a large surface area, which increases the uptake of water (by osmosis) and mineral ions (by active transport)."
+  "def": "A cell on the surface of a root with a long, thin extension into the soil. The root hairs together give a large surface area, which increases the uptake of water (by osmosis) and mineral ions (by active transport).",
+  "forms": [
+   "root hair",
+   "root hairs"
+  ]
  },
  {
   "term": "saliva",
@@ -1035,12 +1169,20 @@ window.GLOSSARY = [
  },
  {
   "term": "salivary glands",
+  "singular": "salivary gland",
   "def": "The glands that secrete saliva into the mouth; they are associated organs, not part of the alimentary canal."
  },
  {
   "term": "saprotrophic nutrition",
   "def": "Feeding on dead organic material by releasing enzymes onto it and absorbing the digested products. How fungi feed.",
-  "sup": true
+  "sup": true,
+  "forms": [
+   "saprotroph",
+   "saprotrophs",
+   "saprotrophic",
+   "saprophyte",
+   "saprophytes"
+  ]
  },
  {
   "term": "scurvy",
@@ -1088,6 +1230,7 @@ window.GLOSSARY = [
  },
  {
   "term": "species",
+  "plural": "species",
   "def": "A group of organisms that can reproduce to produce fertile offspring."
  },
  {
@@ -1122,10 +1265,12 @@ window.GLOSSARY = [
  },
  {
   "term": "stimulus",
+  "plural": "stimuli",
   "def": "A change in the internal or external environment that an organism can detect — light, temperature, touch, a chemical. Plural: stimuli."
  },
  {
   "term": "stoma",
+  "plural": "stomata",
   "def": "A pore in the epidermis of a leaf, mostly on the lower surface, through which carbon dioxide diffuses in, oxygen diffuses out, and water vapour is lost. Plural: stomata."
  },
  {
@@ -1171,7 +1316,10 @@ window.GLOSSARY = [
  {
   "term": "testa",
   "def": "The seed coat: the tough protective covering of a seed, softened and split by water at germination.",
-  "ext": true
+  "ext": true,
+  "forms": [
+   "seed coat"
+  ]
  },
  {
   "term": "thorax",
@@ -1188,7 +1336,10 @@ window.GLOSSARY = [
  },
  {
   "term": "transpiration",
-  "def": "The loss of water vapour from leaves. Water evaporates from the surfaces of the mesophyll cells into the air spaces, and then diffuses out of the leaf through the stomata as water vapour."
+  "def": "The loss of water vapour from leaves. Water evaporates from the surfaces of the mesophyll cells into the air spaces, and then diffuses out of the leaf through the stomata as water vapour.",
+  "forms": [
+   "transpiration stream"
+  ]
  },
  {
   "term": "transpiration pull",
@@ -1221,7 +1372,10 @@ window.GLOSSARY = [
  },
  {
   "term": "variegated leaf",
-  "def": "A leaf with green parts and white parts. The white parts have no chlorophyll, which is what makes it the test for whether chlorophyll is needed for photosynthesis."
+  "def": "A leaf with green parts and white parts. The white parts have no chlorophyll, which is what makes it the test for whether chlorophyll is needed for photosynthesis.",
+  "forms": [
+   "variegated"
+  ]
  },
  {
   "term": "vascular bundle",
@@ -1233,7 +1387,8 @@ window.GLOSSARY = [
  },
  {
   "term": "villus",
-  "def": "A finger-like projection of the lining of the small intestine that increases the surface area for absorption (plural: villi). Each villus is covered in microvilli and holds blood capillaries and a lacteal.",
+  "plural": "villi",
+  "def": "A finger-like projection of the lining of the small intestine that increases the surface area for absorption. Each villus is covered in microvilli and holds blood capillaries and a lacteal.",
   "also": [
    "microvilli",
    "lacteal",
@@ -1277,3 +1432,5 @@ window.GLOSSARY = [
   "sup": true
  }
 ];
+/* every form that opens one of those entries: its plural or singular, the verb behind it, an alias */
+window.GLOSSARY_FORMS = {"adaptation":"adaptive feature","adaptations":"adaptive feature","algae":"alga","antennae":"antenna","autotroph":"autotrophic nutrition","autotrophs":"autotrophic nutrition","autotrophic":"autotrophic nutrition","bacteria":"bacterium","bacterial":"bacterium","binomial":"binomial system","binomial name":"binomial system","binomial names":"binomial system","scientific name":"binomial system","scientific names":"binomial system","elongation":"cell elongation","circular fold":"circular folds","classification system":"classification","classification systems":"classification","seed leaf":"cotyledon","seed leaves":"cotyledon","dicot":"dicotyledon","dicots":"dicotyledon","upper epidermis":"epidermis","lower epidermis":"epidermis","evolutionary relationship":"evolutionary relationships","fat":"fats and oils","fats":"fats and oils","oil":"fats and oils","oils":"fats and oils","fibre":"fibre (roughage)","roughage":"fibre (roughage)","dietary fibre":"fibre (roughage)","fibrous root":"fibrous root system","fibrous roots":"fibrous root system","fungi":"fungus","fungal":"fungus","genera":"genus","heterotroph":"heterotrophic nutrition","heterotrophs":"heterotrophic nutrition","heterotrophic":"heterotrophic nutrition","hyphae":"hypha","five kingdoms":"kingdom","magnesium":"magnesium ion","mammary gland":"mammary glands","mesophyll cell":"mesophyll","mesophyll cells":"mesophyll","microvillus":"microvilli","mitochondria":"mitochondrion","monocot":"monocotyledon","monocots":"monocotyledon","mycelia":"mycelium","nitrate":"nitrate ion","nuclei":"nucleus","palisade cell":"palisade mesophyll","palisade cells":"palisade mesophyll","palisade layer":"palisade mesophyll","parasitic":"parasite","periodontal fibre":"periodontal fibres","peristaltic":"peristalsis","phyla":"phylum","pollen":"pollen grain","prokaryotic":"prokaryote","cortex":"root cortex","root hair":"root hair cell","root hairs":"root hair cell","salivary gland":"salivary glands","saprotroph":"saprotrophic nutrition","saprotrophs":"saprotrophic nutrition","saprotrophic":"saprotrophic nutrition","saprophyte":"saprotrophic nutrition","saprophytes":"saprotrophic nutrition","stimuli":"stimulus","stomata":"stoma","seed coat":"testa","transpiration stream":"transpiration","variegated":"variegated leaf","villi":"villus","abdomens":"abdomen","absorptions":"absorption","absorb":"absorption","absorbs":"absorption","absorbed":"absorption","absorbing":"absorption","absorbation":"absorption","active sites":"active site","active sited":"active site","active siting":"active site","active sitation":"active site","active sition":"active site","active transports":"active transport","adaptive features":"adaptive feature","adaptive featured":"adaptive feature","adaptive featuring":"adaptive feature","adaptive featuration":"adaptive feature","adaptive featurion":"adaptive feature","air spaces":"air space","air spaced":"air space","air spacing":"air space","air spacation":"air space","air spacion":"air space","algas":"alga","alimentary canals":"alimentary canal","amino acids":"amino acid","amphibians":"amphibian","amylases":"amylase","amylased":"amylase","amylasing":"amylase","amylasation":"amylase","amylasion":"amylase","anaemias":"anaemia","anatomies":"anatomy","antennas":"antenna","anthers":"anther","anuses":"anus","arachnids":"arachnid","arthropods":"arthropod","assimilations":"assimilation","assimilate":"assimilation","assimilates":"assimilation","assimilated":"assimilation","assimilating":"assimilation","assimilatation":"assimilation","associated organs":"associated organ","autotrophic nutritions":"autotrophic nutrition","auxins":"auxin","backbones":"backbone","backboned":"backbone","backboning":"backbone","backbonation":"backbone","backbonion":"backbone","bacteriums":"bacterium","balanced diets":"balanced diet","bases":"base","based":"base","basing":"base","basation":"base","basion":"base","base sequences":"base sequence","base sequenced":"base sequence","base sequencing":"base sequence","base sequencation":"base sequence","base sequencion":"base sequence","biles":"bile","biled":"bile","biling":"bile","bilation":"bile","bilion":"bile","bile ducts":"bile duct","binomial systems":"binomial system","birds":"bird","boluses":"bolus","calciums":"calcium","canines":"canine","canined":"canine","canining":"canine","canination":"canine","caninion":"canine","capillaries":"capillary","carbohydrases":"carbohydrase","carbohydrased":"carbohydrase","carbohydrasing":"carbohydrase","carbohydrasation":"carbohydrase","carbohydrasion":"carbohydrase","carbohydrates":"carbohydrate","carbohydrated":"carbohydrate","carbohydrating":"carbohydrate","carbohydratation":"carbohydrate","carbohydration":"carbohydrate","carpels":"carpel","catabolics":"catabolic","catalysts":"catalyst","cell elongations":"cell elongation","cell elongate":"cell elongation","cell elongates":"cell elongation","cell elongated":"cell elongation","cell elongating":"cell elongation","cell elongatation":"cell elongation","cell walls":"cell wall","celluloses":"cellulose","cellulosed":"cellulose","cellulosing":"cellulose","cellulosation":"cellulose","cellulosion":"cellulose","cements":"cement","cephalothoraxes":"cephalothorax","characteristics":"characteristic","chemical digestions":"chemical digestion","chemical digest":"chemical digestion","chemical digests":"chemical digestion","chemical digested":"chemical digestion","chemical digesting":"chemical digestion","chemical digestation":"chemical digestion","chitins":"chitin","chlorophylls":"chlorophyll","chloroplasts":"chloroplast","chymes":"chyme","chymed":"chyme","chyming":"chyme","chymation":"chyme","chymion":"chyme","circular foldses":"circular folds","circular muscles":"circular muscle","circular muscled":"circular muscle","circular muscling":"circular muscle","circular musclation":"circular muscle","circular musclion":"circular muscle","classifications":"classification","classify":"classification","classifies":"classification","classified":"classification","classifying":"classification","classificate":"classification","classificates":"classification","classificated":"classification","classificating":"classification","classificatation":"classification","colons":"colon","common ancestors":"common ancestor","complementaries":"complementary","compound eyes":"compound eye","compound eyed":"compound eye","compound eying":"compound eye","compound eyation":"compound eye","compound eyion":"compound eye","concentrations":"concentration","concentrate":"concentration","concentrates":"concentration","concentrated":"concentration","concentrating":"concentration","concentratation":"concentration","concentration gradients":"concentration gradient","condensations":"condensation","condense":"condensation","condenses":"condensation","condensed":"condensation","condensing":"condensation","condension":"condensation","condensate":"condensation","condensates":"condensation","condensated":"condensation","condensating":"condensation","condensatation":"condensation","constipations":"constipation","constipate":"constipation","constipates":"constipation","constipated":"constipation","constipating":"constipation","constipatation":"constipation","consumeds":"consumed","consum":"consumed","consums":"consumed","consuming":"consumed","consumation":"consumed","consume":"consumed","consumes":"consumed","consumion":"consumed","controls":"control","cotyledons":"cotyledon","cross-pollinations":"cross-pollination","cross-pollinate":"cross-pollination","cross-pollinates":"cross-pollination","cross-pollinated":"cross-pollination","cross-pollinating":"cross-pollination","cross-pollinatation":"cross-pollination","crustaceans":"crustacean","cuticles":"cuticle","cuticled":"cuticle","cuticling":"cuticle","cuticlation":"cuticle","cuticlion":"cuticle","de-starchings":"de-starching","de-starch":"de-starching","de-starchs":"de-starching","de-starched":"de-starching","de-starchation":"de-starching","deficiency diseases":"deficiency disease","deficiency diseased":"deficiency disease","deficiency diseasing":"deficiency disease","deficiency diseasation":"deficiency disease","deficiency diseasion":"deficiency disease","denatureds":"denatured","denatur":"denatured","denaturs":"denatured","denaturing":"denatured","denaturation":"denatured","denature":"denatured","denatures":"denatured","denaturion":"denatured","dentines":"dentine","dentined":"dentine","dentining":"dentine","dentination":"dentine","dentinion":"dentine","dichotomous keys":"dichotomous key","dicotyledons":"dicotyledon","diffusions":"diffusion","diffuse":"diffusion","diffuses":"diffusion","diffused":"diffusion","diffusing":"diffusion","diffusation":"diffusion","digestions":"digestion","digest":"digestion","digests":"digestion","digested":"digestion","digesting":"digestion","digestation":"digestion","dnas":"DNA","dry masses":"dry mass","duodenums":"duodenum","ectotherms":"ectotherm","egestions":"egestion","egest":"egestion","egests":"egestion","egested":"egestion","egesting":"egestion","egestation":"egestion","emulsifications":"emulsification","emulsify":"emulsification","emulsifies":"emulsification","emulsified":"emulsification","emulsifying":"emulsification","emulsificate":"emulsification","emulsificates":"emulsification","emulsificated":"emulsification","emulsificating":"emulsification","emulsificatation":"emulsification","enamels":"enamel","endotherms":"endotherm","enterocytes":"enterocyte","enterocyted":"enterocyte","enterocyting":"enterocyte","enterocytation":"enterocyte","enterocytion":"enterocyte","enzymes":"enzyme","enzymed":"enzyme","enzyming":"enzyme","enzymation":"enzyme","enzymion":"enzyme","epidermises":"epidermis","epiglottises":"epiglottis","epitheliums":"epithelium","equilibriums":"equilibrium","evolutionary relationshipses":"evolutionary relationships","excretions":"excretion","excrete":"excretion","excretes":"excretion","excreted":"excretion","excreting":"excretion","excretation":"excretion","exoskeletons":"exoskeleton","external fertilisations":"external fertilisation","external fertilise":"external fertilisation","external fertilises":"external fertilisation","external fertilised":"external fertilisation","external fertilising":"external fertilisation","external fertilision":"external fertilisation","external fertilisate":"external fertilisation","external fertilisates":"external fertilisation","external fertilisated":"external fertilisation","external fertilisating":"external fertilisation","external fertilisatation":"external fertilisation","faeceses":"faeces","fats and oilses":"fats and oils","features":"feature","featured":"feature","featuring":"feature","featuration":"feature","featurion":"feature","ferns":"fern","fertile offsprings":"fertile offspring","fertile offspr":"fertile offspring","fertile offsprs":"fertile offspring","fertile offspred":"fertile offspring","fertile offspration":"fertile offspring","fertilisations":"fertilisation","fertilise":"fertilisation","fertilises":"fertilisation","fertilised":"fertilisation","fertilising":"fertilisation","fertilision":"fertilisation","fertilisate":"fertilisation","fertilisates":"fertilisation","fertilisated":"fertilisation","fertilisating":"fertilisation","fertilisatation":"fertilisation","fibre (roughage)s":"fibre (roughage)","fibrous root systems":"fibrous root system","filaments":"filament","fila":"filament","filas":"filament","filaed":"filament","filaing":"filament","filaation":"filament","fishes":"fish","flaccids":"flaccid","flowering plants":"flowering plant","fronds":"frond","fruits":"fruit","funguses":"fungus","gastric juices":"gastric juice","gastric juiced":"gastric juice","gastric juicing":"gastric juice","gastric juication":"gastric juice","gastric juicion":"gastric juice","genuses":"genus","germinations":"germination","germinate":"germination","germinates":"germination","germinated":"germination","germinating":"germination","germinatation":"germination","glucoses":"glucose","glucosed":"glucose","glucosing":"glucose","glucosation":"glucose","glucosion":"glucose","glycogens":"glycogen","gravitropisms":"gravitropism","growths":"growth","grow":"growth","grows":"growth","growed":"growth","growing":"growth","growation":"growth","guard cells":"guard cell","gums":"gum","hepatic portal veins":"hepatic portal vein","hepatocytes":"hepatocyte","hepatocyted":"hepatocyte","hepatocyting":"hepatocyte","hepatocytation":"hepatocyte","hepatocytion":"hepatocyte","heterotrophic nutritions":"heterotrophic nutrition","holozoic nutritions":"holozoic nutrition","host cells":"host cell","humidities":"humidity","hydrochloric acids":"hydrochloric acid","hydrogencarbonate indicators":"hydrogencarbonate indicator","hydrolysises":"hydrolysis","hydrolyse":"hydrolysis","hydrolyses":"hydrolysis","hydrolysed":"hydrolysis","hydrolysing":"hydrolysis","hydrolysation":"hydrolysis","hydrolysion":"hydrolysis","hydrophytes":"hydrophyte","hydrophyted":"hydrophyte","hydrophyting":"hydrophyte","hydrophytation":"hydrophyte","hydrophytion":"hydrophyte","hyphas":"hypha","ileums":"ileum","incisors":"incisor","ingestions":"ingestion","ingest":"ingestion","ingests":"ingestion","ingested":"ingestion","ingesting":"ingestion","ingestation":"ingestion","insects":"insect","insolubles":"insoluble","insolubled":"insoluble","insolubling":"insoluble","insolublation":"insoluble","insolublion":"insoluble","internal fertilisations":"internal fertilisation","internal fertilise":"internal fertilisation","internal fertilises":"internal fertilisation","internal fertilised":"internal fertilisation","internal fertilising":"internal fertilisation","internal fertilision":"internal fertilisation","internal fertilisate":"internal fertilisation","internal fertilisates":"internal fertilisation","internal fertilisated":"internal fertilisation","internal fertilisating":"internal fertilisation","internal fertilisatation":"internal fertilisation","iodine solutions":"iodine solution","irons":"iron","jawbones":"jawbone","jawboned":"jawbone","jawboning":"jawbone","jawbonation":"jawbone","jawbonion":"jawbone","kingdoms":"kingdom","lacteals":"lacteal","lignins":"lignin","limiting factors":"limiting factor","lipases":"lipase","lipased":"lipase","lipasing":"lipase","lipasation":"lipase","lipasion":"lipase","longitudinal muscles":"longitudinal muscle","longitudinal muscled":"longitudinal muscle","longitudinal muscling":"longitudinal muscle","longitudinal musclation":"longitudinal muscle","longitudinal musclion":"longitudinal muscle","lumens":"lumen","magnesium ions":"magnesium ion","magnifications":"magnification","magnify":"magnification","magnifies":"magnification","magnified":"magnification","magnifying":"magnification","magnificate":"magnification","magnificates":"magnification","magnificated":"magnification","magnificating":"magnification","magnificatation":"magnification","malnutritions":"malnutrition","maltases":"maltase","maltased":"maltase","maltasing":"maltase","maltasation":"maltase","maltasion":"maltase","maltoses":"maltose","maltosed":"maltose","maltosing":"maltose","maltosation":"maltose","maltosion":"maltose","mammals":"mammal","mammary glandses":"mammary glands","mastications":"mastication","masticate":"mastication","masticates":"mastication","masticated":"mastication","masticating":"mastication","masticatation":"mastication","mesophylls":"mesophyll","metabolisms":"metabolism","microvillis":"microvilli","mineral ions":"mineral ion","mitochondrions":"mitochondrion","models":"model","molars":"molar","monocotyledons":"monocotyledon","monomers":"monomer","morphologies":"morphology","movements":"movement","move":"movement","moves":"movement","moved":"movement","moving":"movement","movation":"movement","movion":"movement","mucuses":"mucus","myceliums":"mycelium","myriapods":"myriapod","nectars":"nectar","negative controls":"negative control","net movements":"net movement","net move":"net movement","net moves":"net movement","net moved":"net movement","net moving":"net movement","net movation":"net movement","net movion":"net movement","neutralises":"neutralise","neutralised":"neutralise","neutralising":"neutralise","neutralisation":"neutralise","neutralision":"neutralise","nitrate ions":"nitrate ion","nucleuses":"nucleus","nutritions":"nutrition","oesophaguses":"oesophagus","optimums":"optimum","optimum phs":"optimum pH","osmosises":"osmosis","ovaries":"ovary","ovules":"ovule","ovuled":"ovule","ovuling":"ovule","ovulation":"ovule","ovulion":"ovule","palisade mesophylls":"palisade mesophyll","pancreatic juices":"pancreatic juice","pancreatic juiced":"pancreatic juice","pancreatic juicing":"pancreatic juice","pancreatic juication":"pancreatic juice","pancreatic juicion":"pancreatic juice","parasites":"parasite","parasited":"parasite","parasiting":"parasite","parasitation":"parasite","parasition":"parasite","parasitic nutritions":"parasitic nutrition","partially permeables":"partially permeable","partially permeabled":"partially permeable","partially permeabling":"partially permeable","partially permeablation":"partially permeable","partially permeablion":"partially permeable","pathogens":"pathogen","pepsins":"pepsin","periodontal fibreses":"periodontal fibres","peristalsises":"peristalsis","petals":"petal","pharynxes":"pharynx","phloems":"phloem","photosynthesises":"photosynthesis","photosynthesise":"photosynthesis","photosynthesised":"photosynthesis","photosynthesising":"photosynthesis","photosynthesisation":"photosynthesis","photosynthesision":"photosynthesis","phototropisms":"phototropism","phylums":"phylum","physical digestions":"physical digestion","physical digest":"physical digestion","physical digests":"physical digestion","physical digested":"physical digestion","physical digesting":"physical digestion","physical digestation":"physical digestion","plaques":"plaque","plasmids":"plasmid","plumules":"plumule","plumuled":"plumule","plumuling":"plumule","plumulation":"plumule","plumulion":"plumule","pollen grains":"pollen grain","pollen tubes":"pollen tube","pollen tubed":"pollen tube","pollen tubing":"pollen tube","pollen tubation":"pollen tube","pollen tubion":"pollen tube","pollinations":"pollination","pollinate":"pollination","pollinates":"pollination","pollinated":"pollination","pollinating":"pollination","pollinatation":"pollination","polymers":"polymer","positive controls":"positive control","potometers":"potometer","premolars":"premolar","prokaryotes":"prokaryote","prokaryoted":"prokaryote","prokaryoting":"prokaryote","prokaryotation":"prokaryote","prokaryotion":"prokaryote","proteases":"protease","proteased":"protease","proteasing":"protease","proteasation":"protease","proteasion":"protease","proteins":"protein","protein coats":"protein coat","protoctists":"protoctist","pulps":"pulp","radicles":"radicle","radicled":"radicle","radicling":"radicle","radiclation":"radicle","radiclion":"radicle","reabsorbeds":"reabsorbed","reabsorb":"reabsorbed","reabsorbs":"reabsorbed","reabsorbing":"reabsorbed","reabsorbation":"reabsorbed","reabsorbe":"reabsorbed","reabsorbes":"reabsorbed","reabsorbion":"reabsorbed","reabsorptions":"reabsorption","rectums":"rectum","reducing sugars":"reducing sugar","reproductions":"reproduction","reproduce":"reproduction","reproduces":"reproduction","reproduced":"reproduction","reproducing":"reproduction","reproducation":"reproduction","reproducion":"reproduction","reptiles":"reptile","reptiled":"reptile","reptiling":"reptile","reptilation":"reptile","reptilion":"reptile","respirations":"respiration","respire":"respiration","respires":"respiration","respired":"respiration","respiring":"respiration","respirion":"respiration","respirate":"respiration","respirates":"respiration","respirated":"respiration","respirating":"respiration","respiratation":"respiration","ricketses":"rickets","root canals":"root canal","root cortexes":"root cortex","root hair cells":"root hair cell","salivas":"saliva","salivary amylases":"salivary amylase","salivary amylased":"salivary amylase","salivary amylasing":"salivary amylase","salivary amylasation":"salivary amylase","salivary amylasion":"salivary amylase","salivary glandses":"salivary glands","saprotrophic nutritions":"saprotrophic nutrition","scurvies":"scurvy","secretes":"secrete","secreted":"secrete","secreting":"secrete","secretation":"secrete","secretion":"secrete","seeds":"seed","self-pollinations":"self-pollination","self-pollinate":"self-pollination","self-pollinates":"self-pollination","self-pollinated":"self-pollination","self-pollinating":"self-pollination","self-pollinatation":"self-pollination","sensitivities":"sensitivity","sensitive":"sensitivity","sensitives":"sensitivity","sensitived":"sensitivity","sensitiving":"sensitivity","sensitivation":"sensitivity","sensitivion":"sensitivity","sepals":"sepal","shoot tips":"shoot tip","sinks":"sink","solubles":"soluble","solubled":"soluble","solubling":"soluble","solublation":"soluble","solublion":"soluble","sources":"source","sourced":"source","sourcing":"source","sourcation":"source","sourcion":"source","specieses":"species","specimens":"specimen","spongy mesophylls":"spongy mesophyll","spores":"spore","spored":"spore","sporing":"spore","sporation":"spore","sporion":"spore","stamens":"stamen","starches":"starch","stigmas":"stigma","stimuluses":"stimulus","stomas":"stoma","styles":"style","styled":"style","styling":"style","stylation":"style","stylion":"style","substrates":"substrate","substrated":"substrate","substrating":"substrate","substratation":"substrate","substration":"substrate","sucroses":"sucrose","sucrosed":"sucrose","sucrosing":"sucrose","sucrosation":"sucrose","sucrosion":"sucrose","surface areas":"surface area","swallowings":"swallowing","swallow":"swallowing","swallows":"swallowing","swallowed":"swallowing","swallowation":"swallowing","tap roots":"tap root","taxonomies":"taxonomy","testas":"testa","thoraxes":"thorax","tracheas":"trachea","translocations":"translocation","translocate":"translocation","translocates":"translocation","translocated":"translocation","translocating":"translocation","translocatation":"translocation","transpirations":"transpiration","transpire":"transpiration","transpires":"transpiration","transpired":"transpiration","transpiring":"transpiration","transpirion":"transpiration","transpirate":"transpiration","transpirates":"transpiration","transpirated":"transpiration","transpirating":"transpiration","transpiratation":"transpiration","transpiration pulls":"transpiration pull","triglycerides":"triglyceride","triglycerided":"triglyceride","triglyceriding":"triglyceride","triglyceridation":"triglyceride","triglyceridion":"triglyceride","tropisms":"tropism","trypsins":"trypsin","turgids":"turgid","ureas":"urea","variegated leaves":"variegated leaf","vascular bundles":"vascular bundle","vascular bundled":"vascular bundle","vascular bundling":"vascular bundle","vascular bundlation":"vascular bundle","vascular bundlion":"vascular bundle","vertebrates":"vertebrate","vertebrated":"vertebrate","vertebrating":"vertebrate","vertebratation":"vertebrate","vertebration":"vertebrate","villuses":"villus","viruses":"virus","visking tubings":"visking tubing","vitamin cs":"vitamin C","vitamin ds":"vitamin D","wiltings":"wilting","wilt":"wilting","wilts":"wilting","wilted":"wilting","wiltation":"wilting","xerophytes":"xerophyte","xerophyted":"xerophyte","xerophyting":"xerophyte","xerophytation":"xerophyte","xerophytion":"xerophyte","xylems":"xylem","xylem vessels":"xylem vessel"};

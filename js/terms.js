@@ -55,15 +55,15 @@
     viruses: ['virus','viruses','protein coat','host cell','host cells'],
     naming:  ['species','genus','genera','binomial system','binomial','binomial name','binomial names','scientific name','scientific names',
               'classification','classification system','classification systems','classify','classified','classifying',
-              'dichotomous key','dichotomous keys','kingdom','kingdoms','taxonomy','taxon','taxa','phylum','phyla','class','order','family',
-              'evolutionary relationships','evolutionary relationship','common ancestor','ancestor','ancestry','linnaeus','carl linnaeus','carolus linnaeus','dna','base sequence','base sequences','bases',
+              'dichotomous key','dichotomous keys','kingdom','kingdoms','taxonomy','taxon','taxa','phylum','phyla','class','classes','order','family',
+              'evolutionary relationships','evolutionary relationship','common ancestor','common ancestors','ancestor','ancestors','ancestry','linnaeus','carl linnaeus','carolus linnaeus','dna','base sequence','base sequences','bases',
               'five kingdoms','fertile offspring','interbreed'],
-    plain:   ['cell wall','cell walls','nucleus','nuclei','chloroplast','chloroplasts','cellulose','chitin','photosynthesis','morphology','anatomy',
+    plain:   ['cell wall','cell walls','nucleus','nuclei','chloroplast','chloroplasts','cellulose','chitin','photosynthesis','photosynthesises','morphology','anatomy',
               'autotrophic nutrition','heterotrophic nutrition','saprotrophic nutrition','parasitic nutrition','autotrophic','heterotrophic','saprotrophic','autotroph','autotrophs','heterotroph','heterotrophs',
               'spore','spores','magnification','specimen','specimens','metabolism','dry mass','stimulus','stimuli','organism','organisms',
               'feature','features','characteristic','characteristics','exoskeleton','backbone','antenna','antennae','compound eye','compound eyes',
-              'cephalothorax','abdomen','thorax','scales','feathers','fins','gills','lungs','moist skin','lateral line','segment','segments','segmented',
-              'jointed legs','jointed limbs','wings','wing','wet scales','dry scales','cilia','flagellum','flagella','habitat','xylem','phloem','sporangium','sporangia','fiddlehead',
+              'cephalothorax','abdomen','thorax','scales','feathers','fin','fins','gill','gills','lungs','moist skin','lateral line','segment','segments','segmented',
+              'jointed leg','jointed legs','jointed limbs','wings','wing','wet scales','dry scales','cilia','flagellum','flagella','habitat','xylem','phloem','sporangium','sporangia','fiddlehead',
               'parallel veins','network of veins','net-like veins','waterproof','internal fertilisation','external fertilisation','warm-blooded','cold-blooded',
               'mammary glands','milk','multicellular','unicellular','single-celled','parasite','parasites','pathogen','pathogens']
   };
@@ -238,15 +238,15 @@
   function jump(list, st) { list.forEach(function (w) { JUMP[w] = st; }); }
   jump(['movement','respiration','sensitivity','growth','reproduction','excretion','nutrition','characteristics','characteristic','metabolism','dry mass','stimulus','stimuli'], 'alive');
   jump(['species','genus','genera','binomial system','binomial','binomial name','binomial names','scientific name','scientific names','classification','classification system',
-        'classification systems','classify','classified','classifying','taxonomy','taxon','taxa','phylum','phyla','class','order','family','linnaeus','fertile offspring','interbreed','feature','features'], 'naming');
-  jump(['dna','base sequence','base sequences','bases','evolutionary relationships','evolutionary relationship','common ancestor','ancestor','ancestry'], 'dna');
+        'classification systems','classify','classified','classifying','taxonomy','taxon','taxa','phylum','phyla','class','classes','order','family','linnaeus','fertile offspring','interbreed','feature','features'], 'naming');
+  jump(['dna','base sequence','base sequences','bases','evolutionary relationships','evolutionary relationship','common ancestor','common ancestors','ancestor','ancestors','ancestry'], 'dna');
   jump(['dichotomous key','dichotomous keys'], 'keys');
   jump(['kingdom','kingdoms','five kingdoms','animal','animals','animal kingdom','plant kingdom','fungus','fungi','fungal','prokaryote','prokaryotes','prokaryotic','bacterium','bacteria','bacterial',
         'protoctist','protoctists','amoeba','paramecium','alga','algae','plasmodium','saprophyte','saprophytes','saprotroph','saprotrophs','yeast','mould','moulds','mushroom','mushrooms',
         'cell wall','cell walls','nucleus','nuclei','chloroplast','chloroplasts','cellulose','multicellular','unicellular','single-celled','circular dna',
         'autotrophic nutrition','heterotrophic nutrition','saprotrophic nutrition','parasitic nutrition','autotrophic','heterotrophic','saprotrophic','autotroph','autotrophs','heterotroph','heterotrophs','photosynthesis'], 'kingdoms');
   jump(['vertebrate','vertebrates','mammal','mammals','bird','birds','reptile','reptiles','amphibian','amphibians','fish','fishes','backbone','lungs','warm-blooded','cold-blooded','mammary glands','milk','lateral line','internal fertilisation','external fertilisation'], 'vertebrates');
-  jump(['arthropod','arthropods','myriapod','myriapods','insect','insects','arachnid','arachnids','crustacean','crustaceans','centipede','centipedes','millipede','millipedes','spider','spiders','crab','crabs','abdomen','thorax','segment','segments','segmented','jointed legs','jointed limbs'], 'arthropods');
+  jump(['arthropod','arthropods','myriapod','myriapods','insect','insects','arachnid','arachnids','crustacean','crustaceans','centipede','centipedes','millipede','millipedes','spider','spiders','crab','crabs','abdomen','thorax','segment','segments','segmented','jointed leg','jointed legs','jointed limbs'], 'arthropods');
   /* 'wings' is deliberately NOT in that list. A bird's wing and a wasp's wing do the same job
      and are not the same structure, and this lab teaches exactly that: similar features are
      not evidence of relationship. The word opens a picture instead, and on the vertebrates
@@ -268,6 +268,8 @@
 
   var DEFINED = {};
   (global.GLOSSARY || []).forEach(function (e) { DEFINED[e.term.toLowerCase()] = e.term; });
+  /* a plural, a singular, the verb behind a noun or an alias opens the term's definition: the forms are worked out at build time */
+  function defined(low) { if (DEFINED[low]) return DEFINED[low]; var F = global.GLOSSARY_FORMS || {}; return F[low] || null; }
 
   var KNOWN = {};
   var KNOWN_KEY = 'labs.knownWords.v1';
@@ -368,8 +370,8 @@
         if (wentTo) wentTo[JUMP[low]] = true;
         act = ' data-jump="' + JUMP[low] + '" tabindex="0" role="button"';
         cls = ' is-jump';
-      } else if (DEFINED[low] && !KNOWN[low]) {
-        act = ' data-gloss="' + esc(DEFINED[low]) + '" tabindex="0" role="button"';
+      } else if (defined(low) && !KNOWN[defined(low).toLowerCase()]) {
+        act = ' data-gloss="' + esc(defined(low)) + '" tabindex="0" role="button"';
         cls = ' is-gloss';
       } else if (JUMP[low] && !(wentTo && wentTo[JUMP[low]])) {
         /* no definition written for it, so the station that teaches it is the only answer */
