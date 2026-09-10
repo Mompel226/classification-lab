@@ -1390,3 +1390,14 @@ svg.lit .kl--all.is-on{opacity:1}
 .qimg{margin:2px 0 14px;background:#fff;border:1px solid var(--edge);border-radius:var(--r);padding:8px 10px 6px;max-width:560px}
 .qimg img{display:block;width:100%;max-width:100%;height:auto}
 .qimg figcaption{font-size:12.5px;color:var(--grey);margin-top:6px}
+
+/* a narrow phone: the header wraps onto two rows rather than running off the screen */
+@media (max-width:540px){
+  .hdr{flex-wrap:wrap;row-gap:6px;padding:8px 10px}
+  .hdr__mark{flex:1 1 100%;overflow:visible}
+  .hdr__spacer{display:none}
+  .hdr__stats{flex:1 1 100%;flex-wrap:wrap;gap:6px}
+  .hbtn{padding:5px 9px;font-size:12.5px}
+  .stat{padding:3px 9px 3px 4px}
+  #btnReset .hbtn__long{display:none} #btnReset .hbtn__short{display:inline;font-size:13px;font-weight:600}
+}
