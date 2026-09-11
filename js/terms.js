@@ -344,12 +344,45 @@
      there to look at. */
   var NEGATED = /(?:^|[\s(\u2014-])(?:no|not|non|never|without|neither|nor|lack|lacks|lacking|nothing)\s+(?:[a-z]+\s+){0,2}$/i;
 
+
+  /* ---- a word can be a glossary word and still be the wrong word ----
+     The glossary matches on spelling, so "the direction of the light SOURCE" was opening the
+     definition of a phloem source — "a part of a plant that releases sucrose" — which is not
+     what the sentence means at all. Same for a CAPILLARY tube, which is glassware and not the
+     smallest blood vessel, and for CONTROL used as a verb rather than as the control in an
+     experiment. Found by Daniel on the first of those, and by auditing every first occurrence
+     of every glossary word in all three labs for the rest.
+
+     Each rule says: this spelling, in this context, is not the glossary's sense — leave it
+     alone. Add to it rather than removing a word from the glossary: the word is right
+     elsewhere. */
+  var NOT_HERE = {
+    'source':     [{ before: /\b(light|energy|heat|power|water|food)\s+$/i },
+                   { after: /^\s+of\s+(energy|light|heat|food|protein|carbohydrate|water|income)/i }],
+    'sources':    [{ before: /\b(light|energy|heat|power|food)\s+$/i },
+                   { after: /^\s+of\s+(energy|light|heat|food)/i }],
+    'capillary':  [{ after: /^\s+tube/i }],
+    'capillaries':[{ after: /^\s+tube/i }],
+    'control':    [{ after: /^\s+(the|it|them|this|these|for|every|all|each)\b/i }]
+  };
+  function wrongSense(low, before, after) {
+    var rules = NOT_HERE[low];
+    if (!rules) return false;
+    for (var i = 0; i < rules.length; i++) {
+      var r = rules[i];
+      if (r.before && r.before.test(before)) return true;
+      if (r.after && r.after.test(after)) return true;
+    }
+    return false;
+  }
+
   function mark(text) {
     return underlineTags(underlineMarks(esc(text)).replace(RE, function (m, _g, at, whole) {
       var low = m.toLowerCase(), e = INFO[low];
       if (!e) return m;
       var before = String(whole).slice(0, at).replace(/<[^>]*>/g, '');
       if (NEGATED.test(before)) return m;
+      if (wrongSense(low, before, String(whole).slice(at + m.length).replace(/<[^>]*>/g, ''))) return m;
       var cat = e[1], act = '', cls = '';
       var first = !quiet && !(seen && seen[low]);
       if (seen) seen[low] = true;
