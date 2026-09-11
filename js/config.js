@@ -29,7 +29,7 @@ window.LAB_CONFIG = {
      To make one: console.cloud.google.com ▸ pick or make a project ▸ Google Auth Platform ▸
      Branding (fill this in first — Google will not issue an id without it) ▸ Audience ▸
      Publish app ▸ Credentials ▸ Create credentials ▸ OAuth client ID ▸ Web application,
-     with https://mompel226.github.io as an authorised JavaScript origin — no path, no
+     with https://nlcsbiology.com as an authorised JavaScript origin — no path, no
      trailing slash.
 
      The full version is in the hub README, under "Sign-in: what the Client ID is". */
