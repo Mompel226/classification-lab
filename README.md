@@ -4,7 +4,7 @@
 
 **Cambridge IGCSE Biology 0610 · Topic 1 — Characteristics and classification**
 
-[![Open the lab](https://img.shields.io/badge/▶_Open_the_lab-0969DA?style=for-the-badge&logoColor=white)](https://mompel226.github.io/classification-lab/)
+[![Open the lab](https://img.shields.io/badge/▶_Open_the_lab-0969DA?style=for-the-badge&logoColor=white)](https://nlcsbiology.com/classification-lab/)
 
 ![10 stations](https://img.shields.io/badge/10-stations-3D7A54)
 ![64 questions](https://img.shields.io/badge/64-questions-8F5D09)
@@ -40,8 +40,8 @@ there, in the wording the exam wants, and questions that say right or wrong — 
 
 ## Where it sits
 
-Behind the [Life on Earth Hub](https://mompel226.github.io/life-on-earth-hub/), one shelf of the
-[Biology Hub](https://mompel226.github.io/biology-hub/) — the front door to every Biology app
+Behind the [Life on Earth Hub](https://nlcsbiology.com/life-on-earth-hub/), one shelf of the
+[Biology Hub](https://nlcsbiology.com/biology-hub/) — the front door to every Biology app
 here. The **← Life on Earth** button goes back up, and a group on that hub's tree opens the
 matching station here.
 
@@ -57,7 +57,7 @@ matching station here.
 
 **One tree, two places.** The tree of life is not a picture — it is drawn by the page from a
 single written description of the groups: what belongs under what, and the features of each.
-That same description is used by the [Life on Earth Hub](https://mompel226.github.io/life-on-earth-hub/),
+That same description is used by the [Life on Earth Hub](https://nlcsbiology.com/life-on-earth-hub/),
 so both draw exactly the same tree and correcting it once corrects it in both. The little animal
 silhouettes come from PhyloPic, are free to use, and are built into the page so it opens without
 fetching anything.
