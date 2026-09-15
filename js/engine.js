@@ -220,7 +220,12 @@
   }
 
   /* onCheck() must return a Promise of {correct,...} or null to abort */
-  function foot(card, onCheck, onReset) {
+  /* `wrongMsg` matters more than it looks. blank and grid mark every gap or row
+     separately, so "the ones marked in red" names them truthfully. order, sort,
+     match and drag are marked as one whole answer — the page cannot know which
+     piece is misplaced, and colouring them all red while saying "look at the red
+     ones" tells a student something false. Those types pass their own wording. */
+  function foot(card, onCheck, onReset, wrongMsg) {
     var f = h('div', 'act__foot');
     var check = h('button', 'btn', 'Check answer');
     var again = h('button', 'btn btn--quiet', 'Try again');
@@ -257,7 +262,8 @@
         again.style.display = res.correct ? 'none' : '';
         if (!res.correct) {
           fb.className = 'feedback no'; fb.style.display = '';
-          fb.innerHTML = 'Not right yet — look again at the ones marked in red, and try once more.';
+          fb.innerHTML = typeof wrongMsg === 'string' ? wrongMsg
+            : 'Not right yet — look again at the ones marked in red, and try once more.';
         }
         card.dispatchEvent(new CustomEvent('result', { bubbles:true, detail:res }));
       });
@@ -394,7 +400,7 @@
         b.dataset.locked = ''; b.classList.remove('ok', 'no'); b.setAttribute('aria-pressed', 'false');
         var w = b.querySelector('.opt__why'); if (w) w.remove();
       });
-    }, function () { return null; });
+    });
     return card;
   }
 
@@ -442,8 +448,10 @@
         return res;
       });
     }, function () {
-      build(shuffle(a.items || []));
-    });
+      /* Keep the order the student arranged. Re-shuffling here threw away every
+         decision they had made and sent them back to a fresh random list. */
+      Array.prototype.forEach.call(list.children, function (r) { r.classList.remove('ok', 'no'); });
+    }, 'Not right yet. Your answer is kept as you left it \u2014 move only what you want to change, then check again.');
     return card;
   }
 
@@ -522,10 +530,11 @@
         return res;
       });
     }, function () {
-      links = {}; sel = { side:null, i:null };
-      lbtn.concat(rbtn).forEach(function (b) { b.dataset.locked = ''; b.classList.remove('ok', 'no', 'paired'); });
+      /* the pairs stay; only the marking is cleared */
+      sel = { side:null, i:null };
+      lbtn.concat(rbtn).forEach(function (b) { b.dataset.locked = ''; b.classList.remove('ok', 'no'); });
       repaint();
-    });
+    }, 'Not right yet. Your answer is kept as you left it \u2014 move only what you want to change, then check again.');
     return card;
   }
 
@@ -581,11 +590,9 @@
         return res;
       });
     }, function () {
-      bins.forEach(function (b) {
-        Array.prototype.forEach.call(b.querySelectorAll('.tok'), function (t) { pool.appendChild(t); });
-      });
-      Array.prototype.forEach.call(pool.querySelectorAll('.tok'), function (t) { t.classList.remove('ok', 'no'); });
-    });
+      /* tokens stay in the bins the student put them in */
+      Array.prototype.forEach.call(card.querySelectorAll('.tok'), function (t) { t.classList.remove('ok', 'no'); });
+    }, 'Not right yet. Your answer is kept as you left it \u2014 move only what you want to change, then check again.');
     return card;
   }
 
@@ -650,12 +657,10 @@
         return res;
       });
     }, function () {
-      wells.forEach(function (w) {
-        w.parentElement.classList.remove('ok', 'no');
-        var t = w.querySelector('.tok'); if (t) pool.appendChild(t);
-      });
+      /* each token stays where it was dropped */
+      wells.forEach(function (w) { w.parentElement.classList.remove('ok', 'no'); });
       tidy();
-    });
+    }, 'Not right yet. Your answer is kept as you left it \u2014 move only what you want to change, then check again.');
     return card;
   }
 
