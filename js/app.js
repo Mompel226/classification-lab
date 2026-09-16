@@ -541,40 +541,34 @@
     setTimeout(function () { if (backChip === b) { b.remove(); backChip = null; } }, 11000);
   }
 
-  /* ---------- who is handing in ---------- */
-  var SIGNIN_KEY = LAB + '.signin';
-  var signIn = null;
-  try { var sv = JSON.parse(localStorage.getItem(SIGNIN_KEY) || 'null'); if (sv && sv.exp * 1000 > Date.now() + 60000) signIn = sv; } catch (e) {}
-  function readToken(jwt) {
-    try {
-      var b = jwt.split('.')[1].replace(/-/g, '+').replace(/_/g, '/');
-      var j = JSON.parse(decodeURIComponent(escape(atob(b))));
-      return { token:jwt, name:j.name || j.email || '', email:j.email || '', exp:j.exp || 0 };
-    } catch (e) { return null; }
-  }
-  function onCredential(res) {
-    var who = res && res.credential ? readToken(res.credential) : null;
-    if (!who) return;
-    signIn = who;
-    try { localStorage.setItem(SIGNIN_KEY, JSON.stringify(who)); } catch (e) {}
-    if (document.getElementById('subWho')) fillSubmit();
-    if (afterSignIn) { var go = afterSignIn; afterSignIn = null; go(); }
-  }
-  function signInReady() { return !!((window.LAB_CONFIG || {}).googleClientId) && window.google && google.accounts && google.accounts.id; }
+  /* ---------- who is handing in ----------
+     One sign-in for the whole site, kept by js/signin.js (shared, from labs-shared/): a student
+     who signed in on the Biology Hub or in another lab is already known here, and signing in
+     here signs them in there. It is remembered after Google's hour is up — `signIn` is who, and
+     haveToken() says whether their token is still good — and renewed without a click when
+     Google allows, so a student is not asked again every hour. */
+  var SI = window.SignIn || null;
+  var CID = (window.LAB_CONFIG || {}).googleClientId || '';
+  var signIn = SI ? SI.who() : null;
   function mountSignIn(el) {
-    if (!signInReady()) return false;
-    try {
-      google.accounts.id.initialize({ client_id: (window.LAB_CONFIG || {}).googleClientId, callback: onCredential, auto_select: true });
-      google.accounts.id.renderButton(el, { theme:'outline', size:'large', text:'signin_with', width: 260 });
-      return true;
-    } catch (e) { return false; }
+    return !!(CID && SI && SI.button(el, CID, { theme:'outline', size:'large', text:'signin_with', width: 260, locale:'en-GB' }));
   }
+  /* "not you?" and "sign in again" sign out everywhere on the site: the hub, every lab */
   function signOut() {
-    signIn = null;
-    try { localStorage.removeItem(SIGNIN_KEY); } catch (e) {}
-    try { if (signInReady()) google.accounts.id.disableAutoSelect(); } catch (e) {}
-    fillSubmit();
+    if (SI) SI.out(); else { signIn = null; fillSubmit(); }
   }
+  /* The sign-in changed — in this page, or in another tab of the site. The Save dialog is redrawn
+     only when what it shows would change, and never over a hand-in on its way or a code on screen. */
+  function onSignIn(v, here) {
+    var was = signIn;
+    signIn = v;
+    var face = function (x) { return x ? x.email + (SI.fresh(x) ? '' : '~') : ''; };
+    var dlg = document.getElementById('subDlg'), go = document.getElementById('subGo'), msg = document.getElementById('subMsg');
+    var coded = !!(msg && msg.querySelector('.code')) && !(here && !v);   /* pressing "not you?" still redraws */
+    if (dlg && !dlg.hidden && face(was) !== face(v) && !(go && go.disabled) && !coded) fillSubmit();
+    if (v && here && afterSignIn && SI.fresh(v)) { var next = afterSignIn; afterSignIn = null; next(); }
+  }
+  if (SI) SI.on(onSignIn);
 
   /* ---------- carrying work between computers ----------
      Progress lives in this browser, so another computer starts from nothing. What was HANDED
@@ -591,27 +585,31 @@
 
   function syncEnabled() { return !!((window.LAB_CONFIG || {}).submitUrl && window.LabSync); }
 
-  function haveToken() { return !!(signIn && signIn.token && signIn.exp * 1000 > Date.now() + 60000); }
+  function haveToken() { return !!(SI && SI.fresh(signIn)); }
   /* A Google sign-in lasts about an hour and a lab takes longer than that, so by the time a
      student presses Save the token they hold is often dead. Try once for a fresh one. If
      Google will not give it, the hand-in goes anyway and the server's refusal is shown, which
      beats a dead end. */
   var askedAgain = false;
 
-  /* Ask Google for a sign-in, then come back and finish. One Tap can be refused by the
-     browser, so say what to do instead rather than leaving a dead button. */
-  function signInThen(fn) {
+  /* Ask Google for a sign-in — for the same account, when one is remembered — then come back and
+     finish. One Tap can be refused by the browser, so say what to do instead rather than leaving
+     a dead button. `failed`, if given, is called instead of that message. A sign-in that arrives
+     later, from the button in Save my progress, still carries on with `fn`. */
+  function signInThen(fn, failed) {
     afterSignIn = fn;
-    if (!signInReady()) { toast('Sign-in is not available here. Open Save my progress and sign in there, then press Sync.'); return; }
-    try {
-      google.accounts.id.initialize({ client_id:(window.LAB_CONFIG || {}).googleClientId,
-                                      callback:onCredential, auto_select:true });
-      google.accounts.id.prompt(function (n) {
-        if (n && (n.isNotDisplayed && n.isNotDisplayed() || n.isSkippedMoment && n.isSkippedMoment())) {
-          toast('Google did not offer a sign-in. Open Save my progress, sign in there, then press Sync.');
-        }
-      });
-    } catch (e) { toast('Could not open sign-in. Open Save my progress and sign in there instead.'); }
+    if (!CID || !SI) { toast('Sign-in is not available here. Open Save my progress and sign in there, then press Sync.'); return; }
+    SI.renew(CID, function (v, why) {
+      if (v) {                             /* already good, or renewed: carry on unless the listener has */
+        if (afterSignIn === fn) { signIn = v; afterSignIn = null; fn(); }
+        return;
+      }
+      if (why === 'signed out') return;
+      if (failed) { failed(why); return; }
+      toast(why === 'unavailable'
+        ? 'Could not open sign-in. Open Save my progress and sign in there instead.'
+        : 'Google did not offer a sign-in. Open Save my progress, sign in there, then press Sync.');
+    });
   }
 
   function applySnap(snap, quiet) {
@@ -652,11 +650,16 @@
     if (!syncEnabled()) return;                 /* no spreadsheet behind this lab: stay hidden */
     btn.hidden = false;
     btn.addEventListener('click', function () { syncNow(false); });
-    /* Already signed in and nothing done here yet? Bring their work back without being asked. */
-    if (haveToken()) {
+    /* Signed in on this site — here, on the hub, or in another lab — and nothing done here yet?
+       Bring their work back without being asked, renewing an hour-old sign-in first if Google
+       will do it without a click. */
+    if (signIn) {
       var empty = true;
       for (var k in progress) { var r = progress[k]; if (r && r.done && Object.keys(r.done).length) { empty = false; break; } }
-      if (empty) syncNow(true);
+      if (empty) {
+        if (haveToken()) syncNow(true);
+        else if (SI && CID) SI.renew(CID, function (v) { if (v) syncNow(true); });
+      }
     }
   })();
 
@@ -673,6 +676,11 @@
     var dlg = document.getElementById('subDlg');
     fillSubmit();
     dlg.hidden = false;
+    /* A Save pressed earlier whose sign-in could not be renewed does not go by itself now: saving
+       happens when the student presses Save. Then an hour-old sign-in is renewed quietly, and the
+       dialog redraws itself if Google does. */
+    if (afterSignIn === doSubmit) afterSignIn = null;
+    if (signIn && !haveToken() && SI && CID) SI.renew(CID, function () {});
     document.getElementById('subClose').onclick = function () { dlg.hidden = true; };
     dlg.onclick = function (e) { if (e.target === dlg) dlg.hidden = true; };
     setTimeout(function () { var n = document.getElementById('subName'); if (n) n.focus(); }, 30);
@@ -764,7 +772,11 @@
       askedAgain = true;
       setTimeout(function () { askedAgain = false; }, 30000);   /* so the next press may try again */
       msg.className = 'submsg'; msg.textContent = 'Your sign-in has run out \u2014 asking Google for a new one\u2026';
-      signInThen(doSubmit); return;
+      signInThen(doSubmit, function () {
+        var m = document.getElementById('subMsg');
+        if (m) { m.className = 'submsg no'; m.textContent = 'Google did not renew your sign-in. Press \u201csign in again\u201d beside your name, then Save once more.'; }
+      });
+      return;
     }
     var t = totals();
     var code = completionCode(name, form, t.done + '/' + t.total);
