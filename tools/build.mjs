@@ -7,6 +7,7 @@
    Writes  js/data/stations.js    presentation + salted hashes, NO answers
            js/data/glossary.js    the shared definitions
            js/engine.js, js/marking.js         copied from labs-shared/engine/
+           js/signin.js                        copied from labs-shared/ (one sign-in for the whole site)
            js/tree.js, js/tree-draw.js         copied from labs-shared/tree/
            assets/silhouettes/                 copied from labs-shared/tree/silhouettes/
            index.html             the silhouettes inlined as <symbol>s, and every ?v= stamped
@@ -59,7 +60,7 @@ if (!SHARED) {
   process.exit(1);
 }
 for (const [from, to] of [['engine/engine.js', 'js/engine.js'], ['engine/marking.js', 'js/marking.js'], ['engine/syllabus.js', 'js/syllabus.js'],
-                          ['engine/sync.js', 'js/sync.js'],
+                          ['engine/sync.js', 'js/sync.js'], ['signin.js', 'js/signin.js'],
                           ['tree/tree.js', 'js/tree.js'], ['tree/tree-draw.js', 'js/tree-draw.js']]) {
   copyFileSync(resolve(SHARED, from), resolve(REPO, to));
 }
