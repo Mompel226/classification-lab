@@ -708,6 +708,9 @@ picture{display:block;line-height:0}
   padding:7px 11px;border-radius:7px;box-shadow:var(--shadow-lg);
   opacity:0;transform:translateY(-3px);pointer-events:none;transition:opacity .1s,transform .1s
 }
+/* near the right edge of the header the tooltip would run off the page */
+.tip--right::after{left:auto;right:0}
+.tip--right::before{left:auto;right:14px}
 .tip::before{
   content:"";position:absolute;left:9px;top:calc(100% + 1px);border:6px solid transparent;border-top-width:0;border-bottom-color:#1F2A1F;
   opacity:0;pointer-events:none;transition:opacity .1s

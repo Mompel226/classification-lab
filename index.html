@@ -21,7 +21,7 @@
 <link rel="stylesheet" media="print" onload="this.media='all'"
       href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500&display=swap">
 <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500&display=swap"></noscript>
-<link rel="stylesheet" href="css/app.css?v=1789513595">
+<link rel="stylesheet" href="css/app.css?v=1789519380">
 </head>
 <body>
 <div class="app">
@@ -46,7 +46,7 @@
       <span class="stat stat--stations" title="Stations finished">
         <b><span id="stDone">0</span>/<span id="stTotal">10</span></b> <span class="stat__lbl">stations</span>
       </span>
-      <button class="hbtn hbtn--go" id="btnSubmit" hidden disabled>Hand in</button>
+      <button class="hbtn hbtn--go tip tip--right" id="btnSubmit" hidden disabled data-tip="Sends everything you have done so far to Dr Mompel’s records — your answers, how many checks each took, and how far you have got. Press it as often as you like: each save replaces the one before, and you can keep working afterwards.">Save my progress</button>
       <a class="hbtn" href="https://nlcsbiology.com/life-on-earth-hub/"
          title="Life on Earth: the tree of life, and the labs for topics 1 and 17–21">← Life on Earth</a>
       <button class="hbtn" id="btnGloss" title="Every word the labs use, with its definition"><span class="hbtn__long">Glossary</span><span class="hbtn__short" aria-hidden="true">A–Z</span></button>
@@ -110,12 +110,12 @@
   <div class="lb__hint">Click anywhere to close</div></figure>
 </div>
 
-<div class="modal" id="subDlg" hidden role="dialog" aria-modal="true" aria-label="Hand in your work">
+<div class="modal" id="subDlg" hidden role="dialog" aria-modal="true" aria-label="Save your progress">
   <div class="modal__box modal__box--sm">
     <button class="modal__close" id="subClose" aria-label="Close">×</button>
-    <h2>Hand in your work</h2>
+    <h2>Save your progress</h2>
     <div id="subBody"></div>
-    <div class="dlgrow"><button class="btn" id="subGo">Hand in</button></div>
+    <div class="dlgrow"><button class="btn" id="subGo">Save my progress</button></div>
   </div>
 </div>
 
@@ -142,11 +142,11 @@
     <ul>
       <li><b>Click any branch</b> of the tree, or any step on the bar along the bottom. The tree lights the groups a station is about, and a group you click opens the station that teaches it.</li>
       <li>Each station has two tabs: <b>Learn</b> — what you must know, with something to click, press or try in every section — and <b>Practise</b>, the questions.</li>
-      <li><b>Check as often as you like.</b> You are told which parts are wrong, <b>never the answer</b> — you have to work it out. Keep going until it is all right, then <b>Hand in</b>.</li>
+      <li><b>Check as often as you like.</b> You are told which parts are wrong, <b>never the answer</b> — you have to work it out. Keep going until it is all right, Press <b>Save my progress</b> whenever you like — it does not have to be at the end, and each save replaces the one before.</li>
       <li>An underlined word can be clicked: <b>🔍</b> opens a picture there and then, <b>↗</b> jumps to the station that explains it and brings you back.</li>
-      <li>Your work is saved <b>in this browser on this device</b>. Use the same computer each time, and hand in before you clear your browsing data.</li>
+      <li>Your work is saved <b>in this browser on this device</b>. Use the same computer each time, and press <b>Save my progress</b> before you clear your browsing data.</li>
     </ul>
-    <p class="fineprint">The answers are never shown. To hand your work to Dr&nbsp;Mompel you sign in with your school Google account, so he knows whose it is; anyone else is welcome to use the lab and will still get a completion code.</p>
+    <p class="fineprint">The answers are never shown. To send your work to Dr&nbsp;Mompel you sign in with your school Google account, so he knows whose it is; anyone else is welcome to use the lab and will still get a completion code.</p>
 
     <details class="helpmore">
       <summary>What the colours mean</summary>
@@ -188,22 +188,22 @@
 </div>
 
 <script src="https://accounts.google.com/gsi/client" async defer></script>
-<script src="js/config.js?v=1789513595" defer></script>
-<script src="js/data/glossary.js?v=1789513595" defer></script>
-<script src="js/data/syllabus.js?v=1789513595" defer></script>
-<script src="js/data/stations.js?v=1789513595" defer></script>
-<script src="js/data/photos.js?v=1789513595" defer></script>
-<script src="js/tree.js?v=1789513595" defer></script>
-<script src="js/tree-draw.js?v=1789513595" defer></script>
-<script src="js/terms.js?v=1789513595" defer></script>
-<script src="js/marking.js?v=1789513595" defer></script>
-<script src="js/sync.js?v=1789513595" defer></script>
-<script src="js/engine.js?v=1789513595" defer></script>
-<script src="js/syllabus.js?v=1789513595" defer></script>
-<script src="js/learn.js?v=1789513595" defer></script>
-<script src="js/engine-ext.js?v=1789513595" defer></script>
-<script src="js/plate.js?v=1789513595" defer></script>
-<script src="js/app.js?v=1789513595" defer></script>
+<script src="js/config.js?v=1789519380" defer></script>
+<script src="js/data/glossary.js?v=1789519380" defer></script>
+<script src="js/data/syllabus.js?v=1789519380" defer></script>
+<script src="js/data/stations.js?v=1789519380" defer></script>
+<script src="js/data/photos.js?v=1789519380" defer></script>
+<script src="js/tree.js?v=1789519380" defer></script>
+<script src="js/tree-draw.js?v=1789519380" defer></script>
+<script src="js/terms.js?v=1789519380" defer></script>
+<script src="js/marking.js?v=1789519380" defer></script>
+<script src="js/sync.js?v=1789519380" defer></script>
+<script src="js/engine.js?v=1789519380" defer></script>
+<script src="js/syllabus.js?v=1789519380" defer></script>
+<script src="js/learn.js?v=1789519380" defer></script>
+<script src="js/engine-ext.js?v=1789519380" defer></script>
+<script src="js/plate.js?v=1789519380" defer></script>
+<script src="js/app.js?v=1789519380" defer></script>
 <!-- The silhouettes live here, AFTER the scripts, not inside #tree.
      They are 220 KB of path data. In the <head>-ward half of the document they sat
      between the browser and the 13 script URLs, so on a slow link nothing else could
