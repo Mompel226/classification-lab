@@ -108,9 +108,15 @@
       sub.hidden = false;
       sub.disabled = !ready;
       sub.classList.toggle('hbtn--part', ready && !done);
-      sub.textContent = done || !ready ? 'Hand in' : 'Hand in progress';
-      sub.title = done ? 'Hand in your finished work'
-        : ready ? 'Hand in what you have so far — ' + t.done + ' of ' + t.total + ' right' : 'Answer a question first';
+      /* It was called "Hand in", and students read that as something you do once, at the end.
+         It is a save: it can be pressed at any point and each press replaces the last. The
+         name says so now, and the tooltip says the rest. */
+      sub.textContent = 'Save my progress';
+      sub.setAttribute('data-tip', !ready
+        ? 'Answer a question first, then this sends your work to Dr Mompel\u2019s records.'
+        : 'Sends everything you have done so far to Dr Mompel\u2019s records \u2014 ' + t.done + ' of ' + t.total +
+          ' right, ' + t.checks + ' check' + (t.checks === 1 ? '' : 's') + ' so far. Press it as often as you like: each save replaces the one before, and you carry on where you were.');
+      sub.title = '';
     }
     document.getElementById('ringFg').setAttribute('stroke-dasharray', (C * pct).toFixed(1) + ' ' + C.toFixed(1));
     document.getElementById('qDone').textContent = t.done;
@@ -587,7 +593,7 @@
 
   function haveToken() { return !!(signIn && signIn.token && signIn.exp * 1000 > Date.now() + 60000); }
   /* A Google sign-in lasts about an hour and a lab takes longer than that, so by the time a
-     student presses Hand in the token they hold is often dead. Try once for a fresh one. If
+     student presses Save the token they hold is often dead. Try once for a fresh one. If
      Google will not give it, the hand-in goes anyway and the server's refusal is shown, which
      beats a dead end. */
   var askedAgain = false;
@@ -596,16 +602,16 @@
      browser, so say what to do instead rather than leaving a dead button. */
   function signInThen(fn) {
     afterSignIn = fn;
-    if (!signInReady()) { toast('Sign-in is not available here. Open Hand in and sign in there, then press Sync.'); return; }
+    if (!signInReady()) { toast('Sign-in is not available here. Open Save my progress and sign in there, then press Sync.'); return; }
     try {
       google.accounts.id.initialize({ client_id:(window.LAB_CONFIG || {}).googleClientId,
                                       callback:onCredential, auto_select:true });
       google.accounts.id.prompt(function (n) {
         if (n && (n.isNotDisplayed && n.isNotDisplayed() || n.isSkippedMoment && n.isSkippedMoment())) {
-          toast('Google did not offer a sign-in. Open Hand in, sign in there, then press Sync.');
+          toast('Google did not offer a sign-in. Open Save my progress, sign in there, then press Sync.');
         }
       });
-    } catch (e) { toast('Could not open sign-in. Open Hand in and sign in there instead.'); }
+    } catch (e) { toast('Could not open sign-in. Open Save my progress and sign in there instead.'); }
   }
 
   function applySnap(snap, quiet) {
@@ -691,11 +697,18 @@
       return;
     }
     if (signIn) {
+      /* A Google sign-in lasts about an hour; a lab takes longer. Pressing Save with a dead one
+         used to send the work, have the server refuse it, and tell the student afterwards — the
+         commonest way work went missing while the student was certain they had saved it. Say it
+         BEFORE the press, and offer the thing that actually fixes it: sign out and back in. */
+      var stale = !haveToken();
       body.innerHTML = '<p class="st-sub">' + head + '</p>' + work +
-        '<div class="who">Handing in as <b>' + esc(signIn.name) + '</b><button type="button" class="tourcard__link" id="subOut">not you?</button></div>' +
+        (stale ? '<p class="submsg no">Your Google sign-in has run out — they last about an hour, and a lab takes longer than that. ' +
+                 'Press <b>Sign in again</b> below first, or nothing will be saved.</p>' : '') +
+        '<div class="who">Saving as <b>' + esc(signIn.name) + '</b><button type="button" class="tourcard__link" id="subOut">' + (stale ? 'sign in again' : 'not you?') + '</button></div>' +
         '<p class="fineprint">If you are on Dr&nbsp;Mompel\'s class list this goes into his records. If you are not — anyone in the world is welcome here — nothing is saved anywhere, and you still get your code.</p>' +
         '<div id="subMsg" class="submsg"></div>';
-      go.style.display = ''; go.textContent = 'Hand in'; go.onclick = doSubmit;
+      go.style.display = ''; go.textContent = stale ? 'Save anyway' : 'Save my progress'; go.onclick = doSubmit;
       document.getElementById('subOut').onclick = signOut;
       return;
     }
@@ -725,7 +738,7 @@
     if (/^not recorded: sign-in is not set up/.test(r))
       return 'Your work was sent, but the records are not set up to accept sign-ins yet, so nothing was saved. Show your teacher this message.';
     if (/^not recorded: not signed in/.test(r))
-      return 'Your sign-in had run out, so nothing was saved. Sign in again and press Hand in once more.';
+      return 'Your sign-in had run out, so nothing was saved. Press \u201csign in again\u201d beside your name, sign in with the same school account, then press Save once more \u2014 that is what fixes it.';
     if (/^not recorded: not on this class list/.test(r)) {
       var acc = r.match(/\(([^)]+)\)/);
       return 'The account you signed in with' + (acc ? ' (' + acc[1] + ')' : '') +
@@ -733,7 +746,7 @@
              'email address, not on name. Your code is still your receipt.';
     }
     if (/^busy/.test(r))
-      return 'The records were busy. Press Hand in once more.';
+      return 'The records were busy. Press Save once more.';
     if (/^rejected/.test(r))
       return 'The records would not accept this hand-in: ' + r.replace(/^rejected:\s*/, '') + '.';
     if (/^unknown lab/.test(r))
@@ -749,6 +762,7 @@
     if (name.trim().length < 3) { msg.className = 'submsg no'; msg.textContent = 'Please type your full name.'; return; }
     if (signIn && !haveToken() && !askedAgain) {
       askedAgain = true;
+      setTimeout(function () { askedAgain = false; }, 30000);   /* so the next press may try again */
       msg.className = 'submsg'; msg.textContent = 'Your sign-in has run out \u2014 asking Google for a new one\u2026';
       signInThen(doSubmit); return;
     }
