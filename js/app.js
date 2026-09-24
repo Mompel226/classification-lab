@@ -23,10 +23,11 @@
   }
   var saveBroken = false;
   function save() {
+    if (typeof queueSave === 'function') queueSave();   /* the records get it a couple of minutes later */
     try { localStorage.setItem(STORE, JSON.stringify(progress)); }
     catch (e) {
       /* Private browsing, or a school profile with site data blocked. Said once per session. */
-      if (!saveBroken) { saveBroken = true; toast('This browser is not saving your work — finish and hand in before you reload.'); }
+      if (!saveBroken) { saveBroken = true; toast('This browser cannot keep your work between visits — sign in, so it goes to Dr Mompel’s records as you work, and do not reload.'); }
     }
   }
   function p(id) {
@@ -101,23 +102,7 @@
   /* ---------- header ---------- */
   function paintHeader() {
     var t = totals(), pct = t.total ? t.done / t.total : 0, C = 2 * Math.PI * 11;
-    var sub = document.getElementById('btnSubmit');
-    if (sub) {
-      var done = t.done === t.total;
-      var ready = t.total > 0 && (done || t.tried > 0);
-      sub.hidden = false;
-      sub.disabled = !ready;
-      sub.classList.toggle('hbtn--part', ready && !done);
-      /* It was called "Hand in", and students read that as something you do once, at the end.
-         It is a save: it can be pressed at any point and each press replaces the last. The
-         name says so now, and the tooltip says the rest. */
-      sub.textContent = 'Save my progress';
-      sub.setAttribute('data-tip', !ready
-        ? 'Answer a question first, then this sends your work to Dr Mompel\u2019s records.'
-        : 'Sends everything you have done so far to Dr Mompel\u2019s records \u2014 ' + t.done + ' of ' + t.total +
-          ' right, ' + t.checks + ' check' + (t.checks === 1 ? '' : 's') + ' so far. Press it as often as you like: each save replaces the one before, and you carry on where you were.');
-      sub.title = '';
-    }
+    paintSaveChip();
     document.getElementById('ringFg').setAttribute('stroke-dasharray', (C * pct).toFixed(1) + ' ' + C.toFixed(1));
     document.getElementById('qDone').textContent = t.done;
     document.getElementById('qTotal').textContent = t.total;
@@ -541,7 +526,14 @@
     setTimeout(function () { if (backChip === b) { b.remove(); backChip = null; } }, 11000);
   }
 
-  /* ---------- who is handing in ----------
+  /* ---------- whose work this is, and saving it ----------
+     The lab is public and stays public: anyone may work through it. Signing in with the school
+     Google account is what lets the work be recorded, so Dr Mompel's spreadsheet holds his own
+     students and nobody else's. There is nothing to hand in: signed in, the work is sent to the
+     records on its own — two minutes after the last check, and at once when the lab is finished
+     or the page is left. Work done signed out stays in this browser and goes the moment they
+     sign in. The records only ever grow: a save can never take a right answer away.
+
      One sign-in for the whole site, kept by js/signin.js (shared, from labs-shared/): a student
      who signed in on the Biology Hub or in another lab is already known here, and signing in
      here signs them in there. It is remembered after Google's hour is up — `signIn` is who, and
@@ -550,290 +542,219 @@
   var SI = window.SignIn || null;
   var CID = (window.LAB_CONFIG || {}).googleClientId || '';
   var signIn = SI ? SI.who() : null;
+  var LAB_ID = LAB;
+  var afterSignIn = null;
   function mountSignIn(el) {
     return !!(CID && SI && SI.button(el, CID, { theme:'outline', size:'large', text:'signin_with', width: 260, locale:'en-GB' }));
   }
   /* "not you?" and "sign in again" sign out everywhere on the site: the hub, every lab */
   function signOut() {
-    if (SI) SI.out(); else { signIn = null; fillSubmit(); }
+    if (SI) SI.out(); else { signIn = null; paintSaveChip(); fillSaveDialog(); }
   }
-  /* The sign-in changed — in this page, or in another tab of the site. The Save dialog is redrawn
-     only when what it shows would change, and never over a hand-in on its way or a code on screen. */
+  /* The sign-in changed — in this page, or in another tab of the site. A sign-in that was not
+     there before brings their records back, then sends what was done here. */
   function onSignIn(v, here) {
-    var was = signIn;
+    var was = signIn && signIn.email;
     signIn = v;
-    var face = function (x) { return x ? x.email + (SI.fresh(x) ? '' : '~') : ''; };
-    var dlg = document.getElementById('subDlg'), go = document.getElementById('subGo'), msg = document.getElementById('subMsg');
-    var coded = !!(msg && msg.querySelector('.code')) && !(here && !v);   /* pressing "not you?" still redraws */
-    if (dlg && !dlg.hidden && face(was) !== face(v) && !(go && go.disabled) && !coded) fillSubmit();
+    paintSaveChip();
+    var dlg = document.getElementById('subDlg');
+    if (dlg && !dlg.hidden) fillSaveDialog();
+    if (v && SI.fresh(v) && v.email !== was) pullThenPush();
     if (v && here && afterSignIn && SI.fresh(v)) { var next = afterSignIn; afterSignIn = null; next(); }
   }
   if (SI) SI.on(onSignIn);
-
-  /* ---------- carrying work between computers ----------
-     Progress lives in this browser, so another computer starts from nothing. What was HANDED
-     IN is in the teacher's spreadsheet, together with a note of which questions were right, so
-     signing in here brings it back. js/sync.js does the folding-in and only ever adds: a
-     question right on either machine stays right, so pressing Sync cannot lose anything. */
-  var LAB_ID = LAB;
-  var afterSignIn = null;
 
   function snapshotNow() {
     return (window.LabSync && window.LabSync.snapshot)
       ? window.LabSync.snapshot(progress, S, ORDER, stationSig) : '';
   }
-
   function syncEnabled() { return !!((window.LAB_CONFIG || {}).submitUrl && window.LabSync); }
-
   function haveToken() { return !!(SI && SI.fresh(signIn)); }
-  /* A Google sign-in lasts about an hour and a lab takes longer than that, so by the time a
-     student presses Save the token they hold is often dead. Try once for a fresh one. If
-     Google will not give it, the hand-in goes anyway and the server's refusal is shown, which
-     beats a dead end. */
-  var askedAgain = false;
 
-  /* Ask Google for a sign-in — for the same account, when one is remembered — then come back and
-     finish. One Tap can be refused by the browser, so say what to do instead rather than leaving
-     a dead button. `failed`, if given, is called instead of that message. A sign-in that arrives
-     later, from the button in Save my progress, still carries on with `fn`. */
+  /* Ask Google for a sign-in — for the same account, when one is remembered — then come back
+     and finish. One Tap can be refused by the browser; `failed` hears why. */
   function signInThen(fn, failed) {
     afterSignIn = fn;
-    if (!CID || !SI) { toast('Sign-in is not available here. Open Save my progress and sign in there, then press Sync.'); return; }
+    if (!CID || !SI) { if (failed) failed('unavailable'); return; }
     SI.renew(CID, function (v, why) {
-      if (v) {                             /* already good, or renewed: carry on unless the listener has */
-        if (afterSignIn === fn) { signIn = v; afterSignIn = null; fn(); }
-        return;
-      }
+      if (v) { if (afterSignIn === fn) { signIn = v; afterSignIn = null; fn(); } return; }
       if (why === 'signed out') return;
-      if (failed) { failed(why); return; }
-      toast(why === 'unavailable'
-        ? 'Could not open sign-in. Open Save my progress and sign in there instead.'
-        : 'Google did not offer a sign-in. Open Save my progress, sign in there, then press Sync.');
+      if (failed) failed(why);
     });
   }
 
+  /* ---------- bringing work back ----------
+     What the records hold for this lab, folded in. js/sync.js only ever adds: a question right
+     on either machine stays right. */
   function applySnap(snap, quiet) {
-    if (!snap) { if (!quiet) toast('Nothing has been handed in for this lab yet, so there is nothing to bring back.'); return; }
+    if (!snap) return;
     var res = window.LabSync.merge(progress, snap, S, stationSig);
     if (res.added) { save(); reconcile(); paintHeader(); paintRail(); paintPanel(); refreshTabCount(); }
     if (!quiet || res.added) toast(window.LabSync.say(res));
   }
-
-  /* quiet: after a hand-in, say nothing unless something actually came back. */
-  function syncNow(quiet) {
-    if (!syncEnabled()) { toast('This lab is not set up to keep marks, so there is nothing to sync with.'); return; }
-    if (!haveToken()) { signInThen(function () { syncNow(quiet); }); return; }
-    var btn = document.getElementById('btnSync');
-    if (btn) { btn.disabled = true; btn.classList.add('is-busy'); }
+  function pull(then) {
+    if (!syncEnabled() || !haveToken()) { if (then) then(); return; }
     fetch((window.LAB_CONFIG || {}).submitUrl, {
       method:'POST', mode:'cors', headers:{ 'Content-Type':'text/plain;charset=utf-8' },
       body: JSON.stringify({ action:'progress', token: signIn.token })
     })
       .then(function (r) { return r.ok ? r.json() : null; })
-      .then(function (j) {
-        /* `why:'not signed in'` comes from the token check, NOT the class list — the records
-           are not consulted about who is on it here. Saying "you are not on the class list"
-           sent students to their teacher over a sign-in that had simply run out. */
-        if (!j || !j.ok) { toast(j && j.why === 'not signed in'
-          ? 'Your sign-in has run out. Sign in again, then press Sync.'
-          : 'Could not reach your teacher\u2019s records just now.'); return; }
-        var mine = j.labs && j.labs[LAB_ID];
-        applySnap(mine && mine.snap, quiet);
-      })
-      .catch(function () { if (!quiet) toast('Could not reach your teacher\u2019s records just now.'); })
-      .then(function () { if (btn) { btn.disabled = false; btn.classList.remove('is-busy'); } });
+      .then(function (j) { var mine = j && j.ok && j.labs && j.labs[LAB_ID]; applySnap(mine && mine.snap, true); })
+      .catch(function () {})
+      .then(function () { if (then) then(); });
+  }
+  /* Signed in: their records first, so nothing here is older than what is there; then whatever
+     this browser has that the records do not. */
+  function pullThenPush() { pull(function () { queueSave(true); }); }
+  if (signIn && syncEnabled()) {
+    if (haveToken()) pullThenPush();
+    else if (SI && CID) SI.renew(CID, function (v) { if (v) { signIn = v; pullThenPush(); } });
   }
 
-  (function () {
-    var btn = document.getElementById('btnSync');
-    if (!btn) return;
-    if (!syncEnabled()) return;                 /* no spreadsheet behind this lab: stay hidden */
-    btn.hidden = false;
-    btn.addEventListener('click', function () { syncNow(false); });
-    /* Signed in on this site — here, on the hub, or in another lab — and nothing done here yet?
-       Bring their work back without being asked, renewing an hour-old sign-in first if Google
-       will do it without a click. */
-    if (signIn) {
-      var empty = true;
-      for (var k in progress) { var r = progress[k]; if (r && r.done && Object.keys(r.done).length) { empty = false; break; } }
-      if (empty) {
-        if (haveToken()) syncNow(true);
-        else if (SI && CID) SI.renew(CID, function (v) { if (v) syncNow(true); });
-      }
-    }
-  })();
-
-  /* ---------- handing in ---------- */
-  function completionCode(name, form, score) {
-    var raw = name.trim().toLowerCase() + '|' + form + '|' + score + '|' + LAB;
-    var s1 = 0, s2 = 0;
-    for (var i = 0; i < raw.length; i++) { s1 = (s1 * 31 + raw.charCodeAt(i)) >>> 0; s2 = (s2 ^ (s1 + i)) >>> 0; }
-    var A = 'ACDEFGHJKLMNPQRTUVWXY3479';
-    function chunk(n) { var o = ''; for (var k = 0; k < 4; k++) { o += A[n % A.length]; n = Math.floor(n / A.length); } return o; }
-    return 'CL-' + chunk(s1) + '-' + chunk(s2);
+  /* ---------- saving on its own ----------
+     Two minutes after the last check, one save carries everything since. Forty students on one
+     script is comfortable at that pace; a save that finds the records busy simply goes again a
+     minute later, and nothing is lost meanwhile because this browser keeps its own copy. */
+  var SAVE_AFTER = 120000, RETRY_AFTER = 60000;
+  var saveTimer = null, savePending = false, saving = false, savedAt = null, saveWhy = '', lastSent = '', lastScore = -1, askedAgain = false;
+  function queueSave(now) {
+    if (!syncEnabled()) return;
+    savePending = true;
+    paintSaveChip();
+    if (now) { clearTimeout(saveTimer); saveTimer = null; flushSave(); return; }
+    if (!saveTimer) saveTimer = setTimeout(function () { saveTimer = null; flushSave(); }, SAVE_AFTER);
   }
-  function openSubmit() {
-    var dlg = document.getElementById('subDlg');
-    fillSubmit();
-    dlg.hidden = false;
-    /* A Save pressed earlier whose sign-in could not be renewed does not go by itself now: saving
-       happens when the student presses Save. Then an hour-old sign-in is renewed quietly, and the
-       dialog redraws itself if Google does. */
-    if (afterSignIn === doSubmit) afterSignIn = null;
-    if (signIn && !haveToken() && SI && CID) SI.renew(CID, function () {});
-    document.getElementById('subClose').onclick = function () { dlg.hidden = true; };
-    dlg.onclick = function (e) { if (e.target === dlg) dlg.hidden = true; };
-    setTimeout(function () { var n = document.getElementById('subName'); if (n) n.focus(); }, 30);
+  function retryLater() {
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(function () { saveTimer = null; flushSave(); }, RETRY_AFTER);
   }
-  function fillSubmit() {
-    var t = totals();
-    var cfg = window.LAB_CONFIG || {};
-    var body = document.getElementById('subBody');
-    var go = document.getElementById('subGo');
-    var complete = t.done === t.total;
-    var head = complete
-      ? 'You have answered all <b>' + t.total + '</b> questions correctly.'
-      : 'Not finished yet: <b>' + t.done + '</b> of <b>' + t.total + '</b> right so far. You can hand this in to show how far you have got, and hand in again when it is all right.';
-    var work = '<p class="fineprint">It carries the work behind it too: <b>' + t.checks + '</b> check' + (t.checks === 1 ? '' : 's') + ', <b>' + t.first1 + '</b> right first time.</p>';
-
-    if (!cfg.googleClientId) {
-      body.innerHTML = '<p class="st-sub">' + head + '</p>' + work +
-        '<label class="fld"><span>Your full name</span><input id="subName" type="text" autocomplete="name"></label>' +
-        '<label class="fld"><span>Your class</span><select id="subForm">' + (cfg.classes || ['Other']).map(function (c) { return '<option>' + c + '</option>'; }).join('') +
-        '</select></label><div id="subMsg" class="submsg"></div>';
-      go.style.display = ''; go.textContent = 'Get my code'; go.onclick = doSubmit;
-      return;
-    }
-    if (signIn) {
-      /* A Google sign-in lasts about an hour; a lab takes longer. Pressing Save with a dead one
-         used to send the work, have the server refuse it, and tell the student afterwards — the
-         commonest way work went missing while the student was certain they had saved it. Say it
-         BEFORE the press, and offer the thing that actually fixes it: sign out and back in. */
-      var stale = !haveToken();
-      body.innerHTML = '<p class="st-sub">' + head + '</p>' + work +
-        (stale ? '<p class="submsg no">Your Google sign-in has run out — they last about an hour, and a lab takes longer than that. ' +
-                 'Press <b>Sign in again</b> below first, or nothing will be saved.</p>' : '') +
-        '<div class="who">Saving as <b>' + esc(signIn.name) + '</b><button type="button" class="tourcard__link" id="subOut">' + (stale ? 'sign in again' : 'not you?') + '</button></div>' +
-        '<p class="fineprint">If you are on Dr&nbsp;Mompel\'s class list this goes into his records. If you are not — anyone in the world is welcome here — nothing is saved anywhere, and you still get your code.</p>' +
-        '<div id="subMsg" class="submsg"></div>';
-      go.style.display = ''; go.textContent = stale ? 'Save anyway' : 'Save my progress'; go.onclick = doSubmit;
-      document.getElementById('subOut').onclick = signOut;
-      return;
-    }
-    body.innerHTML = '<p class="st-sub">' + head + '</p>' + work +
-      '<p class="fineprint">Sign in with your school Google account so Dr&nbsp;Mompel knows whose work this is. The lab is open to everyone; signing in is only how a result reaches his records.</p>' +
-      '<div id="subWho" class="signinbox"></div><div id="subMsg" class="submsg"></div>';
-    go.style.display = 'none';
-    if (!mountSignIn(document.getElementById('subWho'))) {
-      /* Sign-in did not load — offline, or a school filter has blocked accounts.google.com.
-         This used to show "Get my code" with NO name field, so pressing it answered "Please
-         type your full name" with nowhere to type it, and no code was ever issued. */
-      document.getElementById('subWho').innerHTML =
-        '<p class="fineprint">Google sign-in could not load, so this cannot go into Dr&nbsp;Mompel&rsquo;s records ' +
-        'automatically. Type your name and you will still get your completion code.</p>' +
-        '<label class="fld"><span>Your full name</span><input id="subName" type="text" autocomplete="name"></label>' +
-        '<label class="fld"><span>Your class</span><select id="subForm">' +
-        (cfg.classes || ['Other']).map(function (c) { return '<option>' + c + '</option>'; }).join('') +
-        '</select></label>';
-      go.style.display = ''; go.textContent = 'Get my code'; go.onclick = doSubmit;
-      var nf = document.getElementById('subName'); if (nf) nf.focus();
-    }
-  }
-  /* What the server says when it will not record a hand-in. Its own words are shown for
-     anything not listed, so a new answer is never swallowed. */
-  function whyNot(reply) {
-    var r = String(reply || '').trim();
-    if (/^not recorded: sign-in is not set up/.test(r))
-      return 'Your work was sent, but the records are not set up to accept sign-ins yet, so nothing was saved. Show your teacher this message.';
-    if (/^not recorded: not signed in/.test(r))
-      return 'Your sign-in had run out, so nothing was saved. Press \u201csign in again\u201d beside your name, sign in with the same school account, then press Save once more \u2014 that is what fixes it.';
-    if (/^not recorded: not on this class list/.test(r)) {
-      var acc = r.match(/\(([^)]+)\)/);
-      return 'The account you signed in with' + (acc ? ' (' + acc[1] + ')' : '') +
-             ' is not on the class list, so nothing was saved for it. The list is matched on ' +
-             'email address, not on name. Your code is still your receipt.';
-    }
-    if (/^busy/.test(r))
-      return 'The records were busy. Press Save once more.';
-    if (/^rejected/.test(r))
-      return 'The records would not accept this hand-in: ' + r.replace(/^rejected:\s*/, '') + '.';
-    if (/^unknown lab/.test(r))
-      return 'The records do not know this lab yet. Show your teacher this message.';
-    return 'Nothing was saved. The records answered: \u201c' + r + '\u201d.';
-  }
-
-  function doSubmit() {
-    var name = signIn ? signIn.name : ((document.getElementById('subName') || {}).value || '');
-    var form = (document.getElementById('subForm') || {}).value || '';
-    var msg = document.getElementById('subMsg');
-    var go = document.getElementById('subGo');
-    if (name.trim().length < 3) { msg.className = 'submsg no'; msg.textContent = 'Please type your full name.'; return; }
-    if (signIn && !haveToken() && !askedAgain) {
-      askedAgain = true;
-      setTimeout(function () { askedAgain = false; }, 30000);   /* so the next press may try again */
-      msg.className = 'submsg'; msg.textContent = 'Your sign-in has run out \u2014 asking Google for a new one\u2026';
-      signInThen(doSubmit, function () {
-        var m = document.getElementById('subMsg');
-        if (m) { m.className = 'submsg no'; m.textContent = 'Google did not renew your sign-in. Press \u201csign in again\u201d beside your name, then Save once more.'; }
-      });
-      return;
-    }
-    var t = totals();
-    var code = completionCode(name, form, t.done + '/' + t.total);
-    var perStation = {};
+  function payloadNow() {
+    var t = totals(), perStation = {};
     ORDER.forEach(function (id) {
       var s = stationScore(id), rec = p(id), c = 0;
       Object.keys(rec.per || {}).forEach(function (k) { if (+k < s.total) c += rec.per[k]; });
       perStation[id] = s.done + '/' + s.total + (c ? ' in ' + c : '');
     });
-    var payload = { app:LAB, token: signIn ? signIn.token : '', name:name.trim(), form:form,
-                    score:t.done, total:t.total, code:code, complete: t.done === t.total,
-                    checks:t.checks, firstTime:t.first1, tried:t.tried,
-                    from: t.from ? new Date(t.from).toISOString() : '', stations:perStation,
-                    snap:snapshotNow(), at:new Date().toISOString() };
-    var url = (window.LAB_CONFIG || {}).submitUrl;
-    go.disabled = true;
-    msg.className = 'submsg'; msg.textContent = url ? 'Sending…' : 'Generating your code…';
-    /* `why` is the server saying it would not record this, in words a student can act on;
-       `blind` means the reply could not be read at all and nothing should be claimed. */
-    function finish(sent, offline, why, blind) {
-      go.disabled = false; go.style.display = 'none';
-      msg.className = why ? 'submsg no' : 'submsg ok';
-      var head = why ? '<b>Not saved.</b> '
-               : sent ? '<b>Handed in.</b> '
-               : offline ? '<b>You are offline — nothing was sent yet.</b> '
-               : '<b>Could not reach the server.</b> ';
-      var tail = why ? why
-        : sent
-        ? (blind ? 'Your work went out, but this device could not read the answer, so keep your code as the receipt.'
-                 : (signIn ? 'It is now in Dr Mompel&rsquo;s records. Your code is your receipt — keep it.' : 'Your code is your receipt — keep it.'))
-        : offline ? 'Your work is saved on this device. Keep the code, and hand in again once you are back online.'
-        : 'Paste this into the Google Classroom assignment to hand in.';
-      msg.innerHTML = head + 'Your completion code is<div class="code">' + code + '</div>' + tail;
-      try { localStorage.setItem(LAB + '.submitted', JSON.stringify({ name:name.trim(), form:form, code:code, at:payload.at, sent:sent })); } catch (e) {}
-    }
-    if (!url) { finish(false); return; }
-    if (navigator.onLine === false) { finish(false, true); return; }
-    /* The reply is read, not assumed. This used to go out with mode:'no-cors', which made the
-       answer unreadable, so the page said "Handed in." whether the work had been recorded or
-       refused — the one failure a student can do nothing about because they never hear of it.
-       Sync already reads this same endpoint, so reading it here costs nothing. If the read
-       itself fails, fall back to the old blind send rather than losing the hand-in. */
-    fetch(url, { method:'POST', mode:'cors',
-                 headers:{ 'Content-Type':'text/plain;charset=utf-8' },
-                 body:JSON.stringify(payload) })
+    return { app: LAB_ID, token: signIn ? signIn.token : '', name: signIn ? signIn.name : '', form: '',
+             score: t.done, total: t.total, complete: t.done === t.total,
+             checks: t.checks, firstTime: t.first1, tried: t.tried,
+             from: t.from ? new Date(t.from).toISOString() : '', stations: perStation,
+             snap: snapshotNow(), at: new Date().toISOString() };
+  }
+  /* What the records said when they would not keep it, as a state the chip can show. */
+  function whyNot(reply) {
+    var r = String(reply || '').trim();
+    if (/^not recorded: sign-in is not set up/.test(r)) return 'setup';
+    if (/^not recorded: not signed in/.test(r)) return 'stale';
+    if (/^not recorded: not on this class list/.test(r)) return 'list';
+    if (/^busy/.test(r)) return 'busy';
+    if (/^rejected/.test(r)) return 'rejected';
+    return 'other';
+  }
+  function renewThenSave() {
+    if (askedAgain) { paintSaveChip(); return; }
+    askedAgain = true; setTimeout(function () { askedAgain = false; }, 60000);
+    SI.renew(CID, function (v) { if (v) { signIn = v; saveWhy = ''; flushSave(); } else paintSaveChip(); });
+  }
+  function flushSave(leaving) {
+    if (!savePending || !syncEnabled() || saving) return;
+    if (!signIn) { saveWhy = 'signin'; paintSaveChip(); return; }          /* kept here until they sign in */
+    if (!haveToken()) { saveWhy = 'stale'; if (!leaving) renewThenSave(); else paintSaveChip(); return; }
+    var payload = payloadNow();
+    if (!payload.snap && !payload.score && !payload.checks) { savePending = false; saveWhy = ''; paintSaveChip(); return; }   /* nothing done yet: nothing to send */
+    if (payload.snap === lastSent && payload.score <= lastScore) { savePending = false; saveWhy = ''; paintSaveChip(); return; }
+    saving = true; savePending = false; saveWhy = ''; paintSaveChip();
+    var opts = { method:'POST', mode:'cors', headers:{ 'Content-Type':'text/plain;charset=utf-8' }, body: JSON.stringify(payload) };
+    if (leaving) opts.keepalive = true;
+    fetch((window.LAB_CONFIG || {}).submitUrl, opts)
       .then(function (r) { return r.text(); })
       .then(function (reply) {
-        if (/^recorded/.test(String(reply || '').trim())) { finish(true); return; }
-        finish(true, false, whyNot(reply));
+        saving = false;
+        var r = String(reply || '').trim();
+        if (/^recorded/.test(r)) {
+          savedAt = new Date(); lastSent = payload.snap; lastScore = payload.score; saveWhy = '';
+          try { localStorage.setItem(LAB_ID + '.submitted', JSON.stringify({ at: payload.at, sent: true, name: payload.name })); } catch (e) {}
+          if (savePending) queueSave();          /* something changed while it was on its way */
+        } else {
+          saveWhy = whyNot(r); savePending = true;
+          if (saveWhy === 'busy' || saveWhy === 'other') retryLater();
+          else if (saveWhy === 'stale') renewThenSave();
+        }
+        paintSaveChip();
       })
-      .catch(function () {
-        fetch(url, { method:'POST', mode:'no-cors',
-                     headers:{ 'Content-Type':'text/plain;charset=utf-8' },
-                     body:JSON.stringify(payload) })
-          .then(function () { finish(true, false, null, true); })
-          .catch(function () { finish(false); });
-      });
+      .catch(function () { saving = false; savePending = true; saveWhy = 'offline'; paintSaveChip(); retryLater(); });
+  }
+  addEventListener('pagehide', function () { if (savePending && !saving) flushSave(true); });
+  document.addEventListener('visibilitychange', function () {
+    if (document.visibilityState === 'hidden' && savePending && !saving) flushSave(true);
+  });
+
+  /* ---------- the chip in the header, and what opens from it ---------- */
+  function hhmm(d) { return ('0' + d.getHours()).slice(-2) + ':' + ('0' + d.getMinutes()).slice(-2); }
+  function paintSaveChip() {
+    var b = document.getElementById('btnSubmit'); if (!b) return;
+    if (!syncEnabled()) { b.hidden = true; return; }
+    b.hidden = false;
+    var cls = 'hbtn hbtn--save tip tip--right', text, tip;
+    if (!signIn) { cls += ' is-off'; text = 'Sign in to save'; tip = 'Your work stays in this browser until you sign in with your school account. Sign in and it goes to Dr Mompel’s records — what you have done already, too.'; }
+    else if (saving) { cls += ' is-busy'; text = 'Saving…'; tip = 'Sending your work to Dr Mompel’s records.'; }
+    else if (saveWhy === 'list') { cls += ' is-no'; text = 'Not on the class list'; tip = 'The account you signed in with is not on Dr Mompel’s class list, so nothing is recorded for it. Your work stays in this browser.'; }
+    else if (saveWhy === 'setup') { cls += ' is-no'; text = 'Not being collected'; tip = 'The records are not set up to accept sign-ins yet. Your work stays in this browser.'; }
+    else if (saveWhy === 'stale') { cls += ' is-no'; text = 'Sign in again'; tip = 'Your Google sign-in has run out — they last about an hour. Press to sign in again; nothing is lost, it is sent afterwards.'; }
+    else if (saveWhy === 'offline') { cls += ' is-no'; text = 'Offline · will retry'; tip = 'Could not reach the records. Your work is kept here and sent again in a minute.'; }
+    else if (saveWhy === 'rejected') { cls += ' is-no'; text = 'Not saved'; tip = 'The records would not accept this. Show your teacher.'; }
+    else if (savePending) { cls += ' is-busy'; text = 'Saving…'; tip = 'Sent to Dr Mompel’s records within two minutes, and at once when you finish or leave.'; }
+    else if (savedAt) { cls += ' is-ok'; text = 'Saved ✓ ' + hhmm(savedAt); tip = 'In Dr Mompel’s records. Every check is sent on its own — there is nothing to hand in.'; }
+    else { cls += ' is-ok'; text = 'Saves as you go'; tip = 'Signed in: every check is sent to Dr Mompel’s records on its own — there is nothing to hand in.'; }
+    b.className = cls; b.textContent = text; b.setAttribute('data-tip', tip);
+  }
+  function openSaveDialog() {
+    var dlg = document.getElementById('subDlg'); if (!dlg) return;
+    fillSaveDialog();
+    dlg.hidden = false;
+    if (signIn && !haveToken() && SI && CID) SI.renew(CID, function () {});
+    document.getElementById('subClose').onclick = function () { dlg.hidden = true; };
+    dlg.onclick = function (e) { if (e.target === dlg) dlg.hidden = true; };
+  }
+  function saveLine() {
+    if (saving) return 'Saving…';
+    if (saveWhy === 'list') return 'The account you signed in with (' + esc(signIn.email) + ') is not on the class list, so nothing is recorded for it. The list is matched on email address, not on name.';
+    if (saveWhy === 'setup') return 'The records are not set up to accept sign-ins yet, so nothing is recorded. Show your teacher this message.';
+    if (saveWhy === 'offline') return 'Could not reach the records just now. Your work is kept here and sent again in a minute.';
+    if (saveWhy === 'stale') return 'Your sign-in has run out. Sign in again and it is sent.';
+    if (saveWhy === 'rejected') return 'The records would not accept this. Show your teacher.';
+    if (savePending) return 'What you have done since the last save goes within two minutes.';
+    if (savedAt) return 'Saved at ' + hhmm(savedAt) + '. Everything you have done here is in the records.';
+    return 'Saves as you go.';
+  }
+  function fillSaveDialog() {
+    var body = document.getElementById('subBody'), go = document.getElementById('subGo');
+    if (!body || !go) return;
+    var cfg = window.LAB_CONFIG || {}, t = totals();
+    var sofar = '<p class="st-sub"><b>' + t.done + '</b> of <b>' + t.total + '</b> right so far, in <b>' + t.checks + '</b> check' + (t.checks === 1 ? '' : 's') + '.</p>';
+    if (!cfg.googleClientId || !syncEnabled()) {
+      body.innerHTML = sofar + '<p class="fineprint">This copy of the lab is not connected to a teacher’s records, so your work stays in this browser.</p>';
+      go.style.display = 'none'; return;
+    }
+    if (signIn) {
+      var stale = !haveToken();
+      body.innerHTML = sofar +
+        '<div class="who">Saving as <b>' + esc(signIn.name) + '</b><button type="button" class="tourcard__link" id="subOut">' + (stale ? 'sign in again' : 'not you?') + '</button></div>' +
+        (stale ? '<p class="submsg no">Your Google sign-in has run out — they last about an hour, and a lab takes longer than that. Press <b>sign in again</b>; nothing is lost, it is sent afterwards.</p>' : '') +
+        '<p class="submsg' + (saveWhy && saveWhy !== 'signin' ? ' no' : ' ok') + '">' + saveLine() + '</p>' +
+        '<p class="fineprint">Every check is sent to Dr&nbsp;Mompel’s records on its own — within two minutes, and at once when you finish or leave. There is nothing to hand in. If you are on his class list it goes into his records; if you are not — anyone in the world is welcome here — nothing is recorded anywhere.</p>';
+      go.style.display = (savePending || saveWhy) ? '' : 'none'; go.textContent = 'Save now';
+      go.onclick = function () { queueSave(true); fillSaveDialog(); };
+      document.getElementById('subOut').onclick = signOut;
+      return;
+    }
+    body.innerHTML = sofar +
+      '<p class="fineprint">Sign in with your school Google account and your work is sent to Dr&nbsp;Mompel’s records as you go — what you have done here already goes too. The lab is open to everyone; signing in is only how a result reaches his records.</p>' +
+      '<div id="subWho" class="signinbox"></div>';
+    go.style.display = 'none';
+    if (!mountSignIn(document.getElementById('subWho'))) {
+      document.getElementById('subWho').innerHTML = '<p class="fineprint">Google sign-in could not load here — offline, or a school filter has blocked accounts.google.com. Your work stays in this browser; sign in later and it is sent then.</p>';
+    }
   }
 
   /* ---------- clicking a highlighted word ---------- */
@@ -936,7 +857,7 @@
     if (stale) console.info('Classification Lab: ' + stale + ' station record(s) reset — the questions there have changed since they were answered.');
 
     if (window.Plate) window.Plate.init({ onPick: openGroup });
-    document.getElementById('btnSubmit').addEventListener('click', openSubmit);
+    document.getElementById('btnSubmit').addEventListener('click', openSaveDialog);
     wireTermClicks(document.getElementById('panel'));
     window.addEventListener('resize', closePeek);
     var lb = document.getElementById('lightbox');
