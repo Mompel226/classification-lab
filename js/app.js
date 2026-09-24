@@ -637,21 +637,10 @@
     });
     var name = signIn ? signIn.name : '';
     return { app: LAB_ID, token: signIn ? signIn.token : '', name: name, form: '',
-             /* TRANSITION — the script deployed before 25 Sep 2026 refuses a save that carries no
-                checksum. Never shown to anyone; delete this line, and oldCode(), once every
-                deployment runs the new Code.gs. */
-             code: oldCode(name, t.done + '/' + t.total),
              score: t.done, total: t.total, complete: t.done === t.total,
              checks: t.checks, firstTime: t.first1, tried: t.tried,
              from: t.from ? new Date(t.from).toISOString() : '', stations: perStation,
              snap: snapshotNow(), at: new Date().toISOString() };
-  }
-  function oldCode(name, score) {
-    var raw = String(name).trim().toLowerCase() + '||' + score + '|' + LAB_ID, s1 = 0, s2 = 0;
-    for (var i = 0; i < raw.length; i++) { s1 = (s1 * 31 + raw.charCodeAt(i)) >>> 0; s2 = (s2 ^ (s1 + i)) >>> 0; }
-    var A = 'ACDEFGHJKLMNPQRTUVWXY3479';
-    function chunk(n) { var o = ''; for (var k = 0; k < 4; k++) { o += A[n % A.length]; n = Math.floor(n / A.length); } return o; }
-    return chunk(s1) + '-' + chunk(s2);
   }
   /* What the records said when they would not keep it, as a state the chip can show. */
   function whyNot(reply) {
