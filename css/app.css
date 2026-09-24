@@ -79,6 +79,14 @@ h1,h2,h3,h4{margin:0;font-weight:700;line-height:1.25}
 
 /* ---------- mode selector, hand-in, dialogs ---------- */
 .hbtn--go{background:#8FE0A8;color:#0E3D1E;border-color:#8FE0A8;font-weight:700}
+/* the saving chip: what the records know, at a glance */
+.hbtn--save{font-weight:600}
+.hbtn--save.is-ok{background:#8FE0A8;color:#0E3D1E;border-color:#8FE0A8}
+.hbtn--save.is-ok:hover{background:#A6EBBC}
+.hbtn--save.is-busy{background:rgba(255,255,255,.18);color:#fff;border-style:dashed}
+.hbtn--save.is-no{background:#F4C2BA;color:#5A1A12;border-color:#F4C2BA}
+.hbtn--save.is-no:hover{background:#F8D3CC}
+.hbtn--save.is-off{background:transparent;color:#fff;border-style:dashed}
 .hbtn--go:hover:not(:disabled){background:#A6EBBC}
 .hbtn--go:disabled{background:rgba(255,255,255,.10);color:rgba(255,255,255,.55);
   border-color:rgba(255,255,255,.2);cursor:not-allowed;font-weight:600}
