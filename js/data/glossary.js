@@ -36,6 +36,32 @@ window.GLOSSARY = [
   ]
  },
  {
+  "term": "aerobic respiration",
+  "def": "The chemical reactions in cells that use oxygen to break down nutrient molecules to release energy. Glucose + oxygen → carbon dioxide + water."
+ },
+ {
+  "term": "anaerobic respiration",
+  "def": "The chemical reactions in cells that break down nutrient molecules to release energy without using oxygen. It releases much less energy per glucose molecule than aerobic respiration; in muscles, glucose → lactic acid."
+ },
+ {
+  "term": "anomalous result",
+  "def": "A result that does not fit the pattern or trend in the other data points.",
+  "forms": [
+   "anomaly",
+   "anomalies",
+   "anomalous"
+  ]
+ },
+ {
+  "term": "antibody",
+  "plural": "antibodies",
+  "def": "A protein, produced by lymphocytes, that binds to a specific antigen on a pathogen, leading to the pathogen’s destruction or marking it for destruction by phagocytes."
+ },
+ {
+  "term": "aorta",
+  "def": "The largest artery. It carries oxygenated blood from the left ventricle to the body."
+ },
+ {
   "term": "apical meristem",
   "def": "The region of dividing cells at the very tip of a shoot, and at the tip of a root just behind the root cap. It makes the new cells; those cells then lengthen in the zone just behind it, and that lengthening adds most of the extra length. 0610 does not ask for the name.",
   "ext": true,
@@ -108,6 +134,10 @@ window.GLOSSARY = [
   "def": "An arthropod with two body parts (cephalothorax and abdomen), four pairs of legs, no antennae and no wings. Spiders, scorpions, ticks."
  },
  {
+  "term": "artery",
+  "def": "A blood vessel that carries blood away from the heart, at high pressure. It has a thick wall with muscle and elastic fibres, and a narrow lumen."
+ },
+ {
   "term": "arthropod",
   "def": "An animal with jointed legs, a segmented body and a hard exoskeleton. The four main groups are myriapods, insects, arachnids and crustaceans."
  },
@@ -118,6 +148,22 @@ window.GLOSSARY = [
  {
   "term": "associated organ",
   "def": "An organ that secretes into the alimentary canal but that food never passes through: the salivary glands, pancreas, liver and gall bladder."
+ },
+ {
+  "term": "atrioventricular valve",
+  "def": "A valve between an atrium and a ventricle. It closes when the ventricle contracts, which stops blood flowing back into the atrium.",
+  "forms": [
+   "AV valve",
+   "tricuspid valve",
+   "bicuspid valve",
+   "mitral valve"
+  ],
+  "sup": true
+ },
+ {
+  "term": "atrium",
+  "plural": "atria",
+  "def": "One of the two upper chambers of the heart. The atria receive blood from veins and pump it into the ventricles below them."
  },
  {
   "term": "autotrophic nutrition",
@@ -183,6 +229,10 @@ window.GLOSSARY = [
   "def": "A vertebrate with feathers, front limbs that are wings, a beak with no teeth, lungs, hard-shelled eggs and a constant body temperature."
  },
  {
+  "term": "blood vessel",
+  "def": "A tube that carries blood: an artery, a vein or a capillary."
+ },
+ {
   "term": "bolus",
   "def": "The ball of chewed food, mixed with saliva, produced by mastication and ready to be swallowed. It becomes chyme once the stomach has churned it.",
   "also": [
@@ -210,7 +260,7 @@ window.GLOSSARY = [
  },
  {
   "term": "capillary",
-  "def": "A capillary is the smallest type of blood vessel. Be careful which structure does what: it is the epithelium of the villus that absorbs the glucose and amino acids, and the dense network of capillaries inside the villus that carries them away — which is what keeps the concentration gradient steep."
+  "def": "The smallest type of blood vessel: its wall is one cell thick, and its lumen is about as wide as one red blood cell. Capillaries are where substances are exchanged between the blood and the cells of the tissues. (In a villus, it is the epithelium that absorbs glucose and amino acids; the capillaries inside it carry them away, which keeps the concentration gradient steep.)"
  },
  {
   "term": "carbohydrase",
@@ -255,6 +305,224 @@ window.GLOSSARY = [
  {
   "term": "cell wall",
   "def": "A rigid layer outside the cell membrane of plant, fungal and prokaryotic cells. In plants it is made of cellulose; in fungi and prokaryotes it is not. Animal cells have none."
+ },
+ {
+  "term": "circulatory system",
+  "def": "A system of blood vessels with a pump and valves to ensure one-way flow of blood."
+ },
+ {
+  "term": "clotting",
+  "def": "The formation of a clot at a wound, which prevents blood loss and the entry of pathogens.",
+  "forms": [
+   "clot",
+   "clots",
+   "blood clot",
+   "blood clots"
+  ]
+ },
+ {
+  "term": "control variable",
+  "def": "A variable that could change the result, so it is kept the same.",
+  "forms": [
+   "controlled variable",
+   "controlled variables",
+   "constant variable"
+  ]
+ },
+ {
+  "term": "coronary artery",
+  "def": "An artery that branches from the aorta and supplies the heart muscle with oxygen and glucose."
+ },
+ {
+  "term": "coronary heart disease",
+  "def": "Disease caused by the blockage of the coronary arteries: the heart muscle beyond the blockage is short of oxygen and glucose.",
+  "forms": [
+   "CHD"
+  ]
+ },
+ {
+  "term": "deoxygenated",
+  "def": "Carrying little oxygen, because it has given oxygen to respiring cells. Drawn blue on diagrams, although real deoxygenated blood is dark red."
+ },
+ {
+  "term": "dependent variable",
+  "def": "The variable you measure, to see the effect of the change."
+ },
+ {
+  "term": "diastole",
+  "def": "The part of a heartbeat when the heart muscle relaxes and the chambers fill with blood.",
+  "ext": true
+ },
+ {
+  "term": "double circulation",
+  "def": "A circulation in which the blood passes through the heart twice in one complete circuit of the body — once through the pulmonary circulation and once through the systemic circulation — as in a mammal.",
+  "sup": true
+ },
+ {
+  "term": "elastic fibres",
+  "singular": "elastic fibre",
+  "def": "Fibres in the wall of an artery that stretch when a surge of blood arrives and recoil between beats, which keeps the blood moving and evens out the pressure.",
+  "sup": true
+ },
+ {
+  "term": "electrocardiogram",
+  "def": "A record of the electrical activity of the heart, made through electrodes on the skin, used to monitor the heart. Heart rate = 60 ÷ the time for one beat, in seconds.",
+  "forms": [
+   "ECG",
+   "ECGs"
+  ]
+ },
+ {
+  "term": "fibrin",
+  "def": "An insoluble protein made from fibrinogen at a wound. Its threads form a mesh that traps blood cells, making a clot.",
+  "sup": true
+ },
+ {
+  "term": "fibrinogen",
+  "def": "A soluble protein in the plasma that is converted into insoluble fibrin during clotting.",
+  "sup": true
+ },
+ {
+  "term": "genetic predisposition",
+  "def": "An inherited greater chance of developing a disease, often seen as a family history of it."
+ },
+ {
+  "term": "gill",
+  "def": "A gas exchange organ of a fish. Blood flowing through its capillaries absorbs oxygen from the water that flows over it."
+ },
+ {
+  "term": "haemoglobin",
+  "def": "The red protein in red blood cells that contains iron and combines with oxygen, so that the cells can transport it."
+ },
+ {
+  "term": "heart",
+  "def": "The muscular pump of the circulatory system. Its four chambers — two atria above, two ventricles below — contract to pump blood into the arteries."
+ },
+ {
+  "term": "heart rate",
+  "def": "The number of times the heart beats in one minute, in beats per minute (bpm)."
+ },
+ {
+  "term": "hepatic artery",
+  "def": "The artery that carries oxygenated blood to the liver.",
+  "sup": true
+ },
+ {
+  "term": "hepatic vein",
+  "def": "A vein that carries blood from the liver to the vena cava.",
+  "sup": true
+ },
+ {
+  "term": "hypothesis",
+  "plural": "hypotheses",
+  "def": "A testable explanation that predicts what will happen, with a scientific reason."
+ },
+ {
+  "term": "independent variable",
+  "def": "The variable you change on purpose, to see its effect."
+ },
+ {
+  "term": "lactic acid",
+  "def": "The product of anaerobic respiration in muscles during vigorous exercise. It builds up in the muscles and blood, and is removed by aerobic respiration in the liver after exercise."
+ },
+ {
+  "term": "lymphocyte",
+  "def": "A white blood cell that produces antibodies. In a photomicrograph it has one large round nucleus that fills most of the cell.",
+  "sup": true
+ },
+ {
+  "term": "oxygen debt",
+  "def": "The oxygen needed after vigorous exercise to remove the lactic acid that built up: the fast heart rate carries it to the liver, and faster, deeper breathing supplies oxygen for its aerobic respiration there.",
+  "sup": true
+ },
+ {
+  "term": "oxygenated",
+  "def": "Carrying a lot of oxygen, combined with haemoglobin — like blood that has just passed through the lungs. Drawn red on diagrams."
+ },
+ {
+  "term": "phagocyte",
+  "def": "A white blood cell that engulfs pathogens and digests them, by phagocytosis. In a photomicrograph it has a lobed nucleus and a granular cytoplasm.",
+  "sup": true
+ },
+ {
+  "term": "phagocytosis",
+  "def": "The engulfing of a pathogen by a phagocyte, into a vacuole where enzymes digest it."
+ },
+ {
+  "term": "physical activity",
+  "def": "Movement that makes the muscles work harder than at rest, such as walking, running or cycling."
+ },
+ {
+  "term": "plasma",
+  "def": "The liquid part of blood, mostly water. It transports blood cells, ions, nutrients, urea, hormones and carbon dioxide."
+ },
+ {
+  "term": "platelet",
+  "def": "A small fragment of a cell in the blood, involved in clotting."
+ },
+ {
+  "term": "pulmonary artery",
+  "def": "The artery that carries deoxygenated blood from the right ventricle to the lungs."
+ },
+ {
+  "term": "pulmonary circulation",
+  "def": "The part of a double circulation that carries blood from the right side of the heart to the lungs and back to the left side.",
+  "sup": true
+ },
+ {
+  "term": "pulmonary vein",
+  "def": "The vein that carries oxygenated blood from the lungs to the left atrium."
+ },
+ {
+  "term": "pulse rate",
+  "def": "The number of pulses in one minute, in beats per minute (bpm). A pulse is the surge of blood in an artery at each heartbeat; it is counted at the wrist or neck for a set time."
+ },
+ {
+  "term": "red blood cell",
+  "def": "A blood cell that transports oxygen. It is full of haemoglobin and has no nucleus."
+ },
+ {
+  "term": "renal artery",
+  "def": "The artery that carries blood to a kidney."
+ },
+ {
+  "term": "renal vein",
+  "def": "The vein that carries blood from a kidney to the vena cava."
+ },
+ {
+  "term": "risk factor",
+  "def": "Something that makes a disease more likely, without always causing it. For coronary heart disease: diet, lack of exercise, stress, smoking, genetic predisposition, age and sex."
+ },
+ {
+  "term": "semilunar valve",
+  "def": "A pocket-shaped valve at the start of the aorta or the pulmonary artery. It closes when the ventricle relaxes, which stops blood flowing back into the ventricle.",
+  "forms": [
+   "semi-lunar valve"
+  ],
+  "sup": true
+ },
+ {
+  "term": "septum",
+  "def": "The wall of muscle between the left and right sides of the heart. It keeps the oxygenated blood of the left side apart from the deoxygenated blood of the right side."
+ },
+ {
+  "term": "single circulation",
+  "def": "A circulation in which the blood passes through the heart once in each complete circuit of the body, as in a fish: heart → gills → body → heart.",
+  "sup": true
+ },
+ {
+  "term": "stethoscope",
+  "def": "An instrument for listening to sounds inside the body, such as the heart valves closing."
+ },
+ {
+  "term": "systemic circulation",
+  "def": "The part of a double circulation that carries blood from the left side of the heart to the rest of the body and back to the right side.",
+  "sup": true
+ },
+ {
+  "term": "systole",
+  "def": "The part of a heartbeat when the muscle of a chamber contracts: first the atria, then the ventricles.",
+  "ext": true
  },
  {
   "term": "vacuole",
@@ -802,7 +1070,7 @@ window.GLOSSARY = [
  },
  {
   "term": "lumen",
-  "def": "The lumen is the space inside a tube such as the small intestine, where the food and the digestive juices mix."
+  "def": "The space inside a tube — a blood vessel, the small intestine — through which its contents flow."
  },
  {
   "term": "magnesium ion",
@@ -1440,6 +1708,10 @@ window.GLOSSARY = [
   "def": "The waste product made in the liver from excess amino acids, removed from the blood by the kidneys and excreted in urine."
  },
  {
+  "term": "valve",
+  "def": "A one-way door in the heart or in a vein. It opens when blood flows forwards and closes when blood starts to flow backwards, so blood flows in one direction only."
+ },
+ {
   "term": "variegated leaf",
   "def": "A leaf with green parts and white parts. The white parts have no chlorophyll, which is what makes it the test for whether chlorophyll is needed for photosynthesis.",
   "forms": [
@@ -1449,6 +1721,19 @@ window.GLOSSARY = [
  {
   "term": "vascular bundle",
   "def": "A strand of xylem and phloem running through a plant — a vein in a leaf. Xylem carries water and mineral ions and supports; phloem carries sucrose and amino acids. In a ring in a dicotyledon stem, scattered in a monocotyledon stem."
+ },
+ {
+  "term": "vein",
+  "def": "A blood vessel that carries blood back to the heart, at low pressure. It has a thin wall, a wide lumen and valves."
+ },
+ {
+  "term": "vena cava",
+  "plural": "venae cavae",
+  "def": "The largest vein. It returns deoxygenated blood from the body to the right atrium."
+ },
+ {
+  "term": "ventricle",
+  "def": "One of the two lower chambers of the heart. The ventricles pump blood out of the heart into arteries; the left ventricle has the thickest wall."
  },
  {
   "term": "vertebrate",
@@ -1480,6 +1765,10 @@ window.GLOSSARY = [
  {
   "term": "vitamin D",
   "def": "Helps the body absorb calcium. A lack of it causes rickets. Found in oily fish and eggs, and made in the skin in sunlight."
+ },
+ {
+  "term": "white blood cell",
+  "def": "A blood cell that defends the body against pathogens, by phagocytosis or by producing antibodies. It has a nucleus."
  },
  {
   "term": "wilting",
@@ -1515,4 +1804,4 @@ window.GLOSSARY = [
  }
 ];
 /* every form that opens one of those entries: its plural or singular, the verb behind it, an alias */
-window.GLOSSARY_FORMS = {"adaptation":"adaptive feature","adaptations":"adaptive feature","meristem":"apical meristem","meristems":"apical meristem","apical meristems":"apical meristem","algae":"alga","antennae":"antenna","autotroph":"autotrophic nutrition","autotrophs":"autotrophic nutrition","autotrophic":"autotrophic nutrition","bacteria":"bacterium","bacterial":"bacterium","binomial":"binomial system","binomial name":"binomial system","binomial names":"binomial system","scientific name":"binomial system","scientific names":"binomial system","elongation":"cell elongation","plasma membrane":"cell membrane","vacuoles":"vacuole","circular fold":"circular folds","classification system":"classification","classification systems":"classification","coleoptiles":"coleoptile","seed leaf":"cotyledon","seed leaves":"cotyledon","dicot":"dicotyledon","dicots":"dicotyledon","upper epidermis":"epidermis","lower epidermis":"epidermis","evolutionary relationship":"evolutionary relationships","fat":"fats and oils","fats":"fats and oils","oil":"fats and oils","oils":"fats and oils","fibre":"fibre (roughage)","roughage":"fibre (roughage)","dietary fibre":"fibre (roughage)","fibrous root":"fibrous root system","fibrous roots":"fibrous root system","fungi":"fungus","fungal":"fungus","genera":"genus","heterotroph":"heterotrophic nutrition","heterotrophs":"heterotrophic nutrition","heterotrophic":"heterotrophic nutrition","hyphae":"hypha","five kingdoms":"kingdom","magnesium":"magnesium ion","mammary gland":"mammary glands","mesophyll cell":"mesophyll","mesophyll cells":"mesophyll","microvillus":"microvilli","mitochondria":"mitochondrion","monocot":"monocotyledon","monocots":"monocotyledon","mycelia":"mycelium","nitrate":"nitrate ion","nuclei":"nucleus","palisade cell":"palisade mesophyll","palisade cells":"palisade mesophyll","palisade layer":"palisade mesophyll","parasitic":"parasite","periodontal fibre":"periodontal fibres","peristaltic":"peristalsis","phyla":"phylum","pollen":"pollen grain","prokaryotic":"prokaryote","cortex":"root cortex","root hair":"root hair cell","root hairs":"root hair cell","salivary gland":"salivary glands","saprotroph":"saprotrophic nutrition","saprotrophs":"saprotrophic nutrition","saprotrophic":"saprotrophic nutrition","saprophyte":"saprotrophic nutrition","saprophytes":"saprotrophic nutrition","stimuli":"stimulus","stomata":"stoma","seed coat":"testa","variegated":"variegated leaf","villi":"villus","marram":"marram grass","abdomens":"abdomen","absorptions":"absorption","absorb":"absorption","absorbs":"absorption","absorbed":"absorption","absorbing":"absorption","absorbation":"absorption","active sites":"active site","active sited":"active site","active siting":"active site","active sitation":"active site","active sition":"active site","active transports":"active transport","adaptive features":"adaptive feature","adaptive featured":"adaptive feature","adaptive featuring":"adaptive feature","adaptive featuration":"adaptive feature","adaptive featurion":"adaptive feature","adhesions":"adhesion","air spaces":"air space","air spaced":"air space","air spacing":"air space","air spacation":"air space","air spacion":"air space","algas":"alga","alimentary canals":"alimentary canal","amino acids":"amino acid","amphibians":"amphibian","amylases":"amylase","amylased":"amylase","amylasing":"amylase","amylasation":"amylase","amylasion":"amylase","anaemias":"anaemia","anatomies":"anatomy","antennas":"antenna","anthers":"anther","anuses":"anus","arachnids":"arachnid","arthropods":"arthropod","assimilations":"assimilation","assimilate":"assimilation","assimilates":"assimilation","assimilated":"assimilation","assimilating":"assimilation","assimilatation":"assimilation","associated organs":"associated organ","autotrophic nutritions":"autotrophic nutrition","auxins":"auxin","backbones":"backbone","backboned":"backbone","backboning":"backbone","backbonation":"backbone","backbonion":"backbone","bacteriums":"bacterium","balanced diets":"balanced diet","bases":"base","based":"base","basing":"base","basation":"base","basion":"base","base sequences":"base sequence","base sequenced":"base sequence","base sequencing":"base sequence","base sequencation":"base sequence","base sequencion":"base sequence","biles":"bile","biled":"bile","biling":"bile","bilation":"bile","bilion":"bile","bile ducts":"bile duct","binomial systems":"binomial system","birds":"bird","boluses":"bolus","calciums":"calcium","cambiums":"cambium","canines":"canine","canined":"canine","canining":"canine","canination":"canine","caninion":"canine","capillaries":"capillary","carbohydrases":"carbohydrase","carbohydrased":"carbohydrase","carbohydrasing":"carbohydrase","carbohydrasation":"carbohydrase","carbohydrasion":"carbohydrase","carbohydrates":"carbohydrate","carbohydrated":"carbohydrate","carbohydrating":"carbohydrate","carbohydratation":"carbohydrate","carbohydration":"carbohydrate","carpels":"carpel","catabolics":"catabolic","catalysts":"catalyst","cell elongations":"cell elongation","cell elongate":"cell elongation","cell elongates":"cell elongation","cell elongated":"cell elongation","cell elongating":"cell elongation","cell elongatation":"cell elongation","cell membranes":"cell membrane","cell membraned":"cell membrane","cell membraning":"cell membrane","cell membranation":"cell membrane","cell membranion":"cell membrane","cell walls":"cell wall","vacuoled":"vacuole","vacuoling":"vacuole","vacuolation":"vacuole","vacuolion":"vacuole","celluloses":"cellulose","cellulosed":"cellulose","cellulosing":"cellulose","cellulosation":"cellulose","cellulosion":"cellulose","cements":"cement","cephalothoraxes":"cephalothorax","characteristics":"characteristic","chemical digestions":"chemical digestion","chemical digest":"chemical digestion","chemical digests":"chemical digestion","chemical digested":"chemical digestion","chemical digesting":"chemical digestion","chemical digestation":"chemical digestion","chitins":"chitin","chlorophylls":"chlorophyll","chloroplasts":"chloroplast","chymes":"chyme","chymed":"chyme","chyming":"chyme","chymation":"chyme","chymion":"chyme","circular foldses":"circular folds","circular muscles":"circular muscle","circular muscled":"circular muscle","circular muscling":"circular muscle","circular musclation":"circular muscle","circular musclion":"circular muscle","classifications":"classification","classify":"classification","classifies":"classification","classified":"classification","classifying":"classification","classificate":"classification","classificates":"classification","classificated":"classification","classificating":"classification","classificatation":"classification","cohesions":"cohesion","coleoptiled":"coleoptile","coleoptiling":"coleoptile","coleoptilation":"coleoptile","coleoptilion":"coleoptile","colons":"colon","common ancestors":"common ancestor","complementaries":"complementary","compound eyes":"compound eye","compound eyed":"compound eye","compound eying":"compound eye","compound eyation":"compound eye","compound eyion":"compound eye","concentrations":"concentration","concentrate":"concentration","concentrates":"concentration","concentrated":"concentration","concentrating":"concentration","concentratation":"concentration","concentration gradients":"concentration gradient","condensations":"condensation","condense":"condensation","condenses":"condensation","condensed":"condensation","condensing":"condensation","condension":"condensation","condensate":"condensation","condensates":"condensation","condensated":"condensation","condensating":"condensation","condensatation":"condensation","constipations":"constipation","constipate":"constipation","constipates":"constipation","constipated":"constipation","constipating":"constipation","constipatation":"constipation","consumeds":"consumed","consum":"consumed","consums":"consumed","consuming":"consumed","consumation":"consumed","consume":"consumed","consumes":"consumed","consumion":"consumed","controls":"control","cotyledons":"cotyledon","cross-pollinations":"cross-pollination","cross-pollinate":"cross-pollination","cross-pollinates":"cross-pollination","cross-pollinated":"cross-pollination","cross-pollinating":"cross-pollination","cross-pollinatation":"cross-pollination","crustaceans":"crustacean","cuticles":"cuticle","cuticled":"cuticle","cuticling":"cuticle","cuticlation":"cuticle","cuticlion":"cuticle","de-starchings":"de-starching","de-starch":"de-starching","de-starchs":"de-starching","de-starched":"de-starching","de-starchation":"de-starching","deficiency diseases":"deficiency disease","deficiency diseased":"deficiency disease","deficiency diseasing":"deficiency disease","deficiency diseasation":"deficiency disease","deficiency diseasion":"deficiency disease","denatureds":"denatured","denatur":"denatured","denaturs":"denatured","denaturing":"denatured","denaturation":"denatured","denature":"denatured","denatures":"denatured","denaturion":"denatured","dentines":"dentine","dentined":"dentine","dentining":"dentine","dentination":"dentine","dentinion":"dentine","dichotomous keys":"dichotomous key","dicotyledons":"dicotyledon","diffusions":"diffusion","diffuse":"diffusion","diffuses":"diffusion","diffused":"diffusion","diffusing":"diffusion","diffusation":"diffusion","digestions":"digestion","digest":"digestion","digests":"digestion","digested":"digestion","digesting":"digestion","digestation":"digestion","dnas":"DNA","dry masses":"dry mass","duodenums":"duodenum","ectotherms":"ectotherm","egestions":"egestion","egest":"egestion","egests":"egestion","egested":"egestion","egesting":"egestion","egestation":"egestion","emulsifications":"emulsification","emulsify":"emulsification","emulsifies":"emulsification","emulsified":"emulsification","emulsifying":"emulsification","emulsificate":"emulsification","emulsificates":"emulsification","emulsificated":"emulsification","emulsificating":"emulsification","emulsificatation":"emulsification","enamels":"enamel","endotherms":"endotherm","enterocytes":"enterocyte","enterocyted":"enterocyte","enterocyting":"enterocyte","enterocytation":"enterocyte","enterocytion":"enterocyte","enzymes":"enzyme","enzymed":"enzyme","enzyming":"enzyme","enzymation":"enzyme","enzymion":"enzyme","epidermises":"epidermis","epiglottises":"epiglottis","epitheliums":"epithelium","equilibriums":"equilibrium","evolutionary relationshipses":"evolutionary relationships","excretions":"excretion","excrete":"excretion","excretes":"excretion","excreted":"excretion","excreting":"excretion","excretation":"excretion","exoskeletons":"exoskeleton","external fertilisations":"external fertilisation","external fertilise":"external fertilisation","external fertilises":"external fertilisation","external fertilised":"external fertilisation","external fertilising":"external fertilisation","external fertilision":"external fertilisation","external fertilisate":"external fertilisation","external fertilisates":"external fertilisation","external fertilisated":"external fertilisation","external fertilisating":"external fertilisation","external fertilisatation":"external fertilisation","faeceses":"faeces","fats and oilses":"fats and oils","features":"feature","featured":"feature","featuring":"feature","featuration":"feature","featurion":"feature","ferns":"fern","fertile offsprings":"fertile offspring","fertile offspr":"fertile offspring","fertile offsprs":"fertile offspring","fertile offspred":"fertile offspring","fertile offspration":"fertile offspring","fertilisations":"fertilisation","fertilise":"fertilisation","fertilises":"fertilisation","fertilised":"fertilisation","fertilising":"fertilisation","fertilision":"fertilisation","fertilisate":"fertilisation","fertilisates":"fertilisation","fertilisated":"fertilisation","fertilisating":"fertilisation","fertilisatation":"fertilisation","fibre (roughage)s":"fibre (roughage)","fibrous root systems":"fibrous root system","filaments":"filament","fila":"filament","filas":"filament","filaed":"filament","filaing":"filament","filaation":"filament","fishes":"fish","flaccids":"flaccid","flowering plants":"flowering plant","fronds":"frond","fruits":"fruit","funguses":"fungus","gastric juices":"gastric juice","gastric juiced":"gastric juice","gastric juicing":"gastric juice","gastric juication":"gastric juice","gastric juicion":"gastric juice","genuses":"genus","germinations":"germination","germinate":"germination","germinates":"germination","germinated":"germination","germinating":"germination","germinatation":"germination","glucoses":"glucose","glucosed":"glucose","glucosing":"glucose","glucosation":"glucose","glucosion":"glucose","glycogens":"glycogen","gravitropisms":"gravitropism","growths":"growth","grow":"growth","grows":"growth","growed":"growth","growing":"growth","growation":"growth","guard cells":"guard cell","gums":"gum","hepatic portal veins":"hepatic portal vein","hepatocytes":"hepatocyte","hepatocyted":"hepatocyte","hepatocyting":"hepatocyte","hepatocytation":"hepatocyte","hepatocytion":"hepatocyte","heterotrophic nutritions":"heterotrophic nutrition","holozoic nutritions":"holozoic nutrition","host cells":"host cell","humidities":"humidity","hydrochloric acids":"hydrochloric acid","hydrogencarbonate indicators":"hydrogencarbonate indicator","hydrolysises":"hydrolysis","hydrolyse":"hydrolysis","hydrolyses":"hydrolysis","hydrolysed":"hydrolysis","hydrolysing":"hydrolysis","hydrolysation":"hydrolysis","hydrolysion":"hydrolysis","hydrophytes":"hydrophyte","hydrophyted":"hydrophyte","hydrophyting":"hydrophyte","hydrophytation":"hydrophyte","hydrophytion":"hydrophyte","hyphas":"hypha","ileums":"ileum","incisors":"incisor","ingestions":"ingestion","ingest":"ingestion","ingests":"ingestion","ingested":"ingestion","ingesting":"ingestion","ingestation":"ingestion","insects":"insect","insolubles":"insoluble","insolubled":"insoluble","insolubling":"insoluble","insolublation":"insoluble","insolublion":"insoluble","internal fertilisations":"internal fertilisation","internal fertilise":"internal fertilisation","internal fertilises":"internal fertilisation","internal fertilised":"internal fertilisation","internal fertilising":"internal fertilisation","internal fertilision":"internal fertilisation","internal fertilisate":"internal fertilisation","internal fertilisates":"internal fertilisation","internal fertilisated":"internal fertilisation","internal fertilisating":"internal fertilisation","internal fertilisatation":"internal fertilisation","iodine solutions":"iodine solution","irons":"iron","jawbones":"jawbone","jawboned":"jawbone","jawboning":"jawbone","jawbonation":"jawbone","jawbonion":"jawbone","kingdoms":"kingdom","lacteals":"lacteal","lignins":"lignin","limiting factors":"limiting factor","lipases":"lipase","lipased":"lipase","lipasing":"lipase","lipasation":"lipase","lipasion":"lipase","longitudinal muscles":"longitudinal muscle","longitudinal muscled":"longitudinal muscle","longitudinal muscling":"longitudinal muscle","longitudinal musclation":"longitudinal muscle","longitudinal musclion":"longitudinal muscle","lumens":"lumen","magnesium ions":"magnesium ion","magnifications":"magnification","magnify":"magnification","magnifies":"magnification","magnified":"magnification","magnifying":"magnification","magnificate":"magnification","magnificates":"magnification","magnificated":"magnification","magnificating":"magnification","magnificatation":"magnification","malnutritions":"malnutrition","maltases":"maltase","maltased":"maltase","maltasing":"maltase","maltasation":"maltase","maltasion":"maltase","maltoses":"maltose","maltosed":"maltose","maltosing":"maltose","maltosation":"maltose","maltosion":"maltose","mammals":"mammal","mammary glandses":"mammary glands","mastications":"mastication","masticate":"mastication","masticates":"mastication","masticated":"mastication","masticating":"mastication","masticatation":"mastication","mesophylls":"mesophyll","metabolisms":"metabolism","microvillis":"microvilli","mineral ions":"mineral ion","mitochondrions":"mitochondrion","models":"model","molars":"molar","monocotyledons":"monocotyledon","monomers":"monomer","morphologies":"morphology","movements":"movement","move":"movement","moves":"movement","moved":"movement","moving":"movement","movation":"movement","movion":"movement","mucuses":"mucus","myceliums":"mycelium","myriapods":"myriapod","nectars":"nectar","negative controls":"negative control","net movements":"net movement","net move":"net movement","net moves":"net movement","net moved":"net movement","net moving":"net movement","net movation":"net movement","net movion":"net movement","neutralises":"neutralise","neutralised":"neutralise","neutralising":"neutralise","neutralisation":"neutralise","neutralision":"neutralise","nitrate ions":"nitrate ion","nucleuses":"nucleus","nutritions":"nutrition","oesophaguses":"oesophagus","optimums":"optimum","optimum phs":"optimum pH","osmosises":"osmosis","ovaries":"ovary","ovules":"ovule","ovuled":"ovule","ovuling":"ovule","ovulation":"ovule","ovulion":"ovule","palisade mesophylls":"palisade mesophyll","pancreatic juices":"pancreatic juice","pancreatic juiced":"pancreatic juice","pancreatic juicing":"pancreatic juice","pancreatic juication":"pancreatic juice","pancreatic juicion":"pancreatic juice","parasites":"parasite","parasited":"parasite","parasiting":"parasite","parasitation":"parasite","parasition":"parasite","parasitic nutritions":"parasitic nutrition","partially permeables":"partially permeable","partially permeabled":"partially permeable","partially permeabling":"partially permeable","partially permeablation":"partially permeable","partially permeablion":"partially permeable","pathogens":"pathogen","pepsins":"pepsin","periodontal fibreses":"periodontal fibres","peristalsises":"peristalsis","petals":"petal","pharynxes":"pharynx","phloems":"phloem","photosynthesises":"photosynthesis","photosynthesise":"photosynthesis","photosynthesised":"photosynthesis","photosynthesising":"photosynthesis","photosynthesisation":"photosynthesis","photosynthesision":"photosynthesis","phototropisms":"phototropism","phylums":"phylum","physical digestions":"physical digestion","physical digest":"physical digestion","physical digests":"physical digestion","physical digested":"physical digestion","physical digesting":"physical digestion","physical digestation":"physical digestion","plaques":"plaque","plasmids":"plasmid","plumules":"plumule","plumuled":"plumule","plumuling":"plumule","plumulation":"plumule","plumulion":"plumule","pollen grains":"pollen grain","pollen tubes":"pollen tube","pollen tubed":"pollen tube","pollen tubing":"pollen tube","pollen tubation":"pollen tube","pollen tubion":"pollen tube","pollinations":"pollination","pollinate":"pollination","pollinates":"pollination","pollinated":"pollination","pollinating":"pollination","pollinatation":"pollination","polymers":"polymer","positive controls":"positive control","potometers":"potometer","premolars":"premolar","prokaryotes":"prokaryote","prokaryoted":"prokaryote","prokaryoting":"prokaryote","prokaryotation":"prokaryote","prokaryotion":"prokaryote","proteases":"protease","proteased":"protease","proteasing":"protease","proteasation":"protease","proteasion":"protease","proteins":"protein","protein coats":"protein coat","protoctists":"protoctist","pulps":"pulp","radicles":"radicle","radicled":"radicle","radicling":"radicle","radiclation":"radicle","radiclion":"radicle","reabsorbeds":"reabsorbed","reabsorb":"reabsorbed","reabsorbs":"reabsorbed","reabsorbing":"reabsorbed","reabsorbation":"reabsorbed","reabsorbe":"reabsorbed","reabsorbes":"reabsorbed","reabsorbion":"reabsorbed","reabsorptions":"reabsorption","rectums":"rectum","reducing sugars":"reducing sugar","reproductions":"reproduction","reproduce":"reproduction","reproduces":"reproduction","reproduced":"reproduction","reproducing":"reproduction","reproducation":"reproduction","reproducion":"reproduction","reptiles":"reptile","reptiled":"reptile","reptiling":"reptile","reptilation":"reptile","reptilion":"reptile","respirations":"respiration","respire":"respiration","respires":"respiration","respired":"respiration","respiring":"respiration","respirion":"respiration","respirate":"respiration","respirates":"respiration","respirated":"respiration","respirating":"respiration","respiratation":"respiration","ricketses":"rickets","root canals":"root canal","root cortexes":"root cortex","root hair cells":"root hair cell","salivas":"saliva","salivary amylases":"salivary amylase","salivary amylased":"salivary amylase","salivary amylasing":"salivary amylase","salivary amylasation":"salivary amylase","salivary amylasion":"salivary amylase","salivary glandses":"salivary glands","saprotrophic nutritions":"saprotrophic nutrition","scurvies":"scurvy","secretes":"secrete","secreted":"secrete","secreting":"secrete","secretation":"secrete","secretion":"secrete","seeds":"seed","seedlings":"seedling","seedl":"seedling","seedls":"seedling","seedled":"seedling","seedlation":"seedling","self-pollinations":"self-pollination","self-pollinate":"self-pollination","self-pollinates":"self-pollination","self-pollinated":"self-pollination","self-pollinating":"self-pollination","self-pollinatation":"self-pollination","sensitivities":"sensitivity","sensitive":"sensitivity","sensitives":"sensitivity","sensitived":"sensitivity","sensitiving":"sensitivity","sensitivation":"sensitivity","sensitivion":"sensitivity","sepals":"sepal","shoot tips":"shoot tip","sinks":"sink","solubles":"soluble","solubled":"soluble","solubling":"soluble","solublation":"soluble","solublion":"soluble","sources":"source","sourced":"source","sourcing":"source","sourcation":"source","sourcion":"source","specieses":"species","specimens":"specimen","spongy mesophylls":"spongy mesophyll","spores":"spore","spored":"spore","sporing":"spore","sporation":"spore","sporion":"spore","stamens":"stamen","starches":"starch","stigmas":"stigma","stimuluses":"stimulus","stomas":"stoma","styles":"style","styled":"style","styling":"style","stylation":"style","stylion":"style","substrates":"substrate","substrated":"substrate","substrating":"substrate","substratation":"substrate","substration":"substrate","sucroses":"sucrose","sucrosed":"sucrose","sucrosing":"sucrose","sucrosation":"sucrose","sucrosion":"sucrose","surface areas":"surface area","swallowings":"swallowing","swallow":"swallowing","swallows":"swallowing","swallowed":"swallowing","swallowation":"swallowing","tap roots":"tap root","taxonomies":"taxonomy","testas":"testa","thoraxes":"thorax","tracheas":"trachea","translocations":"translocation","translocate":"translocation","translocates":"translocation","translocated":"translocation","translocating":"translocation","translocatation":"translocation","transpirations":"transpiration","transpire":"transpiration","transpires":"transpiration","transpired":"transpiration","transpiring":"transpiration","transpirion":"transpiration","transpirate":"transpiration","transpirates":"transpiration","transpirated":"transpiration","transpirating":"transpiration","transpiratation":"transpiration","transpiration streams":"transpiration stream","transpiration pulls":"transpiration pull","triglycerides":"triglyceride","triglycerided":"triglyceride","triglyceriding":"triglyceride","triglyceridation":"triglyceride","triglyceridion":"triglyceride","tropisms":"tropism","trypsins":"trypsin","turgids":"turgid","ureas":"urea","variegated leaves":"variegated leaf","vascular bundles":"vascular bundle","vascular bundled":"vascular bundle","vascular bundling":"vascular bundle","vascular bundlation":"vascular bundle","vascular bundlion":"vascular bundle","vertebrates":"vertebrate","vertebrated":"vertebrate","vertebrating":"vertebrate","vertebratation":"vertebrate","vertebration":"vertebrate","villuses":"villus","viruses":"virus","visking tubings":"visking tubing","vitamin cs":"vitamin C","vitamin ds":"vitamin D","wiltings":"wilting","wilt":"wilting","wilts":"wilting","wilted":"wilting","wiltation":"wilting","xerophytes":"xerophyte","xerophyted":"xerophyte","xerophyting":"xerophyte","xerophytation":"xerophyte","xerophytion":"xerophyte","succulents":"succulent","marram grasses":"marram grass","xylems":"xylem","xylem vessels":"xylem vessel"};
+window.GLOSSARY_FORMS = {"adaptation":"adaptive feature","adaptations":"adaptive feature","anomaly":"anomalous result","anomalies":"anomalous result","anomalous":"anomalous result","antibodies":"antibody","meristem":"apical meristem","meristems":"apical meristem","apical meristems":"apical meristem","algae":"alga","antennae":"antenna","av valve":"atrioventricular valve","tricuspid valve":"atrioventricular valve","bicuspid valve":"atrioventricular valve","mitral valve":"atrioventricular valve","atria":"atrium","autotroph":"autotrophic nutrition","autotrophs":"autotrophic nutrition","autotrophic":"autotrophic nutrition","bacteria":"bacterium","bacterial":"bacterium","binomial":"binomial system","binomial name":"binomial system","binomial names":"binomial system","scientific name":"binomial system","scientific names":"binomial system","elongation":"cell elongation","plasma membrane":"cell membrane","clot":"clotting","clots":"clotting","blood clot":"clotting","blood clots":"clotting","controlled variable":"control variable","controlled variables":"control variable","constant variable":"control variable","chd":"coronary heart disease","elastic fibre":"elastic fibres","ecg":"electrocardiogram","ecgs":"electrocardiogram","hypotheses":"hypothesis","semi-lunar valve":"semilunar valve","vacuoles":"vacuole","circular fold":"circular folds","classification system":"classification","classification systems":"classification","coleoptiles":"coleoptile","seed leaf":"cotyledon","seed leaves":"cotyledon","dicot":"dicotyledon","dicots":"dicotyledon","upper epidermis":"epidermis","lower epidermis":"epidermis","evolutionary relationship":"evolutionary relationships","fat":"fats and oils","fats":"fats and oils","oil":"fats and oils","oils":"fats and oils","fibre":"fibre (roughage)","roughage":"fibre (roughage)","dietary fibre":"fibre (roughage)","fibrous root":"fibrous root system","fibrous roots":"fibrous root system","fungi":"fungus","fungal":"fungus","genera":"genus","heterotroph":"heterotrophic nutrition","heterotrophs":"heterotrophic nutrition","heterotrophic":"heterotrophic nutrition","hyphae":"hypha","five kingdoms":"kingdom","magnesium":"magnesium ion","mammary gland":"mammary glands","mesophyll cell":"mesophyll","mesophyll cells":"mesophyll","microvillus":"microvilli","mitochondria":"mitochondrion","monocot":"monocotyledon","monocots":"monocotyledon","mycelia":"mycelium","nitrate":"nitrate ion","nuclei":"nucleus","palisade cell":"palisade mesophyll","palisade cells":"palisade mesophyll","palisade layer":"palisade mesophyll","parasitic":"parasite","periodontal fibre":"periodontal fibres","peristaltic":"peristalsis","phyla":"phylum","pollen":"pollen grain","prokaryotic":"prokaryote","cortex":"root cortex","root hair":"root hair cell","root hairs":"root hair cell","salivary gland":"salivary glands","saprotroph":"saprotrophic nutrition","saprotrophs":"saprotrophic nutrition","saprotrophic":"saprotrophic nutrition","saprophyte":"saprotrophic nutrition","saprophytes":"saprotrophic nutrition","stimuli":"stimulus","stomata":"stoma","seed coat":"testa","variegated":"variegated leaf","venae cavae":"vena cava","villi":"villus","marram":"marram grass","abdomens":"abdomen","absorptions":"absorption","absorb":"absorption","absorbs":"absorption","absorbed":"absorption","absorbing":"absorption","absorbation":"absorption","active sites":"active site","active sited":"active site","active siting":"active site","active sitation":"active site","active sition":"active site","active transports":"active transport","adaptive features":"adaptive feature","adaptive featured":"adaptive feature","adaptive featuring":"adaptive feature","adaptive featuration":"adaptive feature","adaptive featurion":"adaptive feature","adhesions":"adhesion","aerobic respirations":"aerobic respiration","aerobic respire":"aerobic respiration","aerobic respires":"aerobic respiration","aerobic respired":"aerobic respiration","aerobic respiring":"aerobic respiration","aerobic respirion":"aerobic respiration","aerobic respirate":"aerobic respiration","aerobic respirates":"aerobic respiration","aerobic respirated":"aerobic respiration","aerobic respirating":"aerobic respiration","aerobic respiratation":"aerobic respiration","anaerobic respirations":"anaerobic respiration","anaerobic respire":"anaerobic respiration","anaerobic respires":"anaerobic respiration","anaerobic respired":"anaerobic respiration","anaerobic respiring":"anaerobic respiration","anaerobic respirion":"anaerobic respiration","anaerobic respirate":"anaerobic respiration","anaerobic respirates":"anaerobic respiration","anaerobic respirated":"anaerobic respiration","anaerobic respirating":"anaerobic respiration","anaerobic respiratation":"anaerobic respiration","anomalous results":"anomalous result","aortas":"aorta","air spaces":"air space","air spaced":"air space","air spacing":"air space","air spacation":"air space","air spacion":"air space","algas":"alga","alimentary canals":"alimentary canal","amino acids":"amino acid","amphibians":"amphibian","amylases":"amylase","amylased":"amylase","amylasing":"amylase","amylasation":"amylase","amylasion":"amylase","anaemias":"anaemia","anatomies":"anatomy","antennas":"antenna","anthers":"anther","anuses":"anus","arachnids":"arachnid","arteries":"artery","arthropods":"arthropod","assimilations":"assimilation","assimilate":"assimilation","assimilates":"assimilation","assimilated":"assimilation","assimilating":"assimilation","assimilatation":"assimilation","associated organs":"associated organ","atrioventricular valves":"atrioventricular valve","atrioventricular valved":"atrioventricular valve","atrioventricular valving":"atrioventricular valve","atrioventricular valvation":"atrioventricular valve","atrioventricular valvion":"atrioventricular valve","atriums":"atrium","autotrophic nutritions":"autotrophic nutrition","auxins":"auxin","backbones":"backbone","backboned":"backbone","backboning":"backbone","backbonation":"backbone","backbonion":"backbone","bacteriums":"bacterium","balanced diets":"balanced diet","bases":"base","based":"base","basing":"base","basation":"base","basion":"base","base sequences":"base sequence","base sequenced":"base sequence","base sequencing":"base sequence","base sequencation":"base sequence","base sequencion":"base sequence","biles":"bile","biled":"bile","biling":"bile","bilation":"bile","bilion":"bile","bile ducts":"bile duct","binomial systems":"binomial system","birds":"bird","blood vessels":"blood vessel","boluses":"bolus","calciums":"calcium","cambiums":"cambium","canines":"canine","canined":"canine","canining":"canine","canination":"canine","caninion":"canine","capillaries":"capillary","carbohydrases":"carbohydrase","carbohydrased":"carbohydrase","carbohydrasing":"carbohydrase","carbohydrasation":"carbohydrase","carbohydrasion":"carbohydrase","carbohydrates":"carbohydrate","carbohydrated":"carbohydrate","carbohydrating":"carbohydrate","carbohydratation":"carbohydrate","carbohydration":"carbohydrate","carpels":"carpel","catabolics":"catabolic","catalysts":"catalyst","cell elongations":"cell elongation","cell elongate":"cell elongation","cell elongates":"cell elongation","cell elongated":"cell elongation","cell elongating":"cell elongation","cell elongatation":"cell elongation","cell membranes":"cell membrane","cell membraned":"cell membrane","cell membraning":"cell membrane","cell membranation":"cell membrane","cell membranion":"cell membrane","cell walls":"cell wall","circulatory systems":"circulatory system","clottings":"clotting","clott":"clotting","clotts":"clotting","clotted":"clotting","clottation":"clotting","control variables":"control variable","control variabled":"control variable","control variabling":"control variable","control variablation":"control variable","control variablion":"control variable","coronary arteries":"coronary artery","coronary heart diseases":"coronary heart disease","coronary heart diseased":"coronary heart disease","coronary heart diseasing":"coronary heart disease","coronary heart diseasation":"coronary heart disease","coronary heart diseasion":"coronary heart disease","deoxygenateds":"deoxygenated","deoxygenat":"deoxygenated","deoxygenats":"deoxygenated","deoxygenating":"deoxygenated","deoxygenatation":"deoxygenated","deoxygenate":"deoxygenated","deoxygenates":"deoxygenated","deoxygenation":"deoxygenated","dependent variables":"dependent variable","dependent variabled":"dependent variable","dependent variabling":"dependent variable","dependent variablation":"dependent variable","dependent variablion":"dependent variable","diastoles":"diastole","diastoled":"diastole","diastoling":"diastole","diastolation":"diastole","diastolion":"diastole","double circulations":"double circulation","double circulate":"double circulation","double circulates":"double circulation","double circulated":"double circulation","double circulating":"double circulation","double circulatation":"double circulation","elastic fibreses":"elastic fibres","electrocardiograms":"electrocardiogram","fibrins":"fibrin","fibrinogens":"fibrinogen","genetic predispositions":"genetic predisposition","gills":"gill","haemoglobins":"haemoglobin","hearts":"heart","heart rates":"heart rate","heart rated":"heart rate","heart rating":"heart rate","heart ratation":"heart rate","heart ration":"heart rate","hepatic arteries":"hepatic artery","hepatic veins":"hepatic vein","hypothesises":"hypothesis","hypothesise":"hypothesis","hypothesised":"hypothesis","hypothesising":"hypothesis","hypothesisation":"hypothesis","hypothesision":"hypothesis","independent variables":"independent variable","independent variabled":"independent variable","independent variabling":"independent variable","independent variablation":"independent variable","independent variablion":"independent variable","lactic acids":"lactic acid","lymphocytes":"lymphocyte","lymphocyted":"lymphocyte","lymphocyting":"lymphocyte","lymphocytation":"lymphocyte","lymphocytion":"lymphocyte","oxygen debts":"oxygen debt","oxygenateds":"oxygenated","oxygenat":"oxygenated","oxygenats":"oxygenated","oxygenating":"oxygenated","oxygenatation":"oxygenated","oxygenate":"oxygenated","oxygenates":"oxygenated","oxygenation":"oxygenated","phagocytes":"phagocyte","phagocyted":"phagocyte","phagocyting":"phagocyte","phagocytation":"phagocyte","phagocytion":"phagocyte","phagocytosises":"phagocytosis","physical activities":"physical activity","physical active":"physical activity","physical actives":"physical activity","physical actived":"physical activity","physical activing":"physical activity","physical activation":"physical activity","physical activion":"physical activity","plasmas":"plasma","platelets":"platelet","pulmonary arteries":"pulmonary artery","pulmonary circulations":"pulmonary circulation","pulmonary circulate":"pulmonary circulation","pulmonary circulates":"pulmonary circulation","pulmonary circulated":"pulmonary circulation","pulmonary circulating":"pulmonary circulation","pulmonary circulatation":"pulmonary circulation","pulmonary veins":"pulmonary vein","pulse rates":"pulse rate","pulse rated":"pulse rate","pulse rating":"pulse rate","pulse ratation":"pulse rate","pulse ration":"pulse rate","red blood cells":"red blood cell","renal arteries":"renal artery","renal veins":"renal vein","risk factors":"risk factor","semilunar valves":"semilunar valve","semilunar valved":"semilunar valve","semilunar valving":"semilunar valve","semilunar valvation":"semilunar valve","semilunar valvion":"semilunar valve","septums":"septum","single circulations":"single circulation","single circulate":"single circulation","single circulates":"single circulation","single circulated":"single circulation","single circulating":"single circulation","single circulatation":"single circulation","stethoscopes":"stethoscope","stethoscoped":"stethoscope","stethoscoping":"stethoscope","stethoscopation":"stethoscope","stethoscopion":"stethoscope","systemic circulations":"systemic circulation","systemic circulate":"systemic circulation","systemic circulates":"systemic circulation","systemic circulated":"systemic circulation","systemic circulating":"systemic circulation","systemic circulatation":"systemic circulation","systoles":"systole","systoled":"systole","systoling":"systole","systolation":"systole","systolion":"systole","vacuoled":"vacuole","vacuoling":"vacuole","vacuolation":"vacuole","vacuolion":"vacuole","celluloses":"cellulose","cellulosed":"cellulose","cellulosing":"cellulose","cellulosation":"cellulose","cellulosion":"cellulose","cements":"cement","cephalothoraxes":"cephalothorax","characteristics":"characteristic","chemical digestions":"chemical digestion","chemical digest":"chemical digestion","chemical digests":"chemical digestion","chemical digested":"chemical digestion","chemical digesting":"chemical digestion","chemical digestation":"chemical digestion","chitins":"chitin","chlorophylls":"chlorophyll","chloroplasts":"chloroplast","chymes":"chyme","chymed":"chyme","chyming":"chyme","chymation":"chyme","chymion":"chyme","circular foldses":"circular folds","circular muscles":"circular muscle","circular muscled":"circular muscle","circular muscling":"circular muscle","circular musclation":"circular muscle","circular musclion":"circular muscle","classifications":"classification","classify":"classification","classifies":"classification","classified":"classification","classifying":"classification","classificate":"classification","classificates":"classification","classificated":"classification","classificating":"classification","classificatation":"classification","cohesions":"cohesion","coleoptiled":"coleoptile","coleoptiling":"coleoptile","coleoptilation":"coleoptile","coleoptilion":"coleoptile","colons":"colon","common ancestors":"common ancestor","complementaries":"complementary","compound eyes":"compound eye","compound eyed":"compound eye","compound eying":"compound eye","compound eyation":"compound eye","compound eyion":"compound eye","concentrations":"concentration","concentrate":"concentration","concentrates":"concentration","concentrated":"concentration","concentrating":"concentration","concentratation":"concentration","concentration gradients":"concentration gradient","condensations":"condensation","condense":"condensation","condenses":"condensation","condensed":"condensation","condensing":"condensation","condension":"condensation","condensate":"condensation","condensates":"condensation","condensated":"condensation","condensating":"condensation","condensatation":"condensation","constipations":"constipation","constipate":"constipation","constipates":"constipation","constipated":"constipation","constipating":"constipation","constipatation":"constipation","consumeds":"consumed","consum":"consumed","consums":"consumed","consuming":"consumed","consumation":"consumed","consume":"consumed","consumes":"consumed","consumion":"consumed","controls":"control","cotyledons":"cotyledon","cross-pollinations":"cross-pollination","cross-pollinate":"cross-pollination","cross-pollinates":"cross-pollination","cross-pollinated":"cross-pollination","cross-pollinating":"cross-pollination","cross-pollinatation":"cross-pollination","crustaceans":"crustacean","cuticles":"cuticle","cuticled":"cuticle","cuticling":"cuticle","cuticlation":"cuticle","cuticlion":"cuticle","de-starchings":"de-starching","de-starch":"de-starching","de-starchs":"de-starching","de-starched":"de-starching","de-starchation":"de-starching","deficiency diseases":"deficiency disease","deficiency diseased":"deficiency disease","deficiency diseasing":"deficiency disease","deficiency diseasation":"deficiency disease","deficiency diseasion":"deficiency disease","denatureds":"denatured","denatur":"denatured","denaturs":"denatured","denaturing":"denatured","denaturation":"denatured","denature":"denatured","denatures":"denatured","denaturion":"denatured","dentines":"dentine","dentined":"dentine","dentining":"dentine","dentination":"dentine","dentinion":"dentine","dichotomous keys":"dichotomous key","dicotyledons":"dicotyledon","diffusions":"diffusion","diffuse":"diffusion","diffuses":"diffusion","diffused":"diffusion","diffusing":"diffusion","diffusation":"diffusion","digestions":"digestion","digest":"digestion","digests":"digestion","digested":"digestion","digesting":"digestion","digestation":"digestion","dnas":"DNA","dry masses":"dry mass","duodenums":"duodenum","ectotherms":"ectotherm","egestions":"egestion","egest":"egestion","egests":"egestion","egested":"egestion","egesting":"egestion","egestation":"egestion","emulsifications":"emulsification","emulsify":"emulsification","emulsifies":"emulsification","emulsified":"emulsification","emulsifying":"emulsification","emulsificate":"emulsification","emulsificates":"emulsification","emulsificated":"emulsification","emulsificating":"emulsification","emulsificatation":"emulsification","enamels":"enamel","endotherms":"endotherm","enterocytes":"enterocyte","enterocyted":"enterocyte","enterocyting":"enterocyte","enterocytation":"enterocyte","enterocytion":"enterocyte","enzymes":"enzyme","enzymed":"enzyme","enzyming":"enzyme","enzymation":"enzyme","enzymion":"enzyme","epidermises":"epidermis","epiglottises":"epiglottis","epitheliums":"epithelium","equilibriums":"equilibrium","evolutionary relationshipses":"evolutionary relationships","excretions":"excretion","excrete":"excretion","excretes":"excretion","excreted":"excretion","excreting":"excretion","excretation":"excretion","exoskeletons":"exoskeleton","external fertilisations":"external fertilisation","external fertilise":"external fertilisation","external fertilises":"external fertilisation","external fertilised":"external fertilisation","external fertilising":"external fertilisation","external fertilision":"external fertilisation","external fertilisate":"external fertilisation","external fertilisates":"external fertilisation","external fertilisated":"external fertilisation","external fertilisating":"external fertilisation","external fertilisatation":"external fertilisation","faeceses":"faeces","fats and oilses":"fats and oils","features":"feature","featured":"feature","featuring":"feature","featuration":"feature","featurion":"feature","ferns":"fern","fertile offsprings":"fertile offspring","fertile offspr":"fertile offspring","fertile offsprs":"fertile offspring","fertile offspred":"fertile offspring","fertile offspration":"fertile offspring","fertilisations":"fertilisation","fertilise":"fertilisation","fertilises":"fertilisation","fertilised":"fertilisation","fertilising":"fertilisation","fertilision":"fertilisation","fertilisate":"fertilisation","fertilisates":"fertilisation","fertilisated":"fertilisation","fertilisating":"fertilisation","fertilisatation":"fertilisation","fibre (roughage)s":"fibre (roughage)","fibrous root systems":"fibrous root system","filaments":"filament","fila":"filament","filas":"filament","filaed":"filament","filaing":"filament","filaation":"filament","fishes":"fish","flaccids":"flaccid","flowering plants":"flowering plant","fronds":"frond","fruits":"fruit","funguses":"fungus","gastric juices":"gastric juice","gastric juiced":"gastric juice","gastric juicing":"gastric juice","gastric juication":"gastric juice","gastric juicion":"gastric juice","genuses":"genus","germinations":"germination","germinate":"germination","germinates":"germination","germinated":"germination","germinating":"germination","germinatation":"germination","glucoses":"glucose","glucosed":"glucose","glucosing":"glucose","glucosation":"glucose","glucosion":"glucose","glycogens":"glycogen","gravitropisms":"gravitropism","growths":"growth","grow":"growth","grows":"growth","growed":"growth","growing":"growth","growation":"growth","guard cells":"guard cell","gums":"gum","hepatic portal veins":"hepatic portal vein","hepatocytes":"hepatocyte","hepatocyted":"hepatocyte","hepatocyting":"hepatocyte","hepatocytation":"hepatocyte","hepatocytion":"hepatocyte","heterotrophic nutritions":"heterotrophic nutrition","holozoic nutritions":"holozoic nutrition","host cells":"host cell","humidities":"humidity","hydrochloric acids":"hydrochloric acid","hydrogencarbonate indicators":"hydrogencarbonate indicator","hydrolysises":"hydrolysis","hydrolyse":"hydrolysis","hydrolyses":"hydrolysis","hydrolysed":"hydrolysis","hydrolysing":"hydrolysis","hydrolysation":"hydrolysis","hydrolysion":"hydrolysis","hydrophytes":"hydrophyte","hydrophyted":"hydrophyte","hydrophyting":"hydrophyte","hydrophytation":"hydrophyte","hydrophytion":"hydrophyte","hyphas":"hypha","ileums":"ileum","incisors":"incisor","ingestions":"ingestion","ingest":"ingestion","ingests":"ingestion","ingested":"ingestion","ingesting":"ingestion","ingestation":"ingestion","insects":"insect","insolubles":"insoluble","insolubled":"insoluble","insolubling":"insoluble","insolublation":"insoluble","insolublion":"insoluble","internal fertilisations":"internal fertilisation","internal fertilise":"internal fertilisation","internal fertilises":"internal fertilisation","internal fertilised":"internal fertilisation","internal fertilising":"internal fertilisation","internal fertilision":"internal fertilisation","internal fertilisate":"internal fertilisation","internal fertilisates":"internal fertilisation","internal fertilisated":"internal fertilisation","internal fertilisating":"internal fertilisation","internal fertilisatation":"internal fertilisation","iodine solutions":"iodine solution","irons":"iron","jawbones":"jawbone","jawboned":"jawbone","jawboning":"jawbone","jawbonation":"jawbone","jawbonion":"jawbone","kingdoms":"kingdom","lacteals":"lacteal","lignins":"lignin","limiting factors":"limiting factor","lipases":"lipase","lipased":"lipase","lipasing":"lipase","lipasation":"lipase","lipasion":"lipase","longitudinal muscles":"longitudinal muscle","longitudinal muscled":"longitudinal muscle","longitudinal muscling":"longitudinal muscle","longitudinal musclation":"longitudinal muscle","longitudinal musclion":"longitudinal muscle","lumens":"lumen","magnesium ions":"magnesium ion","magnifications":"magnification","magnify":"magnification","magnifies":"magnification","magnified":"magnification","magnifying":"magnification","magnificate":"magnification","magnificates":"magnification","magnificated":"magnification","magnificating":"magnification","magnificatation":"magnification","malnutritions":"malnutrition","maltases":"maltase","maltased":"maltase","maltasing":"maltase","maltasation":"maltase","maltasion":"maltase","maltoses":"maltose","maltosed":"maltose","maltosing":"maltose","maltosation":"maltose","maltosion":"maltose","mammals":"mammal","mammary glandses":"mammary glands","mastications":"mastication","masticate":"mastication","masticates":"mastication","masticated":"mastication","masticating":"mastication","masticatation":"mastication","mesophylls":"mesophyll","metabolisms":"metabolism","microvillis":"microvilli","mineral ions":"mineral ion","mitochondrions":"mitochondrion","models":"model","molars":"molar","monocotyledons":"monocotyledon","monomers":"monomer","morphologies":"morphology","movements":"movement","move":"movement","moves":"movement","moved":"movement","moving":"movement","movation":"movement","movion":"movement","mucuses":"mucus","myceliums":"mycelium","myriapods":"myriapod","nectars":"nectar","negative controls":"negative control","net movements":"net movement","net move":"net movement","net moves":"net movement","net moved":"net movement","net moving":"net movement","net movation":"net movement","net movion":"net movement","neutralises":"neutralise","neutralised":"neutralise","neutralising":"neutralise","neutralisation":"neutralise","neutralision":"neutralise","nitrate ions":"nitrate ion","nucleuses":"nucleus","nutritions":"nutrition","oesophaguses":"oesophagus","optimums":"optimum","optimum phs":"optimum pH","osmosises":"osmosis","ovaries":"ovary","ovules":"ovule","ovuled":"ovule","ovuling":"ovule","ovulation":"ovule","ovulion":"ovule","palisade mesophylls":"palisade mesophyll","pancreatic juices":"pancreatic juice","pancreatic juiced":"pancreatic juice","pancreatic juicing":"pancreatic juice","pancreatic juication":"pancreatic juice","pancreatic juicion":"pancreatic juice","parasites":"parasite","parasited":"parasite","parasiting":"parasite","parasitation":"parasite","parasition":"parasite","parasitic nutritions":"parasitic nutrition","partially permeables":"partially permeable","partially permeabled":"partially permeable","partially permeabling":"partially permeable","partially permeablation":"partially permeable","partially permeablion":"partially permeable","pathogens":"pathogen","pepsins":"pepsin","periodontal fibreses":"periodontal fibres","peristalsises":"peristalsis","petals":"petal","pharynxes":"pharynx","phloems":"phloem","photosynthesises":"photosynthesis","photosynthesise":"photosynthesis","photosynthesised":"photosynthesis","photosynthesising":"photosynthesis","photosynthesisation":"photosynthesis","photosynthesision":"photosynthesis","phototropisms":"phototropism","phylums":"phylum","physical digestions":"physical digestion","physical digest":"physical digestion","physical digests":"physical digestion","physical digested":"physical digestion","physical digesting":"physical digestion","physical digestation":"physical digestion","plaques":"plaque","plasmids":"plasmid","plumules":"plumule","plumuled":"plumule","plumuling":"plumule","plumulation":"plumule","plumulion":"plumule","pollen grains":"pollen grain","pollen tubes":"pollen tube","pollen tubed":"pollen tube","pollen tubing":"pollen tube","pollen tubation":"pollen tube","pollen tubion":"pollen tube","pollinations":"pollination","pollinate":"pollination","pollinates":"pollination","pollinated":"pollination","pollinating":"pollination","pollinatation":"pollination","polymers":"polymer","positive controls":"positive control","potometers":"potometer","premolars":"premolar","prokaryotes":"prokaryote","prokaryoted":"prokaryote","prokaryoting":"prokaryote","prokaryotation":"prokaryote","prokaryotion":"prokaryote","proteases":"protease","proteased":"protease","proteasing":"protease","proteasation":"protease","proteasion":"protease","proteins":"protein","protein coats":"protein coat","protoctists":"protoctist","pulps":"pulp","radicles":"radicle","radicled":"radicle","radicling":"radicle","radiclation":"radicle","radiclion":"radicle","reabsorbeds":"reabsorbed","reabsorb":"reabsorbed","reabsorbs":"reabsorbed","reabsorbing":"reabsorbed","reabsorbation":"reabsorbed","reabsorbe":"reabsorbed","reabsorbes":"reabsorbed","reabsorbion":"reabsorbed","reabsorptions":"reabsorption","rectums":"rectum","reducing sugars":"reducing sugar","reproductions":"reproduction","reproduce":"reproduction","reproduces":"reproduction","reproduced":"reproduction","reproducing":"reproduction","reproducation":"reproduction","reproducion":"reproduction","reptiles":"reptile","reptiled":"reptile","reptiling":"reptile","reptilation":"reptile","reptilion":"reptile","respirations":"respiration","respire":"respiration","respires":"respiration","respired":"respiration","respiring":"respiration","respirion":"respiration","respirate":"respiration","respirates":"respiration","respirated":"respiration","respirating":"respiration","respiratation":"respiration","ricketses":"rickets","root canals":"root canal","root cortexes":"root cortex","root hair cells":"root hair cell","salivas":"saliva","salivary amylases":"salivary amylase","salivary amylased":"salivary amylase","salivary amylasing":"salivary amylase","salivary amylasation":"salivary amylase","salivary amylasion":"salivary amylase","salivary glandses":"salivary glands","saprotrophic nutritions":"saprotrophic nutrition","scurvies":"scurvy","secretes":"secrete","secreted":"secrete","secreting":"secrete","secretation":"secrete","secretion":"secrete","seeds":"seed","seedlings":"seedling","seedl":"seedling","seedls":"seedling","seedled":"seedling","seedlation":"seedling","self-pollinations":"self-pollination","self-pollinate":"self-pollination","self-pollinates":"self-pollination","self-pollinated":"self-pollination","self-pollinating":"self-pollination","self-pollinatation":"self-pollination","sensitivities":"sensitivity","sensitive":"sensitivity","sensitives":"sensitivity","sensitived":"sensitivity","sensitiving":"sensitivity","sensitivation":"sensitivity","sensitivion":"sensitivity","sepals":"sepal","shoot tips":"shoot tip","sinks":"sink","solubles":"soluble","solubled":"soluble","solubling":"soluble","solublation":"soluble","solublion":"soluble","sources":"source","sourced":"source","sourcing":"source","sourcation":"source","sourcion":"source","specieses":"species","specimens":"specimen","spongy mesophylls":"spongy mesophyll","spores":"spore","spored":"spore","sporing":"spore","sporation":"spore","sporion":"spore","stamens":"stamen","starches":"starch","stigmas":"stigma","stimuluses":"stimulus","stomas":"stoma","styles":"style","styled":"style","styling":"style","stylation":"style","stylion":"style","substrates":"substrate","substrated":"substrate","substrating":"substrate","substratation":"substrate","substration":"substrate","sucroses":"sucrose","sucrosed":"sucrose","sucrosing":"sucrose","sucrosation":"sucrose","sucrosion":"sucrose","surface areas":"surface area","swallowings":"swallowing","swallow":"swallowing","swallows":"swallowing","swallowed":"swallowing","swallowation":"swallowing","tap roots":"tap root","taxonomies":"taxonomy","testas":"testa","thoraxes":"thorax","tracheas":"trachea","translocations":"translocation","translocate":"translocation","translocates":"translocation","translocated":"translocation","translocating":"translocation","translocatation":"translocation","transpirations":"transpiration","transpire":"transpiration","transpires":"transpiration","transpired":"transpiration","transpiring":"transpiration","transpirion":"transpiration","transpirate":"transpiration","transpirates":"transpiration","transpirated":"transpiration","transpirating":"transpiration","transpiratation":"transpiration","transpiration streams":"transpiration stream","transpiration pulls":"transpiration pull","triglycerides":"triglyceride","triglycerided":"triglyceride","triglyceriding":"triglyceride","triglyceridation":"triglyceride","triglyceridion":"triglyceride","tropisms":"tropism","trypsins":"trypsin","turgids":"turgid","ureas":"urea","valves":"valve","valved":"valve","valving":"valve","valvation":"valve","valvion":"valve","variegated leaves":"variegated leaf","vascular bundles":"vascular bundle","vascular bundled":"vascular bundle","vascular bundling":"vascular bundle","vascular bundlation":"vascular bundle","vascular bundlion":"vascular bundle","veins":"vein","vena cavas":"vena cava","ventricles":"ventricle","ventricled":"ventricle","ventricling":"ventricle","ventriclation":"ventricle","ventriclion":"ventricle","vertebrates":"vertebrate","vertebrated":"vertebrate","vertebrating":"vertebrate","vertebratation":"vertebrate","vertebration":"vertebrate","villuses":"villus","viruses":"virus","visking tubings":"visking tubing","vitamin cs":"vitamin C","vitamin ds":"vitamin D","white blood cells":"white blood cell","wiltings":"wilting","wilt":"wilting","wilts":"wilting","wilted":"wilting","wiltation":"wilting","xerophytes":"xerophyte","xerophyted":"xerophyte","xerophyting":"xerophyte","xerophytation":"xerophyte","xerophytion":"xerophyte","succulents":"succulent","marram grasses":"marram grass","xylems":"xylem","xylem vessels":"xylem vessel"};

@@ -79,21 +79,38 @@
     if (dropped) save();
     return dropped;
   }
+  /* A station's numbers: this go, and what the record keeps (js/sync.js counts both).
+       done, tried        this go: the Practise tab and the ticks on its questions
+       best, bestTried    best ever: the header, the rail's ✓, the teacher's Score
+       firstRight         right first time on the FIRST go, so a redo cannot make it look better
+       checks             every Check pressed here, on every go
+     Only positions that still exist count, so a stale record can never push a score above the
+     number of questions actually asked. */
+  function countsOf(rec, n) {
+    if (window.LabSync) return window.LabSync.counts(rec, n);
+    /* js/sync.js did not arrive: this go is all there is */
+    var o = { go:1, done:0, tried:0, bestDone:0, bestTried:0, firstRight:0, firstTried:0, checks:0 };
+    for (var i = 0; i < n; i++) {
+      if (rec.done && rec.done[i]) { o.done++; if (rec.one && rec.one[i]) o.firstRight++; }
+      if (rec.tried && rec.tried[i]) o.tried++;
+    }
+    Object.keys(rec.per || {}).forEach(function (k) { if (+k < n) o.checks += rec.per[k]; });
+    o.bestDone = o.done; o.bestTried = o.tried; o.firstTried = o.tried;
+    return o;
+  }
   function stationScore(id) {
     var st = S[id];
-    if (!st) return { done:0, total:0, tried:0 };
-    var rec = p(id), total = (st.activities || []).length, n = 0, t = 0;
-    Object.keys(rec.done).forEach(function (k) { if (rec.done[k] && +k < total) n++; });
-    Object.keys(rec.tried).forEach(function (k) { if (rec.tried[k] && +k < total) t++; });
-    return { done:n, total:total, tried:t };
+    if (!st) return { done:0, total:0, tried:0, best:0, bestTried:0, go:1, firstRight:0, firstTried:0, checks:0 };
+    var total = (st.activities || []).length, c = countsOf(p(id), total);
+    return { done:c.done, total:total, tried:c.tried, best:c.bestDone, bestTried:c.bestTried, go:c.go,
+             firstRight:c.firstRight, firstTried:c.firstTried, checks:c.checks };
   }
+  /* The whole lab as the record keeps it: best ever, right first time on the first go, every check. */
   function totals() {
     var done = 0, total = 0, tried = 0, checks = 0, first1 = 0, from = 0;
     ORDER.forEach(function (id) {
-      var s = stationScore(id); done += s.done; total += s.total; tried += s.tried;
-      var rec = p(id);
-      Object.keys(rec.per || {}).forEach(function (k) { if (+k < s.total) checks += rec.per[k]; });
-      Object.keys(rec.one || {}).forEach(function (k) { if (+k < s.total && rec.done[k]) first1++; });
+      var s = stationScore(id), rec = p(id);
+      done += s.best; total += s.total; tried += s.bestTried; checks += s.checks; first1 += s.firstRight;
       if (rec.first && (!from || rec.first < from)) from = rec.first;
     });
     return { done:done, total:total, tried:tried, checks:checks, first1:first1, from:from };
@@ -106,7 +123,7 @@
     document.getElementById('ringFg').setAttribute('stroke-dasharray', (C * pct).toFixed(1) + ' ' + C.toFixed(1));
     document.getElementById('qDone').textContent = t.done;
     document.getElementById('qTotal').textContent = t.total;
-    document.getElementById('stDone').textContent = ORDER.filter(function (id) { var s = stationScore(id); return s.total && s.done === s.total; }).length;
+    document.getElementById('stDone').textContent = ORDER.filter(function (id) { var s = stationScore(id); return s.total && s.best === s.total; }).length;
     document.getElementById('stTotal').textContent = ORDER.length;
   }
 
@@ -116,11 +133,11 @@
     track.innerHTML = '';
     ORDER.forEach(function (id, i) {
       var st = S[id]; if (!st) return;
-      var sc = stationScore(id), full = sc.total && sc.done === sc.total;
+      var sc = stationScore(id), full = sc.total && sc.best === sc.total;
       var b = document.createElement('button');
       b.className = 'rstep' + (full ? ' done' : '');
       b.setAttribute('aria-current', id === current ? 'true' : 'false');
-      b.title = st.name + ' — ' + sc.done + ' of ' + sc.total + ' questions answered';
+      b.title = st.name + ' — ' + (sc.go > 1 ? 'round ' + sc.go + ': ' + sc.done + ' of ' + sc.total + ' answered' + (full ? ' · done before ✓' : '') : sc.done + ' of ' + sc.total + ' questions answered');
       var n = document.createElement('span'); n.className = 'rstep__n'; n.textContent = full ? '✓' : (i + 1);
       var lab = document.createElement('span'); lab.textContent = st.name;
       var bar = document.createElement('span'); bar.className = 'rstep__bar';
@@ -290,7 +307,39 @@
     lb.hidden = false;
   }
 
+  /* The line at the top of a station's Practise tab. On a second go it says which go this is and
+     how the first go went (the honest measure); Practise again empties the page for another go.
+     The record keeps everything: the teacher's Score, homework and the hub read the best ever. */
+  function paintGoLine(pane, st) {
+    var sc = stationScore(st.id);
+    if (!(sc.go > 1 || sc.tried)) return;                 /* nothing answered yet: nothing to say */
+    var line = document.createElement('div');
+    line.className = 'goline' + (sc.go > 1 ? '' : ' goline--bare');   /* go 1: just the button, no box */
+    var txt = document.createElement('span');
+    /* "round", said once and the same everywhere a student reads it (a round = one time through the questions);
+       the first round is counted over the questions answered in it — never "0 of 12" for work not done */
+    if (sc.go > 1) txt.innerHTML = 'Round ' + sc.go + '.' + (sc.firstTried
+      ? ' In your first round you answered <b>' + sc.firstTried + '</b>; <b>' + sc.firstRight + '</b> ' + (sc.firstRight === 1 ? 'was' : 'were') + ' right at the first try.'
+      : ' Your record keeps everything you did before.');
+    line.appendChild(txt);
+    if (sc.tried && window.LabSync) {
+      var again = document.createElement('button');
+      again.type = 'button'; again.className = 'btn btn--quiet'; again.textContent = '\u21ba Start this station again';
+      again.addEventListener('click', function () {
+        if (!confirm('Start this station again?\n\nYour answers will be cleared from this page, so you can try the questions again. Your record keeps everything you have already done.')) return;
+        if (!window.LabSync.newGo(progress, st.id, S)) return;
+        save(); queueSave(true);
+        paintHeader(); paintRail(); paintPanel();
+        var tb = document.querySelector('.tabs .tab[aria-selected="true"]');   /* the button is gone: keep the keyboard in place */
+        if (tb) tb.focus();
+        toast('Round ' + stationScore(st.id).go + ' of ' + st.name + ' has started. Your record keeps everything you did before.');
+      });
+      line.appendChild(again);
+    }
+    pane.appendChild(line);
+  }
   function paintDo(pane, st) {
+    paintGoLine(pane, st);
     (st.activities || []).forEach(function (a, i) {
       var card = window.Engine.render(a, i, st.id + ':' + i);
       if (p(st.id).done[i]) {
@@ -306,7 +355,7 @@
         rec.per[i] = (rec.per[i] || 0) + 1;
         if (!rec.first) rec.first = Date.now();
         rec.last = Date.now();
-        if (e.detail.correct && !rec.done[i] && rec.per[i] === 1) { rec.one = rec.one || {}; rec.one[i] = true; }
+        if (e.detail.correct && !rec.done[i] && rec.per[i] === 1 && !rec.tried[i]) { rec.one = rec.one || {}; rec.one[i] = true; }
         rec.tried[i] = true;
         if (e.detail.correct) rec.done[i] = true;
         save(); paintHeader(); paintRail(); refreshTabCount();
@@ -544,6 +593,27 @@
   var signIn = SI ? SI.who() : null;
   var LAB_ID = LAB;
   var afterSignIn = null;
+  /* ---------- a shared computer ----------
+     This browser's work belongs to the account it was last saved for. Another account signing in must not have
+     it pushed into THEIR record — it is safe in its owner's already — so it leaves this browser first. Work done
+     signed out, before anybody signed in here, has no owner yet and goes to the first account that signs in
+     (as ever). "Clear this computer", in the save window, empties the browser by hand. (Review, 27 Sep 2026:
+     Reset used to be the only way to clear a shared computer, and Reset now keeps the record.) */
+  var OWNER_KEY = LAB_ID + '.owner';
+  function clearHere() {
+    progress = {};
+    try { localStorage.removeItem(STORE); } catch (e) {}
+    paintHeader(); paintRail(); paintPanel();
+  }
+  function claimFor(email) {
+    var was = '';
+    try { was = localStorage.getItem(OWNER_KEY) || ''; } catch (e) {}
+    if (was && email && was !== email) {
+      clearHere();
+      toast('This computer had another student\u2019s work. It stays in their record; it was not added to yours.');
+    }
+    try { if (email) localStorage.setItem(OWNER_KEY, email); } catch (e) {}
+  }
   function mountSignIn(el) {
     return !!(CID && SI && SI.button(el, CID, { theme:'outline', size:'large', text:'signin_with', width: 260, locale:'en-GB' }));
   }
@@ -559,7 +629,7 @@
     paintSaveChip();
     var dlg = document.getElementById('subDlg');
     if (dlg && !dlg.hidden) fillSaveDialog();
-    if (v && SI.fresh(v) && v.email !== was) pullThenPush();
+    if (v && SI.fresh(v) && v.email !== was) { claimFor(v.email); pullThenPush(); }
     if (v && here && afterSignIn && SI.fresh(v)) { var next = afterSignIn; afterSignIn = null; next(); }
   }
   if (SI) SI.on(onSignIn);
@@ -586,11 +656,16 @@
   /* ---------- bringing work back ----------
      What the records hold for this lab, folded in. js/sync.js only ever adds: a question right
      on either machine stays right. */
-  function applySnap(snap, quiet) {
-    if (!snap) return;
-    var res = window.LabSync.merge(progress, snap, S, stationSig);
-    if (res.added) { save(); reconcile(); paintHeader(); paintRail(); paintPanel(); refreshTabCount(); }
-    if (!quiet || res.added) toast(window.LabSync.say(res));
+  function applySnap(mine, quiet) {
+    if (!mine) return;
+    var L = window.LabSync;
+    /* this go first (it may move a station on to a newer go), then the first go and the best */
+    var here = mine.here != null ? mine.here : mine.snap;      /* `here`: this go, from a script that knows goes */
+    var res = here ? L.merge(progress, here, S, stationSig) : { added: 0, stations: 0, skipped: [], newer: 0 };
+    var more = (mine.first && L.mergeFirst ? L.mergeFirst(progress, mine.first, S, stationSig) : 0) +
+               (mine.best && L.mergeBest ? L.mergeBest(progress, mine.best, S, stationSig) : 0);
+    if (res.added || res.newer || more) { save(); reconcile(); paintHeader(); paintRail(); paintPanel(); refreshTabCount(); }
+    if (!quiet || res.added || res.newer) toast(L.say(res));
   }
   function pull(then) {
     if (!syncEnabled() || !haveToken()) { if (then) then(); return; }
@@ -599,7 +674,7 @@
       body: JSON.stringify({ action:'progress', token: signIn.token })
     })
       .then(function (r) { return r.ok ? r.json() : null; })
-      .then(function (j) { var mine = j && j.ok && j.labs && j.labs[LAB_ID]; applySnap(mine && mine.snap, true); })
+      .then(function (j) { var mine = j && j.ok && j.labs && j.labs[LAB_ID]; applySnap(mine, true); })
       .catch(function () {})
       .then(function () { if (then) then(); });
   }
@@ -607,6 +682,7 @@
      this browser has that the records do not. */
   function pullThenPush() { pull(function () { queueSave(true); }); }
   if (signIn && syncEnabled()) {
+    claimFor(signIn.email);
     if (haveToken()) pullThenPush();
     else if (SI && CID) SI.renew(CID, function (v) { if (v) { signIn = v; pullThenPush(); } });
   }
@@ -630,17 +706,20 @@
   }
   function payloadNow() {
     var t = totals(), perStation = {};
+    /* each station as the record keeps it: best ever, and every check made here on every go */
     ORDER.forEach(function (id) {
-      var s = stationScore(id), rec = p(id), c = 0;
-      Object.keys(rec.per || {}).forEach(function (k) { if (+k < s.total) c += rec.per[k]; });
-      perStation[id] = s.done + '/' + s.total + (c ? ' in ' + c : '');
+      var s = stationScore(id);
+      perStation[id] = s.best + '/' + s.total + (s.checks ? ' in ' + s.checks : '');
     });
     var name = signIn ? signIn.name : '';
     return { app: LAB_ID, token: signIn ? signIn.token : '', name: name, form: '',
              score: t.done, total: t.total, complete: t.done === t.total,
              checks: t.checks, firstTime: t.first1, tried: t.tried,
              from: t.from ? new Date(t.from).toISOString() : '', stations: perStation,
-             snap: snapshotNow(), at: new Date().toISOString() };
+             snap: snapshotNow(),
+             first: window.LabSync && window.LabSync.firstSnapshot ? window.LabSync.firstSnapshot(progress, S, ORDER, stationSig) : '',
+             best: window.LabSync && window.LabSync.bestSnapshot ? window.LabSync.bestSnapshot(progress, S, ORDER, stationSig) : '',
+             at: new Date().toISOString() };
   }
   /* What the records said when they would not keep it, as a state the chip can show. */
   function whyNot(reply) {
@@ -751,8 +830,17 @@
     }
     body.innerHTML = sofar +
       '<p class="fineprint">Sign in with your school Google account and your work is sent to Dr&nbsp;Mompel’s records as you go — what you have done here already goes too. The lab is open to everyone; signing in is only how a result reaches his records.</p>' +
-      '<div id="subWho" class="signinbox"></div>';
+      '<div id="subWho" class="signinbox"></div>' +
+      (t.tried ? '<p class="fineprint">Not your work? <button type="button" class="tourcard__link" id="subClear">Clear this computer</button> \u2014 the answers kept in this browser are removed; nothing in anybody\u2019s record changes.</p>' : '');
     go.style.display = 'none';
+    var clr = document.getElementById('subClear');
+    if (clr) clr.onclick = function () {
+      if (!confirm('Clear this computer?\n\nThe answers kept in this browser are removed. Nothing in anybody\u2019s record changes.')) return;
+      clearHere();
+      try { localStorage.removeItem(OWNER_KEY); } catch (e) {}
+      fillSaveDialog();
+      toast('Cleared. This computer keeps no answers now.');
+    };
     if (!mountSignIn(document.getElementById('subWho'))) {
       document.getElementById('subWho').innerHTML = '<p class="fineprint">Google sign-in could not load here — offline, or a school filter has blocked accounts.google.com. Your work stays in this browser; sign in later and it is sent then.</p>';
     }
@@ -977,12 +1065,26 @@
       }
       qStat.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); goQuestions(); } });
     }
+    /* Reset: every station with answers starts a new go (js/sync.js). The page empties so the
+       questions can be practised again; the record (the teacher's Score, homework, the hub) keeps
+       everything, and the first go stays as it was. */
     document.getElementById('btnReset').addEventListener('click', function () {
-      if (!confirm('Clear all your answers and start again? This cannot be undone.')) return;
-      progress = {};
-      try { localStorage.removeItem(STORE); } catch (e) {}
+      var ids = ORDER.filter(function (id) { return stationScore(id).tried > 0; });
+      if (!ids.length) {
+        toast(ORDER.some(function (id) { return stationScore(id).bestTried > 0; })
+          ? 'Every station is already empty.' : 'Nothing to start again yet: answer some questions first.');
+        return;
+      }
+      if (!window.LabSync) {                             /* js/sync.js did not arrive: all this page can do is clear itself */
+        if (!confirm('Clear all your answers in this browser?\n\nThis cannot be undone here.')) return;
+        progress = {}; try { localStorage.removeItem(STORE); } catch (e) {}
+      } else {
+        if (!confirm('Start every station again?\n\nYour answers will be cleared from this page, so you can practise the questions again. Your record keeps everything you have already done.')) return;
+        ids.forEach(function (id) { window.LabSync.newGo(progress, id, S); });
+      }
+      save(); if (typeof queueSave === 'function') queueSave(true);
       paintHeader(); paintRail(); paintPanel();
-      toast('Progress cleared.');
+      toast('Started again: ' + ids.length + ' station' + (ids.length === 1 ? '' : 's') + '. Your record keeps everything you did before.');
     });
 
     /* a link can name a station or a group on the tree */
