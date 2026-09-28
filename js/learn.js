@@ -1440,8 +1440,8 @@
   function segs21() { var s = ''; for (var i = 0; i < 21; i++) s += '<rect class="' + (i % 2 ? 'diag__thorax' : 'diag__abd') + '" x="' + (66 + 13 * i) + '" y="92" width="13" height="26" rx="2"/>'; return s; }
   function legs20() { var s = ''; for (var i = 0; i < 20; i++) { var x = 72.5 + 13 * i; s += '<path d="M' + x + ' 92 L' + (x - 3.5) + ' 76 L' + (x + 4.5) + ' 62"/><path d="M' + x + ' 118 L' + (x - 3.5) + ' 134 L' + (x + 4.5) + ' 148"/>'; } return s; }
   var DIAGRAMS = {
-    prokaryote: { caption: 'A generalised bacterium. No nucleus: the DNA is one circular loop lying free in the cytoplasm, and the small extra rings beside it are plasmids. Grey labels are not needed for 0610; they are here only so the cell makes sense.',
-      svg: '<svg viewBox="0 0 500 250" class="diag__svg" role="img" aria-label="A labelled diagram of a bacterium, showing the cell wall, cytoplasm, one circular loop of DNA and two plasmids">' +
+    prokaryote: { caption: 'A generalised bacterium. No nucleus: the DNA is one circular loop lying free in the cytoplasm, and the small extra rings beside it are plasmids. The grey label, the flagellum, is not needed for 0610; it is here only so the cell makes sense.',
+      svg: '<svg viewBox="0 0 500 250" class="diag__svg" role="img" aria-label="A labelled diagram of a bacterium, showing the cell wall, cell membrane, cytoplasm, ribosomes, one circular loop of DNA and two plasmids">' +
         /* the cell: wall outside, membrane just inside it */
         '<rect class="diag__thorax" x="120" y="70" width="260" height="110" rx="55"/>' +
         '<rect class="diag__seg" x="128" y="78" width="244" height="94" rx="47"/>' +
@@ -1450,16 +1450,16 @@
         /* two plasmids */
         '<ellipse class="diag__legs" cx="292" cy="106" rx="15" ry="10" fill="none"/>' +
         '<ellipse class="diag__legs" cx="308" cy="142" rx="11" ry="8" fill="none"/>' +
-        /* ribosomes, and a flagellum: both good to know, neither asked for */
+        /* ribosomes (0610 2.1.2 asks for them), and a flagellum (it does not) */
         '<g class="diag__eye">' + [[250,92],[264,120],[248,160],[272,166],[220,168],[330,120],[344,96],[336,158],[190,88],[176,132]]
             .map(function (r) { return '<circle cx="' + r[0] + '" cy="' + r[1] + '" r="2.6"/>'; }).join('') + '</g>' +
         '<path class="diag__ant" d="M380 125 C400 112 414 140 434 126 C452 113 464 138 480 128" fill="none"/>' +
         lab(150, 74, 96, 44, 'Cell wall', 'end') +
-        lab(150, 82, 96, 62, 'Cell membrane', 'end', 'extra') +
+        lab(150, 82, 96, 62, 'Cell membrane', 'end') +
         lab(206, 130, 96, 196, 'Circular DNA') +
         lab(292, 106, 420, 60, 'Plasmids') +
         lab(264, 120, 420, 196, 'Cytoplasm') +
-        lab(330, 120, 420, 168, 'Ribosomes', null, 'extra') +
+        lab(330, 120, 420, 168, 'Ribosomes') +
         lab(434, 126, 420, 228, 'Flagellum', null, 'extra') +
         '</svg>' },
     insect: { caption: 'A generalised insect, from above: three body parts; three pairs of jointed legs and two pairs of wings, all on the thorax; one pair of antennae; compound eyes.',
