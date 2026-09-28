@@ -157,7 +157,7 @@
   function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
 
   /* ---------- the old syllabus ----------
-     What this lab teaches that the 2026–28 syllabus does not include, although an older 0610 syllabus did
+     What this lab teaches that the syllabus for 2026–2029 does not include, although an older 0610 syllabus did
      (peristalsis, until 2015). It stays, because past papers ask it, and its badge names the syllabus it
      belongs to. The words are Cambridge's own, from labs-shared/syllabus-past.json through the build. */
   var PAST = window.PAST_SYLLABUS || { statements: {}, terms: {} };
@@ -165,9 +165,9 @@
   function pastBadge(id, cls) {
     var x = (PAST.statements || {})[id && id.id ? id.id : id];
     if (!x) return '';
-    /* the note says what the 2026–28 syllabus does instead, and whether recent papers still give marks for it */
+    /* the note says what the syllabus for 2026–2029 does instead, and whether recent papers still give marks for it */
     var tip = 'In the 0610 syllabus until ' + x.until + (x.tier ? ' (' + x.tier + ')' : '') + ': \u201c' + x.text + '\u201d. ' +
-              (x.note || ('It is not in the 2026\u201328 syllabus, but an exam question can still use it, and past papers up to ' + x.until + ' may ask it directly.'));
+              (x.note || ('It is not in the syllabus for 2026\u20132029, but an exam question can still use it, and past papers up to ' + x.until + ' may ask it directly.'));
     return '<span class="' + (cls || 'sup sup--old') + ' tip" tabindex="0" data-tip="' + esc(tip).replace(/"/g, '&quot;') + '">old syllabus \u00b7 until ' + esc(x.until) + '</span>';
   }
   /* a sentence only part of which is old: the badge goes in front of that part (`from`, in past-syllabus.json) */
@@ -243,15 +243,17 @@
 
     var card = document.createElement('div');
     card.className = 'card';
-    card.innerHTML = '<div class="card__h">What you need to know</div>';
+    /* the exams this list is for: Cambridge's syllabus for 2029 is word for word the one for 2026–2028 (checked 28 Sep
+       2026), so one list serves every student sitting the exams from 2026 to 2029 — the IGCSE 0610 badge says whose is whose */
+    card.innerHTML = '<div class="card__h">What you need to know <span class="card__hsub">\u00b7 for exams in 2026\u20132029</span></div>';
     var list = document.createElement('ul');
     list.className = 'exam-list';
     card.appendChild(list);
 
-    /* What you need to know holds the 2026–28 syllabus only (Daniel, 28 Sep 2026: "do not add these to the what
+    /* What you need to know holds the syllabus for 2026–2029 only (Daniel, 28 Sep 2026: "do not add these to the what
        you need to know sections but a separate one"). A sentence from an older 0610 syllabus (tagged in
        past-syllabus.json) or beyond the syllabus (`ext`) is drawn the same way, with its pictures and widgets,
-       but in the card below: "Not in the 2026–28 syllabus". Each li keeps its place in the master as data-i. */
+       but in the card below: "Not in the syllabus for 2026–2029". Each li keeps its place in the master as data-i. */
     var off = { old: document.createElement('ul'), beyond: document.createElement('ul') }, offAt = { old: [], beyond: [] };
     off.old.className = off.beyond.className = 'exam-list exam-list--off';
     function offOf(b, i) {
@@ -265,7 +267,7 @@
       var txt = typeof b === 'string' ? b : b.text;
       var badge = '';
       if (typeof b === 'object' && b.sup) badge = '<span class="sup tip" tabindex="0" data-tip="Supplement — examined on Paper 4 (Extended) only. Core candidates can skip it.">S</span>';
-      if (typeof b === 'object' && b.ext) badge = '<span class="sup sup--ext tip" tabindex="0" data-tip="Extension — beyond the 2026–28 syllabus. It helps the rest make sense, and an exam question can still use it.">extension</span>';
+      if (typeof b === 'object' && b.ext) badge = '<span class="sup sup--ext tip" tabindex="0" data-tip="Extension — beyond the syllabus for 2026–2029. It helps the rest make sense, and an exam question can still use it.">extension</span>';
       /* in an older 0610 syllabus: its badge names that syllabus (and replaces "extension") */
       var pe = st.past && st.past.exam ? st.past.exam[i] : null, pSplit = null;
       if (pe != null) badge = pastBadge(pe);
@@ -304,14 +306,14 @@
     }
     pane.appendChild(card);
 
-    /* the sentences that are not in the 2026–28 syllabus, right below the ones that are */
+    /* the sentences that are not in the syllabus for 2026–2029, right below the ones that are */
     if (off.old.children.length || off.beyond.children.length || goldOld) {
       var oc = document.createElement('div');
       oc.className = 'card offsyl';
-      oc.innerHTML = '<div class="card__h">Not in the 2026\u201328 syllabus</div>' +
+      oc.innerHTML = '<div class="card__h">Not in the syllabus for 2026\u20132029</div>' +
         /* Daniel, 28 Sep: not in the syllabus does not mean a question cannot lead there, and knowing it can be
            what earns the last marks — so the card says so, and nothing in it says "you will not be asked" */
-        '<p class="offsyl__lead">Do not skip this card. The 2026\u201328 syllabus does not list these, but an exam question can still use them \u2014 and knowing them can be what earns you full marks.</p>';
+        '<p class="offsyl__lead">Do not skip this card. The syllabus for 2026\u20132029 does not list these, but an exam question can still use them \u2014 and knowing them can be what earns you full marks.</p>';
       if (off.old.children.length || goldOld) {
         oc.insertAdjacentHTML('beforeend', '<div class="offsyl__h">In older syllabuses \u2014 you may meet these in past papers</div>');
         oc.appendChild(off.old);
@@ -408,7 +410,7 @@
     paintGoLine(pane, st);
     (st.activities || []).forEach(function (a, i) {
       var card = window.Engine.render(a, i, st.id + ':' + i);
-      /* a question on something the 2026–28 syllabus does not include says which syllabus it comes from */
+      /* a question on something the syllabus for 2026–2029 does not include says which syllabus it comes from */
       var pq = st.past && st.past.q ? st.past.q[i] : null;
       if (pq != null) {
         var qtop = card.querySelector('.act__top'), qn = qtop && qtop.querySelector('.act__n'), qbox = document.createElement('span');

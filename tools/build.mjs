@@ -234,6 +234,11 @@ const b64 = Buffer.from(new Uint8Array(ct)).toString('base64');
 {
   const raw = JSON.parse(readFileSync(resolve(SHARED, 'syllabus.json'), 'utf8'));
   const versions = Object.keys(raw).sort().reverse().map(id => ({ id, label: id.replace('-', '–'), topics: raw[id].topics }));
+  /* a syllabus with the same content as another (2029 = 2026–2028, checked word for word): its own version, without a
+     second copy of the statements — the viewer takes them from the one it names (labs-shared/syllabus-versions.json) */
+  const same = JSON.parse(readFileSync(resolve(SHARED, 'syllabus-versions.json'), 'utf8'));
+  for (const [id, x] of Object.entries(same)) if (!id.startsWith('_') && x.same && raw[x.same]) versions.push({ id, label: id.replace('-', '–'), same: x.same, source: x.source, checked: x.checked });
+  versions.sort((a, b) => (a.id < b.id ? 1 : -1));
   /* the older syllabuses (2015–2022, tools/syllabus/parse_older.py) go in a file of their own, loaded only when a
      student opens one, so the lab does not carry them on every visit (Daniel, 28 Sep 2026: "if the students are
      curious"). syllabus.js names them for the version bar. */

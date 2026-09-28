@@ -14,6 +14,14 @@
    numbers ({ text } with no n), and 2015's topics sit in Sections I–IV (`group`). A choice of an older
    one is not remembered: the badge always opens on a syllabus a student is examined on.
 
+   YOUR YEAR (Daniel, 28 Sep 2026: "make very clear ... which syllabus is for what year"). The school year turns over
+   on 1 August, so 2026–27 ends with the June 2027 exams: Year 11 sits them this year, Year 10 next, Year 9 in two.
+   A student is kept as the year of their exams ('labs.examYear'), which never changes, so next August a Year 9
+   becomes a Year 10 by itself. The hub's "Your year" tabs and Bio English (from the class in the teacher's
+   spreadsheet) keep the same key. The pop-up opens on the syllabus for that exam year, and says which it is.
+   A syllabus with the same content as another (2029 = 2026–2028, labs-shared/syllabus-versions.json) is its own
+   version with the other's statements (`same`), and says so.
+
    The layout follows the official document: each section a two-column table, Core on the left
    and Supplement on the right, the statements numbered as the syllabus numbers them. On a
    phone the two columns stack, Core above Supplement, each still headed.
@@ -62,6 +70,12 @@
     '.syl__ver.syl__vold{font-weight:500}' +
     '.syl__note{margin:12px 0 4px;padding:10px 12px;border-radius:8px;background:#FBF1E2;border:1px solid #DDBB85;color:#5E4212;font-size:14px;line-height:1.45}' +
     '.syl__sec--head h4{margin-bottom:0}' +
+    '.syl__you{display:flex;flex-wrap:wrap;align-items:center;gap:6px 8px;margin-top:10px;font-size:13.5px}' +
+    '.syl__youlab{font-weight:700;color:var(--ink);margin-right:2px}' +
+    '.syl__yr{font:inherit;font-size:13px;font-weight:600;border:1.5px solid var(--edge);border-radius:999px;background:#fff;padding:4px 11px;cursor:pointer;color:var(--ink)}' +
+    '.syl__yr[aria-pressed="true"]{background:#1F4E79;border-color:#1F4E79;color:#fff}' +
+    '.syl__youline{flex:1 1 260px;color:var(--ink);line-height:1.4}' +
+    '.syl__note--same{background:#EEF4FA;border-color:#B7CDE3;color:#1F3B57}' +
     '@media (max-width:700px){' +
     '  .syl__t,.syl__t thead,.syl__t tbody,.syl__t tr,.syl__t td{display:block}' +
     '  .syl__t thead{display:none}' +
@@ -77,7 +91,57 @@
   var LAB_TOPICS = (global.LAB_CONFIG && global.LAB_CONFIG.syllabusTopics) || [];
   var dlg = null, verId = null, find = null, body = null, versBar = null;
   function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
-  function data() { return global.SYLLABUS || { versions: [] }; }
+  function data() {
+    var d = global.SYLLABUS || { versions: [] };
+    if (!d._lent) {               /* a version with the same content as another carries no statements of its own */
+      d.versions.forEach(function (v) {
+        if (v.same && !v.topics) { var o = d.versions.filter(function (x) { return x.id === v.same; })[0]; if (o) v.topics = o.topics; }
+      });
+      d._lent = true;
+    }
+    return d;
+  }
+  /* ---------- your year, your exams, your syllabus ---------- */
+  var EXAM_KEY = 'labs.examYear', chosenNow = false, you = null;
+  function schoolYearEnd() { var d = new Date(); return d.getMonth() >= 7 ? d.getFullYear() + 1 : d.getFullYear(); }
+  function examYearOf(g) { return schoolYearEnd() + (11 - g); }
+  function groupOf(e) { var g = 11 - (e - schoolYearEnd()); return g >= 9 && g <= 11 ? g : null; }
+  function myExamYear() {
+    try {
+      var e = parseInt(localStorage.getItem(EXAM_KEY), 10); if (e) return e;
+      var y = localStorage.getItem('biology-hub.year');          /* the hub's tab, kept before exam years were */
+      if (/^y(9|10|11)$/.test(y || '')) return examYearOf(+y.slice(1));
+    } catch (x) {}
+    return null;
+  }
+  function setMyYear(g) { try { localStorage.setItem(EXAM_KEY, String(examYearOf(g))); localStorage.setItem('biology-hub.year', 'y' + g); } catch (x) {} }
+  function span(id) { var m = /^(\d{4})(?:-(\d{4}))?$/.exec(id || ''); return m ? [+m[1], +(m[2] || m[1])] : null; }
+  /* the syllabus for exams in year e; the newest when Cambridge has not published that one yet */
+  function versionFor(e) {
+    var vs = data().versions;
+    for (var i = 0; i < vs.length; i++) { var sp = span(vs[i].id); if (sp && e >= sp[0] && e <= sp[1]) return { v: vs[i], exact: true }; }
+    return { v: vs[0], exact: false };
+  }
+  function labelOf(id) { var v = data().versions.filter(function (x) { return x.id === id; })[0]; return v ? v.label : id; }
+  function defaultVersion() {
+    var e = myExamYear(); if (e) return versionFor(e).v.id;
+    var id = null; try { id = localStorage.getItem('labs.syllabusVersion'); } catch (x) {}
+    var vs = data().versions;
+    return vs.some(function (v) { return v.id === id; }) ? id : (vs.length ? vs[0].id : null);
+  }
+  function paintYou() {
+    if (!you) return;
+    var e = myExamYear(), g = e ? groupOf(e) : null, line;
+    you.querySelectorAll('.syl__yr').forEach(function (b) { b.setAttribute('aria-pressed', +b.getAttribute('data-g') === g ? 'true' : 'false'); });
+    if (!g) line = 'Choose your year: it decides which syllabus your exams follow.';
+    else {
+      var f = versionFor(e), v = f.v;
+      line = 'Your IGCSE exams are in ' + e + ': ' + (f.exact
+        ? 'the syllabus for ' + v.label + (v.same ? ', which is word for word the same as ' + labelOf(v.same) : '') + '.'
+        : 'Cambridge has not published the syllabus for ' + e + ' yet, so the newest, for ' + v.label + ', is shown.');
+    }
+    you.querySelector('.syl__youline').textContent = line;
+  }
   function olderList() { return data().older || []; }
   function isOlder(id) { return olderList().some(function (v) { return v.id === id; }); }
   function version() {
@@ -162,6 +226,8 @@
       return;
     }
     var ours = [], rest = [], old = isOlder(v.id);
+    /* a syllabus whose last exams came before this school year's (2023–2025) is past, like the older ones */
+    var sp0 = span(v.id), until = old ? v.until : (sp0 && sp0[1] < schoolYearEnd() ? sp0[1] : null);
     /* 2015 groups its topics in Sections I–IV: a heading wherever the Section changes */
     function grouped(list) {
       var out = [], g = null;
@@ -173,14 +239,19 @@
       if (mine.length) ours.push({ t: t, html: topic(t, mine, mine.length < t.sections.length ? 'the part this lab teaches' : '') });
       if (others.length) rest.push({ t: t, html: topic(t, others, mine.length ? mine.map(function (s) { return s.n; }).join(', ') + ' above' : '') });
     });
-    var note = old ? '<p class="syl__note">This syllabus was examined until ' + esc(v.until) + '. Your exams follow the ' + esc(data().versions[0].label) +
-      ' syllabus, but past papers up to ' + esc(v.until) + ' were set on this one, so it shows what those questions expected.</p>' : '';
+    var mineE = myExamYear(), mine = mineE ? versionFor(mineE).v : null;
+    var current = data().versions.filter(function (x) { var sp = span(x.id); return sp && sp[1] >= schoolYearEnd(); }).map(function (x) { return x.label; });
+    var note = until ? '<p class="syl__note">This syllabus was examined until ' + esc(until) + '. Your exams follow ' +
+      (mine ? 'the syllabus for ' + esc(mine.label) : 'the ' + esc(current.join(' or ')) + ' syllabus') +
+      ', but past papers up to ' + esc(until) + ' were set on this one, so it shows what those questions expected.</p>'
+      : v.same ? '<p class="syl__note syl__note--same">The syllabus for exams in ' + esc(v.label) + ' is word for word the same as the ' + esc(labelOf(v.same)) +
+        ' syllabus: every statement, the papers and the practical skills. Everything in this lab serves both.</p>' : '';
     var src = v.source || {}, via = String(src.via || ''), yr = (via.match(/\b(19|20)\d\d\b/) || [])[0];
     var link = src.url ? (/archive\.org/.test(via) && yr ? 'https://web.archive.org/web/' + yr + '/' + src.url : src.url) : '';
     var foot = old
       ? '<p class="syl__foot">The statements are Cambridge\'s own, from the syllabus for examination in ' + esc(v.label) + ', bulleted as it prints them: Core on the left, Supplement on the right. © Cambridge University Press &amp; Assessment.' +
         (link ? ' The document: <a href="' + esc(link) + '" target="_blank" rel="noopener">' + esc(src.title || 'the published syllabus') + '</a>' + (/archive\.org/.test(via) ? ', a copy kept by the Internet Archive' : '') + '.' : '') + '</p>'
-      : '<p class="syl__foot">The statements are Cambridge\'s own, from the published syllabus for ' + esc(v.label) + ', numbered as it numbers them: Core is examined on Papers 1, 3 and 5 or 6; Supplement adds Papers 2 and 4. © Cambridge University Press &amp; Assessment. The official document: <a href="https://www.cambridgeinternational.org/programmes-and-qualifications/cambridge-igcse-biology-0610/" target="_blank" rel="noopener">cambridgeinternational.org</a>.</p>';
+      : '<p class="syl__foot">The statements are Cambridge\'s own, from the published syllabus for ' + esc(v.label) + (v.same ? ' (the same as ' + esc(labelOf(v.same)) + ')' : '') + ', numbered as it numbers them: Core is examined on Papers 1, 3 and 5 or 6; Supplement adds Papers 2 and 4. © Cambridge University Press &amp; Assessment. The official document: <a href="https://www.cambridgeinternational.org/programmes-and-qualifications/cambridge-igcse-biology-0610/" target="_blank" rel="noopener">cambridgeinternational.org</a>.</p>';
     body.innerHTML = note + (ours.length ? '<div class="syl__group">This lab\'s topics</div>' + grouped(ours) + '<div class="syl__group">The rest of the syllabus</div>' : '') + grouped(rest) + foot;
     filter();
   }
@@ -197,14 +268,23 @@
     var vs = data().versions;
     dlg.innerHTML = '<div class="modal__box syl__box"><div class="syl__head"><button class="modal__close" type="button" aria-label="Close">×</button>' +
       '<h2>Cambridge IGCSE Biology 0610 — the syllabus</h2><p class="syl__sub">As Cambridge publishes it, section by section: Core on the left, Supplement on the right.' + (LAB_TOPICS.length ? ' This lab\'s topics come first.' : '') + '</p>' +
+      '<div class="syl__you" role="group" aria-label="Your year"><span class="syl__youlab">Your year</span>' +
+      [9, 10, 11].map(function (g) { return '<button type="button" class="syl__yr" data-g="' + g + '" aria-pressed="false">Year ' + g + '</button>'; }).join('') +
+      '<span class="syl__youline"></span></div>' +
       '<div class="syl__bar"><div class="syl__vers">' + vs.map(function (v) { return '<button type="button" class="syl__ver" data-v="' + esc(v.id) + '">' + esc(v.label) + '</button>'; }).join('') +
       (olderList().length ? '<span class="syl__oldlab">Older:</span>' + olderList().map(function (v) { return '<button type="button" class="syl__ver syl__vold" data-v="' + esc(v.id) + '">' + esc(v.label) + '</button>'; }).join('') : '') + '</div>' +
       '<input class="syl__find" type="search" placeholder="Find a word in the syllabus…" aria-label="Find in the syllabus"></div></div><div class="syl__body"></div></div>';
     document.body.appendChild(dlg);
-    find = dlg.querySelector('.syl__find'); body = dlg.querySelector('.syl__body'); versBar = dlg.querySelector('.syl__vers');
+    find = dlg.querySelector('.syl__find'); body = dlg.querySelector('.syl__body'); versBar = dlg.querySelector('.syl__vers'); you = dlg.querySelector('.syl__you');
+    you.addEventListener('click', function (e) {
+      var b = e.target.closest('.syl__yr'); if (!b) return;
+      setMyYear(+b.getAttribute('data-g'));
+      verId = versionFor(myExamYear()).v.id; chosenNow = false;
+      paintYou(); paint(); body.scrollTop = 0;
+    });
     versBar.addEventListener('click', function (e) {
       var b = e.target.closest('.syl__ver'); if (!b) return;
-      verId = b.getAttribute('data-v');
+      verId = b.getAttribute('data-v'); chosenNow = true;
       if (!isOlder(verId)) { try { localStorage.setItem('labs.syllabusVersion', verId); } catch (x) {} }
       paint(); body.scrollTop = 0;
     });
@@ -212,17 +292,15 @@
     dlg.querySelector('.modal__close').addEventListener('click', close);
     dlg.addEventListener('click', function (e) { if (e.target === dlg) close(); });
     document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !dlg.hidden) close(); });
-    try { verId = localStorage.getItem('labs.syllabusVersion') || null; } catch (x) {}
-    if (!vs.some(function (v) { return v.id === verId; })) verId = vs.length ? vs[0].id : null;
+    verId = defaultVersion();
   }
   var opener = null;
   function open(sectionN) {
     build();
-    if (isOlder(verId)) {                 /* an older syllabus is looked at, not kept: the badge reopens on a current one */
-      try { verId = localStorage.getItem('labs.syllabusVersion') || null; } catch (x) { verId = null; }
-      if (!data().versions.some(function (v) { return v.id === verId; })) verId = data().versions.length ? data().versions[0].id : null;
-    }
-    paint();
+    /* the badge opens on the student's own syllabus, unless they picked another one on this visit; an older
+       syllabus is looked at, not kept */
+    if (!chosenNow || isOlder(verId)) verId = defaultVersion();
+    paintYou(); paint();
     dlg.hidden = false; document.body.classList.add('syl-open');
     if (sectionN) { var el = body.querySelector('.syl__sec[data-sec="' + sectionN + '"]'); if (el) { var t = el.closest('.syl__topic'); if (t) t.open = true; el.scrollIntoView({ block: 'start' }); } }
     else body.scrollTop = 0;
