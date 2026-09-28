@@ -682,6 +682,7 @@ picture{display:block;line-height:0}
 /* ---- Not in the 2026–28 syllabus: the card right below What you need to know ---- */
 .offsyl{background:var(--card-2,#FAF8F3);border:1px dashed #CFC6B2}
 .offsyl .card__h{color:#6B5B45}
+.card__h .card__hsub{font-weight:600;letter-spacing:.06em;color:var(--grey,#6B6B6B)}
 .offsyl__h{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#7A6B52;margin:14px 0 8px}
 .offsyl__h:first-of-type{margin-top:4px}
 .offsyl__lead{margin:6px 0 2px;font-size:15.5px;line-height:1.5;color:#5E503C}
