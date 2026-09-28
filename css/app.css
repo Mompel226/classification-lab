@@ -679,6 +679,11 @@ picture{display:block;line-height:0}
 .tier--old{background:#FBF1E2;color:#7A4B12;border:1px solid #DDBB85;cursor:help}
 .later__ref.later__ref--old{background:#FBF1E2;color:#7A4B12;border:1px solid #DDBB85;cursor:help}
 .act__old{display:inline-block;font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:#7A4B12;background:#FBF1E2;border:1px solid #DDBB85;border-radius:4px;padding:1px 6px;cursor:help}
+/* ---- Not in the 2026–28 syllabus: the card right below What you need to know ---- */
+.offsyl{background:var(--card-2,#FAF8F3);border:1px dashed #CFC6B2}
+.offsyl .card__h{color:#6B5B45}
+.offsyl__h{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#7A6B52;margin:14px 0 8px}
+.offsyl__h:first-of-type{margin-top:4px}
 .qtable{overflow-x:auto;margin:-4px 0 14px}
 .qtable table{border-collapse:collapse;font-size:14.5px;font-variant-numeric:tabular-nums;min-width:280px}
 .qtable th,.qtable td{border:1px solid var(--edge);padding:5px 11px;text-align:left;vertical-align:top}

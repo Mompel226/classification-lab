@@ -248,27 +248,49 @@
     list.className = 'exam-list';
     card.appendChild(list);
 
+    /* What you need to know holds the 2026–28 syllabus only (Daniel, 28 Sep 2026: "do not add these to the what
+       you need to know sections but a separate one"). A sentence from an older 0610 syllabus (tagged in
+       past-syllabus.json) or beyond the syllabus (`ext`) is drawn the same way, with its pictures and widgets,
+       but in the card below: "Not in the 2026–28 syllabus". Each li keeps its place in the master as data-i. */
+    var off = { old: document.createElement('ul'), beyond: document.createElement('ul') }, offAt = { old: [], beyond: [] };
+    off.old.className = off.beyond.className = 'exam-list exam-list--off';
+    function offOf(b, i) {
+      if (st.past && st.past.exam && st.past.exam[i] != null) return 'old';
+      return typeof b === 'object' && b.ext ? 'beyond' : null;
+    }
+
     (st.learn.exam || []).forEach(function (b, i) {
+      var offK = offOf(b, i);
       var li = document.createElement('li');
       var txt = typeof b === 'string' ? b : b.text;
       var badge = '';
       if (typeof b === 'object' && b.sup) badge = '<span class="sup tip" tabindex="0" data-tip="Supplement — examined on Paper 4 (Extended) only. Core candidates can skip it.">S</span>';
       if (typeof b === 'object' && b.ext) badge = '<span class="sup sup--ext tip" tabindex="0" data-tip="Extension — not in the 2026–28 syllabus. Here to make sense of the rest; you will not be asked to write it.">extension</span>';
       /* in an older 0610 syllabus: its badge names that syllabus (and replaces "extension") */
-      var pe = st.past && st.past.exam ? st.past.exam[i] : null, pSplit = pastSplit(txt, pe, M);
-      if (pe != null && !pSplit) badge = pastBadge(pe);
+      var pe = st.past && st.past.exam ? st.past.exam[i] : null, pSplit = null;
+      if (pe != null) badge = pastBadge(pe);
+      else if (offK === 'beyond') badge = '';       /* its heading says so */
       li.innerHTML = badge + (pSplit || M(txt));
-      list.appendChild(li);
+      li.setAttribute('data-i', i);
+      if (offK) offAt[offK].push({ k: typeof b === 'object' && b.near != null ? b.near + 0.5 : i, li: li });
+      else list.appendChild(li);
       /* the thing to press, drag or count sits under the sentence it belongs to */
       widgets.filter(function (w) { return w.after === i; }).forEach(function (w) { li.appendChild(window.Learn.widget(w, WIDGET_CTX)); });
     });
     widgets.filter(function (w) { return w.after == null; }).forEach(function (w) { card.appendChild(window.Learn.widget(w, WIDGET_CTX)); });
+    /* the card below reads in the station's order: a part moved out of sentence 3 comes after sentence 3 (`near`) */
+    ['old', 'beyond'].forEach(function (k) {
+      offAt[k].sort(function (x, y) { return x.k - y.k; }).forEach(function (x) { off[k].appendChild(x.li); });
+    });
 
+    var goldOld = null;
     if (st.learn && st.learn.golden) {
       var g = document.createElement('div');
       g.className = 'golden';
-      g.innerHTML = '<div class="golden__h">⬤ Check yourself — the mistake students make here' + (st.past && st.past.golden && !st.past.golden.from ? ' ' + pastBadge(st.past.golden) : '') + '</div><p>' + (pastSplit(st.learn.golden, st.past && st.past.golden, M) || M(st.learn.golden)) + '</p>';
-      card.appendChild(g);
+      var gOld = !!(st.past && st.past.golden && !st.past.golden.from);
+      g.innerHTML = '<div class="golden__h">⬤ Check yourself — the mistake students make here' + (gOld ? ' ' + pastBadge(st.past.golden) : '') + '</div><p>' + (pastSplit(st.learn.golden, st.past && st.past.golden, M) || M(st.learn.golden)) + '</p>';
+      /* a mistake about something from an older syllabus goes with it, into the card below */
+      if (gOld) goldOld = g; else card.appendChild(g);
     }
     if ((st.learn.examFocus || []).length) {
       var ef = document.createElement('div');
@@ -281,6 +303,23 @@
       card.appendChild(ef);
     }
     pane.appendChild(card);
+
+    /* the sentences that are not in the 2026–28 syllabus, right below the ones that are */
+    if (off.old.children.length || off.beyond.children.length || goldOld) {
+      var oc = document.createElement('div');
+      oc.className = 'card offsyl';
+      oc.innerHTML = '<div class="card__h">Not in the 2026\u201328 syllabus</div>';
+      if (off.old.children.length || goldOld) {
+        oc.insertAdjacentHTML('beforeend', '<div class="offsyl__h">In older syllabuses \u2014 you may meet these in past papers</div>');
+        oc.appendChild(off.old);
+        if (goldOld) oc.appendChild(goldOld);
+      }
+      if (off.beyond.children.length) {
+        oc.insertAdjacentHTML('beforeend', '<div class="offsyl__h">Beyond the syllabus \u2014 here to help the rest make sense</div>');
+        oc.appendChild(off.beyond);
+      }
+      pane.appendChild(oc);
+    }
 
     var further = (st.learn && st.learn.further) || [];
     if (further.length) {
