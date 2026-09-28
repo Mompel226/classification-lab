@@ -167,7 +167,7 @@
     if (!x) return '';
     /* the note says what the 2026–28 syllabus does instead, and whether recent papers still give marks for it */
     var tip = 'In the 0610 syllabus until ' + x.until + (x.tier ? ' (' + x.tier + ')' : '') + ': \u201c' + x.text + '\u201d. ' +
-              (x.note || ('It is not in the 2026\u201328 syllabus, so your exam is unlikely to ask it. Past papers up to ' + x.until + ' may ask it.'));
+              (x.note || ('It is not in the 2026\u201328 syllabus, but an exam question can still use it, and past papers up to ' + x.until + ' may ask it directly.'));
     return '<span class="' + (cls || 'sup sup--old') + ' tip" tabindex="0" data-tip="' + esc(tip).replace(/"/g, '&quot;') + '">old syllabus \u00b7 until ' + esc(x.until) + '</span>';
   }
   /* a sentence only part of which is old: the badge goes in front of that part (`from`, in past-syllabus.json) */
@@ -265,7 +265,7 @@
       var txt = typeof b === 'string' ? b : b.text;
       var badge = '';
       if (typeof b === 'object' && b.sup) badge = '<span class="sup tip" tabindex="0" data-tip="Supplement — examined on Paper 4 (Extended) only. Core candidates can skip it.">S</span>';
-      if (typeof b === 'object' && b.ext) badge = '<span class="sup sup--ext tip" tabindex="0" data-tip="Extension — not in the 2026–28 syllabus. Here to make sense of the rest; you will not be asked to write it.">extension</span>';
+      if (typeof b === 'object' && b.ext) badge = '<span class="sup sup--ext tip" tabindex="0" data-tip="Extension — beyond the 2026–28 syllabus. It helps the rest make sense, and an exam question can still use it.">extension</span>';
       /* in an older 0610 syllabus: its badge names that syllabus (and replaces "extension") */
       var pe = st.past && st.past.exam ? st.past.exam[i] : null, pSplit = null;
       if (pe != null) badge = pastBadge(pe);
@@ -308,7 +308,10 @@
     if (off.old.children.length || off.beyond.children.length || goldOld) {
       var oc = document.createElement('div');
       oc.className = 'card offsyl';
-      oc.innerHTML = '<div class="card__h">Not in the 2026\u201328 syllabus</div>';
+      oc.innerHTML = '<div class="card__h">Not in the 2026\u201328 syllabus</div>' +
+        /* Daniel, 28 Sep: not in the syllabus does not mean a question cannot lead there, and knowing it can be
+           what earns the last marks — so the card says so, and nothing in it says "you will not be asked" */
+        '<p class="offsyl__lead">Do not skip this card. The 2026\u201328 syllabus does not list these, but an exam question can still use them \u2014 and knowing them can be what earns you full marks.</p>';
       if (off.old.children.length || goldOld) {
         oc.insertAdjacentHTML('beforeend', '<div class="offsyl__h">In older syllabuses \u2014 you may meet these in past papers</div>');
         oc.appendChild(off.old);
@@ -343,7 +346,7 @@
         '<dl class="kw-grid">' +
         st.keywords.map(function (w) {
           var g2 = (window.GLOSSARY || []).filter(function (e) { return e.term.toLowerCase() === w.term.toLowerCase(); })[0] || {};
-          var tag = pastTerm(w.term) ? ' ' + pastBadge(pastTerm(w.term), 'tier tier--old') : g2.ext ? ' <span class="tier tier--ext" title="Worth knowing, but 0610 will not ask you to name it">not asked in 0610</span>'
+          var tag = pastTerm(w.term) ? ' ' + pastBadge(pastTerm(w.term), 'tier tier--old') : g2.ext ? ' <span class="tier tier--ext tip" tabindex="0" data-tip="The 0610 syllabus does not name it, but it is worth knowing: an exam question can still use it.">beyond 0610</span>'
                   : g2.sup ? ' <span class="tier tier--sup" title="Supplement — Paper 4 (Extended) only">Supplement</span>' : '';
           return '<div class="kw kw--flip" role="button" tabindex="0" aria-expanded="false">' +
                  '<dt>' + M(w.term) + numberOf(g2) + tag + '</dt><p class="kw__ask">Do you know it? Tap to check</p><dd>' + M(w.def) + '</dd></div>';
@@ -1030,7 +1033,7 @@
       var built = false, pinTerm = null, atOpen = null;
       function tierTag(w) {
         var pid = pastTerm(w.term); if (pid) return ' ' + pastBadge(pid, 'tier tier--old');
-        if (w.ext) return ' <span class="tier tier--ext" title="Worth knowing, but 0610 will not ask you to name it">not asked in 0610</span>';
+        if (w.ext) return ' <span class="tier tier--ext tip" tabindex="0" data-tip="The 0610 syllabus does not name it, but it is worth knowing: an exam question can still use it.">beyond 0610</span>';
         if (w.sup) return ' <span class="tier tier--sup" title="Supplement — examined on Paper 4 (Extended) only">Supplement</span>';
         return '';
       }
