@@ -1,7 +1,7 @@
 /* ============================================================
    engine-ext.js — what this lab adds to the shared activity engine.
 
-   Two activity types Topic 1 needed and the other labs did not:
+   Two activity types this lab introduced for Topic 1 (plants-lab and circulation-lab now carry copies):
      grid     a table of ticks — things down the side, characteristics along the top —
               marked row by row, so a wrong row is named but never corrected
      hotspot  click the features on a photograph; the answer is the set of regions

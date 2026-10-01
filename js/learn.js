@@ -17,6 +17,9 @@
      kingdoms    five cards; each lights its kingdom on the tree and shows its features
      table       a comparison table
      photo       a photograph with its credit
+     clado       a phylogenetic tree: click a junction to light the groups that share that ancestor
+     keyrules    how to build a key that gets the marks: one rule, and a checklist with a right and a wrong example
+     keybad      a key that does not work, and why: each fault highlights the lines it is about
    Also exported for the questions: seqView, keyPrint, svgFor (the labelled diagrams).
    ============================================================ */
 (function (global) {

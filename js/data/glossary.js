@@ -63,7 +63,7 @@ window.GLOSSARY = [
  },
  {
   "term": "apical meristem",
-  "def": "The region of dividing cells at the very tip of a shoot, and at the tip of a root just behind the root cap. It makes the new cells; those cells then lengthen in the zone just behind it, and that lengthening adds most of the extra length. 0610 does not ask for the name.",
+  "def": "The region of dividing cells at the very tip of a shoot, and at the tip of a root just behind the root cap. It makes the new cells; those cells then lengthen in the zone just behind it, and that lengthening adds most of the extra length. The 0610 syllabus does not name it, but an exam question can still use it.",
   "ext": true,
   "forms": [
    "meristem",
@@ -1297,7 +1297,7 @@ window.GLOSSARY = [
  {
   "term": "periodontal fibres",
   "singular": "periodontal fibre",
-  "def": "Tough fibres between the cement and the jawbone that hold the tooth firmly in its socket and act as shock absorbers. (Not required by 0610.)",
+  "def": "Tough fibres between the cement and the jawbone that hold the tooth firmly in its socket and act as shock absorbers. The 0610 syllabus does not name it, but an exam question can still use it.",
   "ext": true
  },
  {
@@ -1338,7 +1338,7 @@ window.GLOSSARY = [
  },
  {
   "term": "plaque",
-  "def": "Plaque is a sticky film of bacteria that builds up on teeth. The bacteria respire the sugar left on the teeth and release acid, which dissolves the enamel and causes decay. (Not required by 0610.)",
+  "def": "Plaque is a sticky film of bacteria that builds up on teeth. The bacteria respire the sugar left on the teeth and release acid, which dissolves the enamel and causes decay. The 0610 syllabus does not name it, but an exam question can still use it.",
   "ext": true
  },
  {
@@ -1464,7 +1464,7 @@ window.GLOSSARY = [
  },
  {
   "term": "root canal",
-  "def": "The channel running down the root of a tooth along which the blood vessels and nerves reach the pulp cavity. (Not required by 0610.)",
+  "def": "The channel running down the root of a tooth along which the blood vessels and nerves reach the pulp cavity. The 0610 syllabus does not name it, but an exam question can still use it.",
   "ext": true
  },
  {

@@ -4,13 +4,18 @@
      node tools/build.mjs [password]
 
    Reads   ../classification-lab-source/stations.master.js   (has the answers)
+           ../classification-lab-source/past-syllabus.json   (the old-syllabus badges)
    Writes  js/data/stations.js    presentation + salted hashes, NO answers
            js/data/glossary.js    the shared definitions
-           js/engine.js, js/marking.js         copied from labs-shared/engine/
+           js/data/photos.js      the pixel size of every picture
+           js/data/syllabus.js, js/data/syllabus-older.js   the syllabus text, for the IGCSE 0610 badge
+           js/engine.js, js/marking.js, js/sync.js, js/homework.js, js/syllabus.js   copied from labs-shared/engine/
            js/signin.js                        copied from labs-shared/ (one sign-in for the whole site)
            js/tree.js, js/tree-draw.js         copied from labs-shared/tree/
            assets/silhouettes/                 copied from labs-shared/tree/silhouettes/
-           index.html             the silhouettes inlined as <symbol>s, and every ?v= stamped
+           index.html             the silhouettes inlined as <symbol>s, and every ?v= stamped; version.txt the same stamp
+           sw.js                  the offline worker, from labs-shared/sw.template.js
+           ../../labs-shared/labs.json   this lab's station and question counts
 
    The hashes let the page mark an answer right or wrong without the answer
    existing anywhere in the download. Nothing in the site can say what the
@@ -60,7 +65,7 @@ if (!SHARED) {
   process.exit(1);
 }
 for (const [from, to] of [['engine/engine.js', 'js/engine.js'], ['engine/marking.js', 'js/marking.js'], ['engine/syllabus.js', 'js/syllabus.js'],
-                          ['engine/sync.js', 'js/sync.js'], ['signin.js', 'js/signin.js'],
+                          ['engine/sync.js', 'js/sync.js'], ['engine/homework.js', 'js/homework.js'], ['signin.js', 'js/signin.js'],
                           ['tree/tree.js', 'js/tree.js'], ['tree/tree-draw.js', 'js/tree-draw.js']]) {
   copyFileSync(resolve(SHARED, from), resolve(REPO, to));
 }
@@ -439,6 +444,24 @@ const nStamp = (idx.match(/\.(?:js|css)\?v=\d+/g) || []).length;
 if (!nStamp) throw new Error('index.html has no ?v= stamps to bump — cache busting would be silent');
 writeFileSync(idxPath, idx.replace(/(\.(?:js|css))\?v=\d+/g, `$1?v=${STAMP}`));
 
+/* ---------- the register ----------
+   labs-shared/labs.json is the single register: this lab's counts are written by this build, as the Plants
+   and Circulation builds write theirs, so the hubs' percentages and the Apps Script's totals can never
+   disagree with what is here. It is rewritten only when a count changes (30 Sep 2026: this build used to
+   leave it to be edited by hand). */
+{
+  const LAB = 'classification-lab';
+  const regPath = resolve(SHARED, 'labs.json');
+  const reg = JSON.parse(readFileSync(regPath, 'utf8'));
+  const row = reg.labs.find(l => l.id === LAB);
+  if (!row) throw new Error('labs-shared/labs.json has no entry for ' + LAB + ' — add one (id, name, shelf, url, store) before building');
+  if (row.stations !== pub.length || row.questions !== nAct) {
+    row.stations = pub.length; row.questions = nAct;
+    writeFileSync(regPath, JSON.stringify(reg, null, 2).replace(/\{\n\s+"id"/g, '{ "id"') + '\n');
+    console.log(`  labs.json             ${LAB} now ${pub.length} stations · ${nAct} questions — rebuild the hubs (node tools/stamp.mjs) so they see it`);
+  }
+}
+
 const SW_LAB = 'classification-lab';
 const SW_TEMPLATE = resolve(SHARED, 'sw.template.js');
 
@@ -488,7 +511,7 @@ console.log(`built ${pub.length} stations, ${nAct} activities`);
 console.log(`  js/data/stations.js   presentation + hashes (no answers)`);
 console.log(`  js/data/glossary.js   ${GLOSSARY.length} shared definitions`);
 console.log(`  js/data/photos.js     ${Object.keys(SIZES).length} picture sizes`);
-console.log(`  shared engine, marking, tree, tree-draw and ${symbols.length} silhouettes copied in`);
+console.log(`  shared engine, marking, syllabus, sync, signin, tree, tree-draw and ${symbols.length} silhouettes copied in`);
 console.log(`  index.html + version.txt  stamped ${STAMP} (${nStamp} assets)`);
 
 /* ---------- the marking gate ----------

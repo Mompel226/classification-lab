@@ -1,5 +1,5 @@
 /* ============================================================
-   app.js — wiring: tree ⇄ panel ⇄ rail, progress, hand-in.
+   app.js — wiring: tree ⇄ panel ⇄ rail, progress, saving.
    The Digestion Lab's app.js with the plate swapped: the anatomical plate and its
    camera are replaced by the tree of life (js/plate.js), and the Learn tab carries
    this lab's widgets (js/learn.js) between its sentences.
@@ -145,6 +145,8 @@
       bar.appendChild(fill);
       b.appendChild(n); b.appendChild(lab); b.appendChild(bar);
       b.addEventListener('click', function () { open(id); });
+      /* homework set for this pupil: red not started, orange part done, green done (labs-shared/engine/homework.js) */
+      if (window.LabHomework) window.LabHomework.mark(b, id, sc.best, sc.total);
       track.appendChild(b);
     });
     var cur = track.querySelector('[aria-current="true"]');
@@ -158,7 +160,7 @@
 
   /* ---------- the old syllabus ----------
      What this lab teaches that the syllabus for 2026–2029 does not include, although an older 0610 syllabus did
-     (peristalsis, until 2015). It stays, because past papers ask it, and its badge names the syllabus it
+     (the statements tagged in ../classification-lab-source/past-syllabus.json). It stays, because past papers ask it, and its badge names the syllabus it
      belongs to. The words are Cambridge's own, from labs-shared/syllabus-past.json through the build. */
   var PAST = window.PAST_SYLLABUS || { statements: {}, terms: {} };
   function pastTerm(term) { return (PAST.terms || {})[String(term || '').toLowerCase()] || null; }
@@ -266,13 +268,12 @@
       var li = document.createElement('li');
       var txt = typeof b === 'string' ? b : b.text;
       var badge = '';
-      if (typeof b === 'object' && b.sup) badge = '<span class="sup tip" tabindex="0" data-tip="Supplement — examined on Paper 4 (Extended) only. Core candidates can skip it.">S</span>';
-      if (typeof b === 'object' && b.ext) badge = '<span class="sup sup--ext tip" tabindex="0" data-tip="Extension — beyond the syllabus for 2026–2029. It helps the rest make sense, and an exam question can still use it.">extension</span>';
-      /* in an older 0610 syllabus: its badge names that syllabus (and replaces "extension") */
-      var pe = st.past && st.past.exam ? st.past.exam[i] : null, pSplit = null;
+      if (typeof b === 'object' && b.sup) badge = '<span class="sup tip" tabindex="0" data-tip="Supplement — examined on the Extended papers (2 and 4) only. Core candidates can skip it.">S</span>';
+      /* in an older 0610 syllabus: its badge names that syllabus; beyond the syllabus: no badge, its heading says so */
+      var pe = st.past && st.past.exam ? st.past.exam[i] : null;
       if (pe != null) badge = pastBadge(pe);
-      else if (offK === 'beyond') badge = '';       /* its heading says so */
-      li.innerHTML = badge + (pSplit || M(txt));
+      else if (offK === 'beyond') badge = '';
+      li.innerHTML = badge + M(txt);
       li.setAttribute('data-i', i);
       if (offK) offAt[offK].push({ k: typeof b === 'object' && b.near != null ? b.near + 0.5 : i, li: li });
       else list.appendChild(li);
@@ -349,7 +350,7 @@
         st.keywords.map(function (w) {
           var g2 = (window.GLOSSARY || []).filter(function (e) { return e.term.toLowerCase() === w.term.toLowerCase(); })[0] || {};
           var tag = pastTerm(w.term) ? ' ' + pastBadge(pastTerm(w.term), 'tier tier--old') : g2.ext ? ' <span class="tier tier--ext tip" tabindex="0" data-tip="The 0610 syllabus does not name it, but it is worth knowing: an exam question can still use it.">beyond 0610</span>'
-                  : g2.sup ? ' <span class="tier tier--sup" title="Supplement — Paper 4 (Extended) only">Supplement</span>' : '';
+                  : g2.sup ? ' <span class="tier tier--sup" title="Supplement — Extended papers (2 and 4) only">Supplement</span>' : '';
           return '<div class="kw kw--flip" role="button" tabindex="0" aria-expanded="false">' +
                  '<dt>' + M(w.term) + numberOf(g2) + tag + '</dt><p class="kw__ask">Do you know it? Tap to check</p><dd>' + M(w.def) + '</dd></div>';
         }).join('') + '</dl>';
@@ -517,8 +518,8 @@
     return scroller === document.scrollingElement || scroller === document.documentElement
       ? 0 : scroller.getBoundingClientRect().top;
   }
-  /* A word can send a reader into a section that is folded shut — the "optimum pH" line lives
-     inside a closed <details>, and scrolling to something behind a shut disclosure scrolls to
+  /* A word can send a reader into a section that is folded shut — a line can live inside
+     a closed <details>, and scrolling to something behind a shut disclosure scrolls to
      nothing the reader can see. Open the way in first. */
   function revealAncestors(target) {
     for (var n = target.parentNode; n && n.nodeType === 1; n = n.parentNode) {
@@ -673,10 +674,16 @@
      it pushed into THEIR record — it is safe in its owner's already — so it leaves this browser first. Work done
      signed out, before anybody signed in here, has no owner yet and goes to the first account that signs in
      (as ever). "Clear this computer", in the save window, empties the browser by hand. (Review, 27 Sep 2026:
-     Reset used to be the only way to clear a shared computer, and Reset now keeps the record.) */
-  var OWNER_KEY = LAB_ID + '.owner';
+     Reset used to be the only way to clear a shared computer, and Reset now keeps the record.)
+     It is safe in its owner's record only if every answer reached it. UNSENT_KEY says whether some has not:
+     every change sets it (queueSave), and a save the records took, with nothing left waiting, clears it
+     (flushSave), so the message the next account sees is true either way. And signing out sends what is still
+     waiting first, while that account's sign-in still works (onSignIn). The same as the Bio English Lab (30 Sep 2026). */
+  var OWNER_KEY = LAB_ID + '.owner', UNSENT_KEY = LAB_ID + '.unsent';
+  function markUnsent(on) { try { if (on) localStorage.setItem(UNSENT_KEY, '1'); else localStorage.removeItem(UNSENT_KEY); } catch (e) {} }
+  function unsentHere() { try { return !!localStorage.getItem(UNSENT_KEY); } catch (e) { return true; } }
   function clearHere() {
-    progress = {};
+    progress = {}; markUnsent(false);
     try { localStorage.removeItem(STORE); } catch (e) {}
     paintHeader(); paintRail(); paintPanel();
   }
@@ -684,8 +691,10 @@
     var was = '';
     try { was = localStorage.getItem(OWNER_KEY) || ''; } catch (e) {}
     if (was && email && was !== email) {
+      var unsent = unsentHere() || !!savePending || !!saving;
       clearHere();
-      toast('This computer had another student\u2019s work. It stays in their record; it was not added to yours.');
+      if (unsent) toast('This computer had another student\u2019s work, and some of it may not have been saved to their record. It has been removed from this computer, and none of it was added to yours.', 10000);
+      else toast('This computer had another student\u2019s work. It stays in their record; it was not added to yours.');
     }
     try { if (email) localStorage.setItem(OWNER_KEY, email); } catch (e) {}
   }
@@ -700,6 +709,9 @@
      there before brings their records back, then sends what was done here. */
   function onSignIn(v, here) {
     var was = signIn && signIn.email;
+    /* signed out (here, or in another tab of the site), or another account signed in: what is still waiting
+       goes first, with the sign-in it belongs to, while that still works. Once it is gone it cannot be sent. */
+    if (was && (!v || v.email !== was) && savePending && !saving && haveToken()) flushSave();
     signIn = v;
     paintSaveChip();
     var dlg = document.getElementById('subDlg');
@@ -749,13 +761,24 @@
       body: JSON.stringify({ action:'progress', token: signIn.token })
     })
       .then(function (r) { return r.ok ? r.json() : null; })
-      .then(function (j) { var mine = j && j.ok && j.labs && j.labs[LAB_ID]; applySnap(mine, true); })
+      .then(function (j) {
+        var mine = j && j.ok && j.labs && j.labs[LAB_ID]; applySnap(mine, true);
+        /* and their homework here, which the same answer carries (a script from before sends none) */
+        if (window.LabHomework) window.LabHomework.take(j && j.ok ? j.homework : null, signIn && signIn.email);
+      })
       .catch(function () {})
       .then(function () { if (then) then(); });
   }
   /* Signed in: their records first, so nothing here is older than what is there; then whatever
      this browser has that the records do not. */
   function pullThenPush() { pull(function () { queueSave(true); }); }
+  /* Homework set for this pupil in this lab (Daniel, 29 Sep 2026): its stations coloured on the row, and a note once a
+     day with what is still to do. Scored by the teacher's rule; the shared code is labs-shared/engine/homework.js. */
+  if (window.LabHomework) window.LabHomework.init({ lab: LAB_ID,
+    score: function (id) { var s = stationScore(id); return { done: s.best, total: s.total }; },
+    name: function (id) { return S[id] ? S[id].name : ''; },
+    open: function (id) { open(id); },
+    repaint: function () { paintRail(); } });
   if (signIn && syncEnabled()) {
     claimFor(signIn.email);
     if (haveToken()) pullThenPush();
@@ -769,6 +792,7 @@
   var SAVE_AFTER = 120000, RETRY_AFTER = 60000;
   var saveTimer = null, savePending = false, saving = false, savedAt = null, saveWhy = '', lastSent = '', lastScore = -1, askedAgain = false;
   function queueSave(now) {
+    markUnsent(true);                        /* until a save the records take: see flushSave */
     if (!syncEnabled()) return;
     savePending = true;
     paintSaveChip();
@@ -816,8 +840,8 @@
     if (!signIn) { saveWhy = 'signin'; paintSaveChip(); return; }          /* kept here until they sign in */
     if (!haveToken()) { saveWhy = 'stale'; if (!leaving) renewThenSave(); else paintSaveChip(); return; }
     var payload = payloadNow();
-    if (!payload.snap && !payload.score && !payload.checks) { savePending = false; saveWhy = ''; paintSaveChip(); return; }   /* nothing done yet: nothing to send */
-    if (payload.snap === lastSent && payload.score <= lastScore) { savePending = false; saveWhy = ''; paintSaveChip(); return; }
+    if (!payload.snap && !payload.score && !payload.checks) { savePending = false; saveWhy = ''; markUnsent(false); paintSaveChip(); return; }   /* nothing done yet: nothing to send */
+    if (payload.snap === lastSent && payload.score <= lastScore) { savePending = false; saveWhy = ''; markUnsent(false); paintSaveChip(); return; }   /* the records have it already */
     saving = true; savePending = false; saveWhy = ''; paintSaveChip();
     var opts = { method:'POST', mode:'cors', headers:{ 'Content-Type':'text/plain;charset=utf-8' }, body: JSON.stringify(payload) };
     if (leaving) opts.keepalive = true;
@@ -830,10 +854,11 @@
           savedAt = new Date(); lastSent = payload.snap; lastScore = payload.score; saveWhy = '';
           try { localStorage.setItem(LAB_ID + '.submitted', JSON.stringify({ at: payload.at, sent: true, name: payload.name })); } catch (e) {}
           if (savePending) queueSave();          /* something changed while it was on its way */
+          else markUnsent(false);                /* everything done here is in the records */
         } else {
           saveWhy = whyNot(r); savePending = true;
           if (saveWhy === 'busy' || saveWhy === 'other') retryLater();
-          else if (saveWhy === 'stale') renewThenSave();
+          else if (saveWhy === 'stale' && signIn) renewThenSave();   /* signed out since it left: nobody to renew */
         }
         paintSaveChip();
       })
@@ -991,10 +1016,10 @@
 
   /* ---------- toast, tooltips ---------- */
   var toastT = null;
-  function toast(msg) {
+  function toast(msg, ms) {
     var t = document.getElementById('toast');
     t.style.pointerEvents = ''; t.textContent = msg; t.classList.add('show');
-    clearTimeout(toastT); toastT = setTimeout(function () { t.classList.remove('show'); }, 2800);
+    clearTimeout(toastT); toastT = setTimeout(function () { t.classList.remove('show'); }, ms || 2800);
   }
   document.addEventListener('click', function (e) {
     var tip = e.target.closest ? e.target.closest('.tip') : null;
@@ -1036,7 +1061,7 @@
       function tierTag(w) {
         var pid = pastTerm(w.term); if (pid) return ' ' + pastBadge(pid, 'tier tier--old');
         if (w.ext) return ' <span class="tier tier--ext tip" tabindex="0" data-tip="The 0610 syllabus does not name it, but it is worth knowing: an exam question can still use it.">beyond 0610</span>';
-        if (w.sup) return ' <span class="tier tier--sup" title="Supplement — examined on Paper 4 (Extended) only">Supplement</span>';
+        if (w.sup) return ' <span class="tier tier--sup" title="Supplement — examined on the Extended papers (2 and 4) only">Supplement</span>';
         return '';
       }
       function build() {

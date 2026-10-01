@@ -280,7 +280,12 @@
     /* true whether or not the new round has answers yet (those are counted in "Brought back") */
     var again = res.newer ? ' ' + res.newer + ' station' + (res.newer === 1 ? ' was' : 's were') +
       ' started again on another computer, so ' + (res.newer === 1 ? 'it is on its' : 'they are on their') + ' new round here too.' : '';
-    if (!res.added) return again ? 'Your record is back.' + again : 'Nothing new to bring back — this computer is already up to date.';
+    /* stations rewritten since the answers were saved are left alone — never "up to date" when some were */
+    var left = res.skipped && res.skipped.length ? res.skipped.length + ' station' +
+      (res.skipped.length === 1 ? ' has' : 's have') + ' changed since your answers were saved, so ' +
+      (res.skipped.length === 1 ? 'it was' : 'they were') + ' left alone.' : '';
+    if (!res.added) return left ? 'Nothing new to bring back. ' + left + again
+                                : again ? 'Your record is back.' + again : 'Nothing new to bring back — this computer is already up to date.';
     return 'Brought back ' + res.added + ' answer' + (res.added === 1 ? '' : 's') +
            ' across ' + res.stations + ' station' + (res.stations === 1 ? '' : 's') + '.' +
            (res.skipped.length ? ' ' + res.skipped.length + ' station' +
