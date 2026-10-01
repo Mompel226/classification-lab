@@ -77,8 +77,7 @@ h1,h2,h3,h4{margin:0;font-weight:700;line-height:1.25}
 }
 .hbtn:hover{background:rgba(255,255,255,.24)}
 
-/* ---------- mode selector, hand-in, dialogs ---------- */
-.hbtn--go{background:#8FE0A8;color:#0E3D1E;border-color:#8FE0A8;font-weight:700}
+/* ---------- header buttons, the saving chip, dialogs ---------- */
 /* the saving chip: what the records know, at a glance */
 .hbtn--save{font-weight:600}
 .hbtn--save.is-ok{background:#8FE0A8;color:#0E3D1E;border-color:#8FE0A8}
@@ -87,17 +86,7 @@ h1,h2,h3,h4{margin:0;font-weight:700;line-height:1.25}
 .hbtn--save.is-no{background:#F4C2BA;color:#5A1A12;border-color:#F4C2BA}
 .hbtn--save.is-no:hover{background:#F8D3CC}
 .hbtn--save.is-off{background:transparent;color:#fff;border-style:dashed}
-.hbtn--go:hover:not(:disabled){background:#A6EBBC}
-.hbtn--go:disabled{background:rgba(255,255,255,.10);color:rgba(255,255,255,.55);
-  border-color:rgba(255,255,255,.2);cursor:not-allowed;font-weight:600}
 .modal__box--sm{max-width:460px}
-.fld{display:block;margin:14px 0}
-.fld span{display:block;font-size:13px;font-weight:600;color:#3C3C3C;margin-bottom:5px}
-.fld input,.fld select{
-  width:100%;font:inherit;font-size:15.5px;padding:9px 12px;border:1.5px solid var(--edge);
-  border-radius:var(--r);background:var(--card-2);color:var(--ink)
-}
-.fld input:focus,.fld select:focus{outline:2px solid var(--green);outline-offset:1px;background:#fff}
 .dlgrow{display:flex;gap:9px;justify-content:flex-end;margin-top:18px}
 .submsg{font-size:14px;line-height:1.5;margin-top:8px}
 .submsg.no{color:var(--red)} .submsg.ok{color:var(--green-2)}
@@ -128,9 +117,6 @@ h1,h2,h3,h4{margin:0;font-weight:700;line-height:1.25}
   font-size:11.5px;font-weight:700;letter-spacing:.03em;color:#fff;padding:4px 11px;border-radius:var(--r-pill);
   background:var(--grey);white-space:nowrap
 }
-.chip--ingestion{background:var(--c-ing)} .chip--digestion{background:var(--c-dig)}
-.chip--absorption{background:var(--c-abs)} .chip--assimilation{background:var(--c-ass)}
-.chip--egestion{background:var(--c-ege)}
 .chip__n{display:inline-block;min-width:1.1em;height:1.1em;line-height:1.1em;text-align:center;
   border-radius:50%;background:rgba(255,255,255,.28);margin-right:6px;font-size:.85em}
 .chip--beyond{background:#fff;color:#5A5A5A;border:1.5px dashed #9A9A9A;font-style:italic}
@@ -163,11 +149,6 @@ h1,h2,h3,h4{margin:0;font-weight:700;line-height:1.25}
   content:"";position:absolute;left:4px;top:.62em;width:9px;height:9px;border-radius:50%;
   background:var(--green-2);box-shadow:0 0 0 3px var(--green-tint)
 }
-.real{background:var(--teal-tint);border:1px solid #CBE0E8;border-radius:var(--r);padding:12px 15px;margin-top:14px}
-.real__h{font-size:11px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--teal);margin-bottom:7px}
-.real ul{margin:0;padding-left:19px}
-.real li{font-size:14px;font-style:italic;color:#26424D;margin-bottom:5px;line-height:1.5}
-.real li:last-child{margin-bottom:0}
 
 .golden{
   background:#fff;border:2.4px solid var(--green);border-radius:var(--r-lg);padding:14px 18px;
@@ -679,7 +660,7 @@ picture{display:block;line-height:0}
 .tier--old{background:#FBF1E2;color:#7A4B12;border:1px solid #DDBB85;cursor:help}
 .later__ref.later__ref--old{background:#FBF1E2;color:#7A4B12;border:1px solid #DDBB85;cursor:help}
 .act__old{display:inline-block;font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:#7A4B12;background:#FBF1E2;border:1px solid #DDBB85;border-radius:4px;padding:1px 6px;cursor:help}
-/* ---- Not in the 2026–28 syllabus: the card right below What you need to know ---- */
+/* ---- Not in the syllabus for 2026–2029: the card right below What you need to know ---- */
 .offsyl{background:var(--card-2,#FAF8F3);border:1px dashed #CFC6B2}
 .offsyl .card__h{color:#6B5B45}
 .card__h .card__hsub{font-weight:600;letter-spacing:.06em;color:var(--grey,#6B6B6B)}

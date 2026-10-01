@@ -1,10 +1,14 @@
 /* ============================================================
-   Life on Earth Hub — the tree register
+   The tree register — SHARED. This copy, in labs-shared/tree/, is the
+   source: the Life on Earth Hub (tools/sync-shared.mjs) and the
+   Classification Lab (tools/build.mjs) copy it in. Edit it here, then
+   sync both.
    ------------------------------------------------------------
    The tree is the content of Topic 1, so drawing it teaches it.
-   Everything the map shows comes from here: the groups and their
-   features in the syllabus's words, the story of the first cells,
-   and the credit for every silhouette.
+   Everything the map shows comes from here: the groups, the story of
+   the first cells, and the credit for every silhouette. Each group also
+   carries its features in the syllabus's words (feats), which the hub's
+   card no longer shows: the Classification Lab teaches them.
 
    groups   in the order they sit round the rim. Each one:
      id        unique key
