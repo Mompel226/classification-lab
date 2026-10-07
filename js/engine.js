@@ -361,16 +361,22 @@
   }
 
   /* ============================= MCQ ============================= */
+  /* The options are drawn in a fresh order every time a question is drawn, as order, sort and match
+     already were (7 Oct 2026, Daniel: pupils found the right answer was nearly always A, because the
+     master lists it first). The letters A, B, C… follow the screen. Marking still works in the
+     master's own numbers, `i` below, because those are what the answer is hashed against: nothing
+     published changes, so no station's fingerprint changes and nobody's saved work moves. */
   function mcq(a, idx, id) {
     var card = shell(a, idx);
     var box = h('div', 'opts');
     var picked = {};
-    var btns = (a.options || []).map(function (txt, i) {
+    var order = shuffle((a.options || []).map(function (_, i) { return i; }));
+    var btns = order.map(function (i, pos) {
       var b = h('button', 'opt');
       b.type = 'button';
       b.setAttribute('aria-pressed', 'false');
-      b.appendChild(h('span', 'opt__k', String.fromCharCode(65 + i)));
-      var body = h('span'); body.appendChild(document.createTextNode(txt));
+      b.appendChild(h('span', 'opt__k', String.fromCharCode(65 + pos)));
+      var body = h('span'); body.appendChild(document.createTextNode(a.options[i]));
       b.appendChild(body);
       b.addEventListener('click', function () {
         if (b.dataset.locked === '1') return;
@@ -389,8 +395,8 @@
       if (!sel.length) return null;
       return window.Marking.check(a, id, sel).then(function (res) {
         /* only what THEY chose is marked — the right answer stays hidden */
-        btns.forEach(function (b, i) {
-          if (sel.indexOf(i) >= 0) b.classList.add(res.correct ? 'ok' : 'no');
+        btns.forEach(function (b, pos) {
+          if (sel.indexOf(order[pos]) >= 0) b.classList.add(res.correct ? 'ok' : 'no');
         });
         return res;
       });

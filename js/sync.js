@@ -42,18 +42,44 @@
                 other two). What the student has achieved: the hub, homework and
                 the teacher's Score read this.
 
-   A new go replaces the one before it; only the first go and the best stay, so
-   nothing grows however often a student starts again.
+   Since 7 Oct 2026 a new go no longer replaces the one before it: every round is kept,
+   small (ROUNDS AND CHECKS, below), with the first go and the best as before.
 
    MERGING NEVER TAKES ANYTHING AWAY. Within one go, a question right on either
    device stays right. Between goes, the newer go is what the page shows, and the
    older one's answers still count for the first go and the best. The spreadsheet
    merges by the same rules (the labs script's `_snapMerge_` family).
 
-   What is deliberately NOT carried: how many times they pressed Check. That is
-   a count of work done on one machine, and adding two machines' counts together
-   would say something untrue. (rec.past — checks made in earlier goes — stays on
-   the machine that made them, like rec.per.)
+   ROUNDS AND CHECKS (7 Oct 2026, Daniel: "round one should show how they did in
+   round one, how they did in round two, in a summarised way"; "a total checks per
+   question, no matter the number of rounds, and per round"; and keep it small)
+
+   Each station keeps its FINISHED rounds in rec.r, one short token each:
+
+     <letters>.<checks>[*<k>]   letters as above, one per question; checks one
+                                character per question, base 36 (0-9 a-z; z = 35
+                                or more); *k = k old rounds folded into one
+
+   The round on the page now is rec.done / tried / one / per, as before. Round 1 is
+   rec.r[0] once round 2 starts. A token may be '' (a round known to have happened
+   whose answers this computer never saw: made on another computer, or before rounds
+   were kept), its letters may be '' (".*6": six such rounds, folded), and its checks
+   may be '' (not counted per question). At most ROUNDS_KEPT rounds are kept:
+   round 1 always, then the newest; the ones squeezed out are folded together. A
+   token's round is found by counting: round 1, then each token's k after it — never
+   by its place in the list, which folding changes.
+   rec.legacy: checks that no question can be given — made in rounds that finished
+   before rounds were kept (the old rec.past), or beyond the 35 a character holds.
+   rec.lr: the rounds the old rec.past was made in ([first, last]). When the records
+   later give one of those rounds its checks question by question (a page of this
+   code saved it while it was the round on the page, and old code in another tab
+   then moved it on), those checks leave rec.legacy, so they are never counted twice.
+
+   Checks now travel with the record (`rounds`), so a cleared browser or another
+   computer picks up the count it had; each question keeps the larger count, so a
+   count seen twice is counted once (two computers in the same round at the same
+   time count as the larger of the two). A whole-lab Reset is counted on its own
+   (resets), in this browser and, when it cannot keep anything, in memory.
    ============================================================ */
 (function (global) {
   'use strict';
@@ -92,6 +118,86 @@
   function any(s) { return /[^0]/.test(String(s || '')); }
   function right(c) { return c === DONE || c === FIRST; }
 
+  /* ---------- rounds ---------- */
+  var ROUNDS_KEPT = 10;
+  var B36 = '0123456789abcdefghijklmnopqrstuvwxyz';
+  function c36(v) { v = Math.floor(Number(v) || 0); return B36.charAt(v < 0 ? 0 : v > 35 ? 35 : v); }
+  function n36(ch) { var i = B36.indexOf(String(ch || '').toLowerCase()); return i < 0 ? 0 : i; }
+  /* this round's checks, one character per question */
+  function checksOf(rec, n) {
+    var per = (rec && rec.per) || {}, s = '';
+    for (var i = 0; i < n; i++) s += c36(per[i]);
+    return s;
+  }
+  function sum36(s) { var t = 0; s = String(s || ''); for (var i = 0; i < s.length; i++) t += n36(s.charAt(i)); return t; }
+  /* checks strings, question by question: the larger (one machine's count, seen twice) or the sum (two rounds folded) */
+  function max36(a, b, n) { var o = ''; for (var i = 0; i < n; i++) o += c36(Math.max(n36(String(a || '').charAt(i)), n36(String(b || '').charAt(i)))); return o; }
+  function add36(a, b, n) { var o = ''; for (var i = 0; i < n; i++) o += c36(n36(String(a || '').charAt(i)) + n36(String(b || '').charAt(i))); return o; }
+  function readTok(t) {
+    var m = String(t == null ? '' : t).match(/^([01tf]*)\.([0-9a-z]*)(?:\*(\d{1,4}))?$/);
+    return m ? { l: m[1], c: m[2], k: m[3] ? Math.max(1, +m[3]) : 1, known: true } : { l: '', c: '', k: 1, known: false };
+  }
+  function tokOf(x) { return x.known ? x.l + '.' + x.c + (x.k > 1 ? '*' + x.k : '') : ''; }
+  /* two copies of one round, question by question: the further letter, the larger count */
+  function mergeTok(a, b, n) {
+    var A = readTok(a), B = readTok(b);
+    /* the records' copy, cut to this station's questions (a malformed one never counts past them) */
+    if (!A.known) return B.known ? tokOf({ known: true, l: B.l ? fit(B.l, n) : '', c: B.c ? max36('', B.c, n) : '', k: B.k }) : '';
+    if (!B.known) return tokOf(A);
+    return tokOf({ known: true, l: (A.l || B.l) ? best(A.l, B.l, n) : '', c: (A.c || B.c) ? max36(A.c, B.c, n) : '', k: Math.max(A.k, B.k) });
+  }
+  /* How many rounds a list of finished rounds holds (a folded token is k of them), and where each token starts. */
+  function span(list) { var t = 0; (list || []).forEach(function (x) { t += readTok(x).k; }); return t; }
+  function starts(list) { var out = [], at = 1; (list || []).forEach(function (x) { out.push(at); at += readTok(x).k; }); return out; }
+  /* Keep round 1 and the newest: the rounds in between are folded into one token, so a row never grows without end.
+     A question's count past 35 (what one character holds) goes to rec.legacy, so the station's total loses nothing. */
+  function cap(list, n, rec) {
+    if (list.length <= ROUNDS_KEPT - 1) return list;
+    var keepNew = ROUNDS_KEPT - 3, mid = list.slice(1, list.length - keepNew), f = null, over = 0;
+    mid.forEach(function (t) {
+      var x = readTok(t);
+      if (!f) { f = { known: true, l: x.l ? fit(x.l, n) : '', c: x.c, k: x.k }; return; }
+      if (x.c) for (var i = 0; i < n; i++) over += Math.max(0, n36(f.c.charAt(i)) + n36(x.c.charAt(i)) - 35);
+      f.l = (f.l || x.l) ? best(f.l, x.l, n) : '';
+      f.c = (f.c || x.c) ? add36(f.c, x.c, n) : '';
+      f.k += x.k;
+    });
+    if (over && rec) rec.legacy = (Number(rec.legacy) || 0) + over;
+    return [list[0], tokOf(f)].concat(list.slice(list.length - keepNew));
+  }
+  /* A record from before rounds were kept is brought up to date here, every time it is read: its earlier rounds
+     become tokens (round 1 from rec.g1; the others are known to have happened, nothing more), and rec.past, the checks
+     of earlier rounds that no question can be given, moves to rec.legacy. Safe to call again and again. */
+  function upgrade(rec, n) {
+    if (!rec) return rec;
+    var g = goOf(rec);
+    if (!Array.isArray(rec.r)) rec.r = [];
+    var knew = span(rec.r);                              /* the rounds this code had already kept */
+    if (g > 1 && !rec.r.length) rec.r.push(any(rec.g1) ? fit(rec.g1, n) + '.' : '');
+    for (var i = 0, need = Math.min(g - 1 - span(rec.r), 10000); i < need; i++) rec.r.push('');
+    if (Number(rec.past) > 0) {
+      rec.legacy = (Number(rec.legacy) || 0) + Number(rec.past); rec.past = 0;
+      var lo = knew + 1, hi = g - 1;                     /* the rounds old code moved on, here */
+      if (lo <= hi) rec.lr = Array.isArray(rec.lr) ? [Math.min(+rec.lr[0] || lo, lo), Math.max(+rec.lr[1] || hi, hi)] : [lo, hi];
+    }
+    rec.r = cap(rec.r, n, rec);                          /* folded as advance() folds, so both ends line up */
+    return rec;
+  }
+  /* Every round of one station, oldest first, the round on the page last: [{ l, c, k, known, now }]. */
+  function roundsOf(rec, n) {
+    upgrade(rec, n);
+    var out = (rec.r || []).map(function (t) { var x = readTok(t); x.l = x.l ? fit(x.l, n) : ''; return x; });
+    out.push({ l: charsOf(rec, n), c: checksOf(rec, n), k: 1, known: true, now: true });
+    return out;
+  }
+  /* Checks made at each question in every round, added up (a token's checks are already per question). */
+  function questionChecks(rec, n) {
+    var t = [], i;
+    for (i = 0; i < n; i++) t.push(0);
+    roundsOf(rec, n).forEach(function (x) { for (i = 0; i < n; i++) t[i] += n36(x.c.charAt(i)); });
+    return t;
+  }
+
   /* The three records of one station, as letters of length n. */
   function records(rec, n) {
     var here = charsOf(rec, n), g = goOf(rec);
@@ -105,6 +211,8 @@
        firstRight         right first time on the first go
        firstTried         answered at all on the first go
        checks             every Check pressed on this machine, all goes together */
+  /* (checks: every Check pressed, every round: this browser's own, with what the records hold of other computers and
+     earlier rounds, each round and question at its larger count) */
   function counts(rec, n) {
     var r = records(rec, n), o = { go: r.go, done: 0, tried: 0, bestDone: 0, bestTried: 0, firstRight: 0, firstTried: 0, checks: 0 };
     for (var i = 0; i < n; i++) {
@@ -118,7 +226,11 @@
     }
     var per = (rec && rec.per) || {};
     Object.keys(per).forEach(function (k) { if (+k < n) o.checks += Number(per[k]) || 0; });
-    o.checks += Number(rec && rec.past) || 0;
+    if (rec) {
+      upgrade(rec, n);
+      rec.r.forEach(function (t) { o.checks += sum36(readTok(t).c); });
+      o.checks += (Number(rec.legacy) || 0) + (Number(rec.past) || 0);
+    }
     return o;
   }
 
@@ -158,6 +270,93 @@
     });
   }
 
+  /* EVERY ROUND, for the records: "+<legacy>" first when there are such checks, then each finished round, then the
+     round on the page. A station with nothing in any round says nothing. */
+  function roundsSnapshot(progress, stations, order, sigOf) {
+    return each(progress, stations, order, sigOf, function (rec, n) {
+      var all = roundsOf(rec, n), leg = Number(rec.legacy) || 0;
+      var anything = leg > 0 || all.length > 1 || any(all[0].l) || /[^0]/.test(all[0].c);
+      if (!anything) return null;
+      return (leg > 0 ? ['+' + Math.min(leg, 9999999)] : []).concat(all.map(function (x) { return x.now ? x.l + '.' + x.c : tokOf(x); })).join(';');
+    });
+  }
+  /* [{ id, sig, legacy, rounds }], in the order given. The records may hold a station twice, once for each fingerprint
+     it has had; a page only ever uses the one that is its own. */
+  function parseRounds(str) {
+    var out = [];
+    String(str || '').split('|').forEach(function (part) {
+      if (!part || part.charAt(0) === '#') return;       /* "#<resets>": the records' own count, sent apart */
+      var colon = part.lastIndexOf(':'); if (colon < 0) return;
+      var head = part.slice(0, colon), tail = part.slice(colon + 1);
+      var tilde = head.indexOf('~'), id = tilde < 0 ? head : head.slice(0, tilde);
+      if (!id || !/^[A-Za-z0-9][A-Za-z0-9_-]{0,39}$/.test(id)) return;
+      var o = { id: id, sig: tilde < 0 ? '' : head.slice(tilde + 1), legacy: 0, rounds: [] };
+      tail.split(';').forEach(function (t) {
+        if (/^\+\d+$/.test(t)) { o.legacy = Math.max(o.legacy, Math.min(+t.slice(1), 9999999)); return; }
+        if (/^\^\d+$/.test(t)) return;                     /* the records' own floor: not the page's business */
+        o.rounds.push(readTok(t).known ? t : '');
+      });
+      out.push(o);
+    });
+    return out;
+  }
+  /* Fold the records' rounds into this browser, after merge() has moved each station to the records' round: the finished
+     rounds question by question, the checks of the round on the page by the larger count. Adds only. */
+  function mergeRounds(progress, str, stations, sigOf) {
+    var changed = 0;
+    parseRounds(str).forEach(function (want) {
+      var st = stations[want.id]; if (!st) return;
+      var sig = sigOf ? sigOf(st) : '';
+      if (want.sig && sig && want.sig !== sig) return;   /* rewritten since: those rounds were other questions */
+      var n = (st.activities || []).length, rec = progress[want.id];
+      if (!rec) return;                                  /* merge() makes the station when the records have letters */
+      upgrade(rec, n);
+      var before = JSON.stringify([rec.r, rec.per || {}, rec.legacy || 0]);
+      var g = goOf(rec), mine = starts(rec.r), at = 1;
+      /* each of the records' rounds, found here by its round number */
+      var filled = 0, lr = Array.isArray(rec.lr) ? rec.lr : null;
+      want.rounds.forEach(function (t) {
+        var x = readTok(t), a = at; at += x.k;
+        if (a === g && x.k === 1) {                      /* the round on the page: its checks, by the larger count */
+          rec.per = rec.per || {};
+          for (var q = 0; q < n; q++) { var v = n36(x.c.charAt(q)); if (v > (Number(rec.per[q]) || 0)) rec.per[q] = v; }
+          return;
+        }
+        if (a + x.k - 1 >= g) return;                    /* a round this page has not reached */
+        for (var j = 0; j < mine.length; j++) {          /* the same rounds, kept the same way here: never a part of a fold */
+          if (mine[j] === a && readTok(rec.r[j]).k === x.k) {
+            var had = readTok(rec.r[j]);
+            rec.r[j] = mergeTok(rec.r[j], t, n);
+            /* checks by question for rounds whose checks this browser kept only as a number (rec.legacy, from old code):
+               the same checks, so they leave rec.legacy (7 Oct 2026, the second audit: they were counted twice) */
+            if (!had.c && x.c && lr && a <= lr[1] && a + x.k - 1 >= lr[0]) filled += sum36(x.c);
+            return;
+          }
+        }
+      });
+      if (want.legacy > (Number(rec.legacy) || 0)) rec.legacy = want.legacy;
+      if (filled && Number(rec.legacy) > 0) rec.legacy = Math.max(0, Number(rec.legacy) - filled);
+      if (JSON.stringify([rec.r, rec.per || {}, rec.legacy || 0]) !== before) changed++;
+    });
+    return changed;
+  }
+  /* Whole-lab resets, kept in this browser under `key` (a lab's own name), and the larger of two counts after a pull */
+  var heldResets = {};                                   /* when this browser keeps nothing (site data blocked) */
+  function resets(key, add, atLeast) {
+    var k = key + '.resets', v = heldResets[k] || 0;
+    try { v = Math.max(v, parseInt(localStorage.getItem(k), 10) || 0); } catch (e) {}
+    var w = Math.min(999, Math.max(v + (add ? 1 : 0), Math.floor(Number(atLeast) || 0)));
+    heldResets[k] = w;
+    if (w !== v) { try { localStorage.setItem(k, String(w)); } catch (e) {} }
+    return w;
+  }
+  /* another pupil signs in on this computer: the last one's count goes with their work */
+  function clearResets(key) {
+    var k = key + '.resets';
+    delete heldResets[k];
+    try { localStorage.removeItem(k); } catch (e) {}
+  }
+
   /* ---------- read ---------- */
   function parse(snap) {
     var out = {};
@@ -181,14 +380,19 @@
   /* A station moves on to a new go: the page empties, the record does not. Used by Practise
      again and Reset (newGo) and when the records show another computer already moved on. */
   function advance(rec, n, go) {
-    var r = records(rec, n);
+    upgrade(rec, n);
+    var r = records(rec, n), c = checksOf(rec, n), per = rec.per || {};
     if (r.go === 1) rec.g1 = r.here;                     /* the first go is frozen as it stands */
     rec.best = r.best;
-    var per = rec.per || {}, c = 0;
-    Object.keys(per).forEach(function (k) { if (+k < n) c += Number(per[k]) || 0; });
-    rec.past = (Number(rec.past) || 0) + c;
+    /* the round that ends is kept, small: its letters and its checks at each question (7 Oct 2026); a round this
+       computer saw nothing of (another computer moved the station on) is known to have happened, nothing more */
+    rec.r.push(any(r.here) || /[^0]/.test(c) ? r.here + '.' + c : '');
+    for (var i = 0; i < n; i++) if ((Number(per[i]) || 0) > 35) rec.legacy = (Number(rec.legacy) || 0) + Number(per[i]) - 35;
+    var to = Math.max(go || 0, r.go + 1);
+    while (span(rec.r) < to - 1) rec.r.push('');        /* rounds made on another computer: they happened */
+    rec.r = cap(rec.r, n, rec);
     rec.done = {}; rec.tried = {}; rec.per = {}; rec.one = {};
-    rec.go = Math.max(go || 0, r.go + 1);
+    rec.go = to;
   }
   /* Practise again. Only a station with something answered in this go moves on — pressing it
      twice does not make a go of nothing. Returns whether it did. */
@@ -295,5 +499,9 @@
 
   global.LabSync = { snapshot: snapshot, firstSnapshot: firstSnapshot, bestSnapshot: bestSnapshot,
                      parse: parse, merge: merge, mergeFirst: mergeFirst, mergeBest: mergeBest,
-                     newGo: newGo, counts: counts, records: records, goOf: goOf, say: say };
+                     newGo: newGo, counts: counts, records: records, goOf: goOf, say: say,
+                     /* rounds and checks (7 Oct 2026) */
+                     roundsSnapshot: roundsSnapshot, parseRounds: parseRounds, mergeRounds: mergeRounds,
+                     roundsOf: roundsOf, questionChecks: questionChecks, upgrade: upgrade, resets: resets, clearResets: clearResets,
+                     ROUNDS_KEPT: ROUNDS_KEPT };
 })(this);

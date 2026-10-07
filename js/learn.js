@@ -27,6 +27,13 @@
 
   function h(tag, cls, html) { var n = document.createElement(tag); if (cls) n.className = cls; if (html != null) n.innerHTML = html; return n; }
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;' }[c]; }); }
+  /* The answer buttons of a question in Learn are drawn in a fresh order each time (7 Oct 2026, Daniel: pupils found the
+     right answer was always first, and in all three of these questions it was). Marking is by the words, not the place. */
+  function mixed(a) {
+    var r = (a || []).slice(), i, j, t;
+    for (i = r.length - 1; i > 0; i--) { j = Math.floor(Math.random() * (i + 1)); t = r[i]; r[i] = r[j]; r[j] = t; }
+    return r;
+  }
   var T = global.TREE || { groups: [] };
   var GROUP = {};
   (T.groups || []).concat(T.viruses ? [T.viruses] : []).forEach(function (g) { GROUP[g.id] = g; });
@@ -643,7 +650,7 @@
       var opts = h('div', 'dnaq__opts');
       var out = h('p', 'dnaq__out');
       var answered = false;
-      (spec.question.options || []).forEach(function (o) {
+      mixed(spec.question.options).forEach(function (o) {
         var b = h('button', 'wbtn', esc(o)); b.type = 'button';
         b.addEventListener('click', function () {
           if (answered) return;
@@ -872,7 +879,7 @@
       var opts = h('div', 'cladoq__opts');
       var out = h('p', 'cladoq__out');
       var done = false;
-      q.options.forEach(function (o) {
+      mixed(q.options).forEach(function (o) {
         var b = h('button', 'wbtn', esc(o)); b.type = 'button';
         b.addEventListener('click', function () {
           if (done) return;

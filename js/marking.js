@@ -34,15 +34,29 @@
       return hex(d).slice(0, 32);
     });
   }
+  /* `anyOrder` on a drag or an order question (7 Oct 2026, Daniel: pupils were marked wrong for
+     "water + carbon dioxide"): groups of positions, counted from 0, whose contents may come in any
+     order: the two reactants of an equation, or two steps that happen at the same time. Inside each
+     group the answers are put in one fixed order before hashing, so every order of the group gives
+     the same hash, and an answer moved out of its group still does not. Must stay byte-identical to
+     settle() in every lab's tools/build.mjs. */
+  function settle(list, groups) {
+    var r = list.slice();
+    (groups || []).forEach(function (g) {
+      var vals = g.map(function (j) { return r[j]; }).sort();
+      g.slice().sort(function (x, y) { return x - y; }).forEach(function (j, k) { r[j] = vals[k]; });
+    });
+    return r;
+  }
 
   /* ---------- canonical response for each type ---------- */
   function canon(a, id, r) {
     switch (a.type) {
       case 'mcq':   return H([id, 'mcq', r.slice().sort(function (x, y) { return x - y; }).join(',')]);
-      case 'order': return H([id, 'order', r.join('~')]);
+      case 'order': return H([id, 'order', settle(r, a.anyOrder).join('~')]);
       case 'match': return H([id, 'match', r.map(function (p) { return p.join('-'); }).sort().join(',')]);
       case 'sort':  return H([id, 'sort', r.map(function (p) { return norm(p[0]) + '=' + p[1]; }).sort().join(',')]);
-      case 'drag':  return H([id, 'drag', r.map(function (t, j) { return j + '=' + norm(t); }).join(',')]);
+      case 'drag':  return H([id, 'drag', settle(r.map(norm), a.anyOrder).map(function (t, j) { return j + '=' + t; }).join(',')]);
       /* The slider moves in half units, and an optimum like amylase's 6.8 does
          not sit on that grid. Snap before hashing so marking never depends on
          how the value happened to arrive. */

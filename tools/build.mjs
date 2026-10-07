@@ -110,6 +110,32 @@ function norm(s) {
     .replace(/[‘’]/g, "'").replace(/[“”]/g, '"')
     .replace(/\s+/g, ' ').replace(/[.,;:!?]+$/, '').replace(/^(the|a|an)\s+/, '');
 }
+/* `anyOrder` on a drag or an order question (7 Oct 2026): groups of positions, counted from 0, whose
+   contents may come in any order (the two reactants of an equation; two steps that happen at the same
+   time). Inside each group the answers are put in one fixed order before hashing. settle() must give
+   exactly what settle() in js/marking.js gives; the marking gate tries every case. */
+function settle(list, groups) {
+  const r = list.slice();
+  (groups || []).forEach(g => {
+    const vals = g.map(j => r[j]).sort();
+    g.slice().sort((x, y) => x - y).forEach((j, k) => { r[j] = vals[k]; });
+  });
+  return r;
+}
+function positionsOf(id, groups, n) {
+  if (groups == null) return null;
+  if (!Array.isArray(groups) || !groups.length) throw new Error(id + ': anyOrder must be a list of groups of positions');
+  const seen = new Set();
+  for (const g of groups) {
+    if (!Array.isArray(g) || g.length < 2) throw new Error(id + ': each anyOrder group needs two or more positions');
+    for (const j of g) {
+      if (!Number.isInteger(j) || j < 0 || j >= n) throw new Error(id + ': anyOrder position ' + j + ' is not one of 0 to ' + (n - 1));
+      if (seen.has(j)) throw new Error(id + ': anyOrder position ' + j + ' is in two groups');
+      seen.add(j);
+    }
+  }
+  return groups;
+}
 const SALT = hex(crypto.getRandomValues(new Uint8Array(16)));
 async function H(parts) {
   const d = await crypto.subtle.digest('SHA-256', enc.encode(SALT + '|' + parts.join('|')));
@@ -173,7 +199,9 @@ for (const st of STATIONS) {
 
     } else if (t === 'order') {
       p.items = scramble(a.items, id);
-      p.k = await H([id, 'order', a.items.join('~')]);
+      const ao = positionsOf(id, a.anyOrder, a.items.length);
+      if (ao) p.anyOrder = ao;                 /* marking policy: outside every fingerprint */
+      p.k = await H([id, 'order', settle(a.items, ao).join('~')]);
       v.items = a.items;
 
     } else if (t === 'match') {
@@ -192,7 +220,9 @@ for (const st of STATIONS) {
     } else if (t === 'drag') {
       p.tokens = a.tokens; p.distractors = a.distractors || [];
       p.slots = a.slots.map(s2 => ({ label: s2.label }));
-      p.k = await H([id, 'drag', a.slots.map((s2, j) => j + '=' + norm(s2.accept)).join(',')]);
+      const ao = positionsOf(id, a.anyOrder, a.slots.length);
+      if (ao) p.anyOrder = ao;                 /* marking policy: outside every fingerprint */
+      p.k = await H([id, 'drag', settle(a.slots.map(s2 => norm(s2.accept)), ao).map((x, j) => j + '=' + x).join(',')]);
       v.slots = a.slots.map(s2 => s2.accept);
 
     } else if (t === 'grid') {
