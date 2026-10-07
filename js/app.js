@@ -64,7 +64,18 @@
       Object.keys(a).sort().forEach(function (k) { if (k !== 'k' && k !== 'anyOrder') c[k] = a[k]; });
       return JSON.stringify(c);
     }).join('|');
-    return acts.length + ':' + hash36(body);
+    var sig = acts.length + ':' + hash36(body);
+    /* `keep` (7 Oct 2026): a station reworded WITHOUT changing what it asks keeps the fingerprint its
+       records were saved under, so nobody's ticks, scores, homework or practice move (Daniel: the
+       multiple-choice options were rewritten so that the right answer is no longer the longest, and
+       the work pupils had done was not to be lost). keep = { sig: the old fingerprint, now: the
+       fingerprint of the wording it was declared for }. It holds only while the station reads
+       exactly as declared: reword it again and `now` no longer matches, so the station resets as
+       any changed station does. Written by tools/keep-records.mjs after it has checked that every
+       question still asks the same thing; never by hand. Every copy of this function must agree
+       (tools/syllabus-tags.mjs, the labs script's _labSig_). */
+    var kp = st.keep;
+    return kp && kp.now === sig && typeof kp.sig === 'string' ? kp.sig : sig;
   }
   function reconcile() {
     var dropped = 0;
@@ -83,7 +94,7 @@
        done, tried        this go: the Practise tab and the ticks on its questions
        best, bestTried    best ever: the header, the rail's ✓, the teacher's Score
        firstRight         right first time on the FIRST go, so a redo cannot make it look better
-       checks             every Check pressed here, on every go
+       checks             every Check pressed, every go: this browser's own, with what the records hold
      Only positions that still exist count, so a stale record can never push a score above the
      number of questions actually asked. */
   function countsOf(rec, n) {
@@ -684,12 +695,32 @@
   function unsentHere() { try { return !!localStorage.getItem(UNSENT_KEY); } catch (e) { return true; } }
   function clearHere() {
     progress = {}; markUnsent(false);
+    /* their whole-lab resets go with their work; and "Saved ✓ hh:mm" was theirs, not the next pupil's (7 Oct 2026) */
+    if (window.LabSync && window.LabSync.clearResets) window.LabSync.clearResets(LAB_ID);
+    else { try { localStorage.removeItem(LAB_ID + '.resets'); } catch (e) {} }
+    savedAt = null;
     try { localStorage.removeItem(STORE); } catch (e) {}
     paintHeader(); paintRail(); paintPanel();
   }
+  /* the page drawn again for the work it now holds */
+  function repaintAfterClaim() { paintHeader(); paintRail(); paintPanel(); }
+  /* Whose work THIS page holds in memory: the stored owner it was loaded with, then each pupil it is claimed for; a
+     sign-out never clears it. Two tabs of a lab share the stored owner, so another tab that had already claimed this
+     browser for the next pupil hid the last pupil's work still in this page's memory, and it went to the next pupil's
+     record (the sign-in audit, 7 Oct 2026). */
+  var pageOwner = '';
+  try { pageOwner = localStorage.getItem(OWNER_KEY) || ''; } catch (e) {}
   function claimFor(email) {
     var was = '';
     try { was = localStorage.getItem(OWNER_KEY) || ''; } catch (e) {}
+    if (email && pageOwner && pageOwner !== email && was === email) {
+      /* another tab has claimed this browser for them already, and keeps their copy here: this page takes that copy and
+         lets the last pupil's go (it is in their record, or waits in their own tab) */
+      progress = load(); reconcile(); savedAt = null; savePending = false; markUnsent(false); pageOwner = email;
+      repaintAfterClaim();
+      return;
+    }
+    if (email) pageOwner = email;
     if (was && email && was !== email) {
       var unsent = unsentHere() || !!savePending || !!saving;
       clearHere();
@@ -701,8 +732,9 @@
   function mountSignIn(el) {
     return !!(CID && SI && SI.button(el, CID, { theme:'outline', size:'large', text:'signin_with', width: 260, locale:'en-GB' }));
   }
-  /* "not you?" and "sign in again" sign out everywhere on the site: the hub, every lab */
+  /* "not you?" signs out everywhere on the site: the hub, every lab (an expired sign-in is renewed in place: fillSaveDialog) */
   function signOut() {
+    if (savePending && !saving && canSend()) flushSave();   /* what waits goes first, while its sign-in or pass still works */
     if (SI) SI.out(); else { signIn = null; paintSaveChip(); fillSaveDialog(); }
   }
   /* The sign-in changed — in this page, or in another tab of the site. A sign-in that was not
@@ -712,11 +744,16 @@
     /* signed out (here, or in another tab of the site), or another account signed in: what is still waiting
        goes first, with the sign-in it belongs to, while that still works. Once it is gone it cannot be sent. */
     if (was && (!v || v.email !== was) && savePending && !saving && haveToken()) flushSave();
+    /* the same pupil with a new sign-in (Google's button pressed again, a renewal, the hub in another tab): what could not
+       be sent while the old one had expired goes now, the records first (6 Oct 2026; before, only another account did) */
+    var again = !!v && v.email === was && SI.fresh(v) && (saveWhy === 'stale' || savePending || unsentHere());
     signIn = v;
+    if (v && SI.fresh(v) && saveWhy === 'stale') saveWhy = '';
     paintSaveChip();
     var dlg = document.getElementById('subDlg');
     if (dlg && !dlg.hidden) fillSaveDialog();
     if (v && SI.fresh(v) && v.email !== was) { claimFor(v.email); pullThenPush(); }
+    else if (again) pullThenPush();
     if (v && here && afterSignIn && SI.fresh(v)) { var next = afterSignIn; afterSignIn = null; next(); }
   }
   if (SI) SI.on(onSignIn);
@@ -727,6 +764,10 @@
   }
   function syncEnabled() { return !!((window.LAB_CONFIG || {}).submitUrl && window.LabSync); }
   function haveToken() { return !!(SI && SI.fresh(signIn)); }
+  /* The labs script's own pass (6 Oct 2026; js/signin.js): after Google's hour it still carries this pupil's saves and their
+     own records. Only ever the pass made for the account signed in HERE, so another account's never goes with this work. */
+  function passFor(v) { var p = SI && SI.pass ? SI.pass() : null; return (p && v && p.email === v.email) ? p.pass : ''; }
+  function canSend() { return haveToken() || !!passFor(signIn); }
 
   /* Ask Google for a sign-in — for the same account, when one is remembered — then come back
      and finish. One Tap can be refused by the browser; `failed` hears why. */
@@ -750,24 +791,31 @@
     var here = mine.here != null ? mine.here : mine.snap;      /* `here`: this go, from a script that knows goes */
     var res = here ? L.merge(progress, here, S, stationSig) : { added: 0, stations: 0, skipped: [], newer: 0 };
     var more = (mine.first && L.mergeFirst ? L.mergeFirst(progress, mine.first, S, stationSig) : 0) +
-               (mine.best && L.mergeBest ? L.mergeBest(progress, mine.best, S, stationSig) : 0);
+               (mine.best && L.mergeBest ? L.mergeBest(progress, mine.best, S, stationSig) : 0) +
+               /* every round and its checks (7 Oct 2026): after merge(), which moves a station on to the records' round */
+               (mine.rounds && L.mergeRounds ? L.mergeRounds(progress, mine.rounds, S, stationSig) : 0);
+    if (mine.resets && L.resets) L.resets(LAB_ID, false, mine.resets);
     if (res.added || res.newer || more) { save(); reconcile(); paintHeader(); paintRail(); paintPanel(); refreshTabCount(); }
     if (!quiet || res.added || res.newer) toast(L.say(res));
   }
   function pull(then) {
-    if (!syncEnabled() || !haveToken()) { if (then) then(); return; }
+    if (!syncEnabled() || !canSend()) { if (then) then(); return; }
+    /* an answer for a pupil who is no longer the one signed in here is dropped, and nothing goes on from it: another account
+       signing in while it was on its way must never have the first one's records (audit, 6 Oct 2026) */
+    var asked = signIn.email, still = function () { return !!signIn && signIn.email === asked; };
     fetch((window.LAB_CONFIG || {}).submitUrl, {
       method:'POST', mode:'cors', headers:{ 'Content-Type':'text/plain;charset=utf-8' },
-      body: JSON.stringify({ action:'progress', token: signIn.token })
+      body: JSON.stringify({ action:'progress', token: signIn.token, pass: passFor(signIn) })
     })
       .then(function (r) { return r.ok ? r.json() : null; })
       .then(function (j) {
+        if (!still()) return;
         var mine = j && j.ok && j.labs && j.labs[LAB_ID]; applySnap(mine, true);
         /* and their homework here, which the same answer carries (a script from before sends none) */
         if (window.LabHomework) window.LabHomework.take(j && j.ok ? j.homework : null, signIn && signIn.email);
       })
       .catch(function () {})
-      .then(function () { if (then) then(); });
+      .then(function () { if (then && still()) then(); });
   }
   /* Signed in: their records first, so nothing here is older than what is there; then whatever
      this browser has that the records do not. */
@@ -779,10 +827,17 @@
     name: function (id) { return S[id] ? S[id].name : ''; },
     open: function (id) { open(id); },
     repaint: function () { paintRail(); } });
+  if (SI && SI.passFrom && syncEnabled()) SI.passFrom((window.LAB_CONFIG || {}).submitUrl);   /* the script's pass, when it is due */
   if (signIn && syncEnabled()) {
     claimFor(signIn.email);
-    if (haveToken()) pullThenPush();
-    else if (SI && CID) SI.renew(CID, function (v) { if (v) { signIn = v; pullThenPush(); } });
+    if (canSend()) pullThenPush();
+    /* opened on an expired sign-in that Google will not renew without a click: the chip says "Sign in again" at once, never
+       "Saves as you go", because nothing can be sent until the pupil does (6 Oct 2026) */
+    else if (SI && CID) SI.renew(CID, function (v) {
+      /* only ever the same pupil's renewal (audit, 6 Oct 2026), and "Sign in again" only when nothing can be sent */
+      if (v && (!signIn || v.email === signIn.email)) { signIn = v; pullThenPush(); }
+      else if (signIn && !canSend()) { saveWhy = 'stale'; paintSaveChip(); }
+    });
   }
 
   /* ---------- saving on its own ----------
@@ -805,21 +860,28 @@
   }
   function payloadNow() {
     var t = totals(), perStation = {};
-    /* each station as the record keeps it: best ever, and every check made here on every go */
+    /* each station as the record keeps it: best ever, and every check of every go (this browser's and the records') */
     ORDER.forEach(function (id) {
       var s = stationScore(id);
       perStation[id] = s.best + '/' + s.total + (s.checks ? ' in ' + s.checks : '');
     });
     var name = signIn ? signIn.name : '';
-    return { app: LAB_ID, token: signIn ? signIn.token : '', name: name, form: '',
+    return { app: LAB_ID, token: signIn ? signIn.token : '', pass: passFor(signIn), name: name, form: '',
              score: t.done, total: t.total, complete: t.done === t.total,
              checks: t.checks, firstTime: t.first1, tried: t.tried,
              from: t.from ? new Date(t.from).toISOString() : '', stations: perStation,
              snap: snapshotNow(),
              first: window.LabSync && window.LabSync.firstSnapshot ? window.LabSync.firstSnapshot(progress, S, ORDER, stationSig) : '',
              best: window.LabSync && window.LabSync.bestSnapshot ? window.LabSync.bestSnapshot(progress, S, ORDER, stationSig) : '',
+             /* every round of every station, small, with its checks at each question; and how often the whole lab was reset */
+             rounds: window.LabSync && window.LabSync.roundsSnapshot ? window.LabSync.roundsSnapshot(progress, S, ORDER, stationSig) : '',
+             resets: window.LabSync && window.LabSync.resets ? window.LabSync.resets(LAB_ID) : 0,
              at: new Date().toISOString() };
   }
+  /* What a save says, for telling whether the records have it already: a check changes the rounds even when no letter moves
+     (up to 35 checks at one question in a round: one character holds no more, and the count past it travels with the
+     station's total) */
+  function sentKey(p) { return p.snap + '|' + (p.rounds || '') + '|' + (p.resets || 0); }
   /* What the records said when they would not keep it, as a state the chip can show. */
   function whyNot(reply) {
     var r = String(reply || '').trim();
@@ -833,15 +895,15 @@
   function renewThenSave() {
     if (askedAgain) { paintSaveChip(); return; }
     askedAgain = true; setTimeout(function () { askedAgain = false; }, 60000);
-    SI.renew(CID, function (v) { if (v) { signIn = v; saveWhy = ''; flushSave(); } else paintSaveChip(); });
+    SI.renew(CID, function (v) { if (v && (!signIn || v.email === signIn.email)) { signIn = v; saveWhy = ''; flushSave(); } else paintSaveChip(); });   /* the same pupil only */
   }
   function flushSave(leaving) {
     if (!savePending || !syncEnabled() || saving) return;
     if (!signIn) { saveWhy = 'signin'; paintSaveChip(); return; }          /* kept here until they sign in */
-    if (!haveToken()) { saveWhy = 'stale'; if (!leaving) renewThenSave(); else paintSaveChip(); return; }
+    if (!canSend()) { saveWhy = 'stale'; if (!leaving) renewThenSave(); else paintSaveChip(); return; }
     var payload = payloadNow();
     if (!payload.snap && !payload.score && !payload.checks) { savePending = false; saveWhy = ''; markUnsent(false); paintSaveChip(); return; }   /* nothing done yet: nothing to send */
-    if (payload.snap === lastSent && payload.score <= lastScore) { savePending = false; saveWhy = ''; markUnsent(false); paintSaveChip(); return; }   /* the records have it already */
+    if (sentKey(payload) === lastSent && payload.score <= lastScore) { savePending = false; saveWhy = ''; markUnsent(false); paintSaveChip(); return; }   /* the records have it already */
     saving = true; savePending = false; saveWhy = ''; paintSaveChip();
     var opts = { method:'POST', mode:'cors', headers:{ 'Content-Type':'text/plain;charset=utf-8' }, body: JSON.stringify(payload) };
     if (leaving) opts.keepalive = true;
@@ -851,12 +913,13 @@
         saving = false;
         var r = String(reply || '').trim();
         if (/^recorded/.test(r)) {
-          savedAt = new Date(); lastSent = payload.snap; lastScore = payload.score; saveWhy = '';
+          savedAt = new Date(); lastSent = sentKey(payload); lastScore = payload.score; saveWhy = '';
           try { localStorage.setItem(LAB_ID + '.submitted', JSON.stringify({ at: payload.at, sent: true, name: payload.name })); } catch (e) {}
           if (savePending) queueSave();          /* something changed while it was on its way */
           else markUnsent(false);                /* everything done here is in the records */
         } else {
           saveWhy = whyNot(r); savePending = true;
+          if (saveWhy === 'stale' && payload.pass && SI && SI.dropPass) SI.dropPass(payload.pass);   /* the script refused that pass (🔑): sign in again */
           if (saveWhy === 'busy' || saveWhy === 'other') retryLater();
           else if (saveWhy === 'stale' && signIn) renewThenSave();   /* signed out since it left: nobody to renew */
         }
@@ -880,7 +943,7 @@
     else if (saving) { cls += ' is-busy'; text = 'Saving…'; tip = 'Sending your work to Dr Mompel’s records.'; }
     else if (saveWhy === 'list') { cls += ' is-no'; text = 'Not on the class list'; tip = 'The account you signed in with is not on Dr Mompel’s class list, so nothing is recorded for it. Your work stays in this browser.'; }
     else if (saveWhy === 'setup') { cls += ' is-no'; text = 'Not being collected'; tip = 'The records are not set up to accept sign-ins yet. Your work stays in this browser.'; }
-    else if (saveWhy === 'stale') { cls += ' is-no'; text = 'Sign in again'; tip = 'Your Google sign-in has run out — they last about an hour. Press to sign in again; nothing is lost, it is sent afterwards.'; }
+    else if (saveWhy === 'stale') { cls += ' is-no'; text = 'Sign in again'; tip = 'Your Google sign-in has expired (it lasts about an hour). Press here to sign in again. Nothing is lost: your work is sent after you sign in.'; }
     else if (saveWhy === 'offline') { cls += ' is-no'; text = 'Offline · will retry'; tip = 'Could not reach the records. Your work is kept here and sent again in a minute.'; }
     else if (saveWhy === 'rejected') { cls += ' is-no'; text = 'Not saved'; tip = 'The records would not accept this. Show your teacher.'; }
     else if (savePending) { cls += ' is-busy'; text = 'Saving…'; tip = 'Sent to Dr Mompel’s records within two minutes, and at once when you finish or leave.'; }
@@ -892,7 +955,7 @@
     var dlg = document.getElementById('subDlg'); if (!dlg) return;
     fillSaveDialog();
     dlg.hidden = false;
-    if (signIn && !haveToken() && SI && CID) SI.renew(CID, function () {});
+    if (signIn && !canSend() && SI && CID) SI.renew(CID, function () {});
     document.getElementById('subClose').onclick = function () { dlg.hidden = true; };
     dlg.onclick = function (e) { if (e.target === dlg) dlg.hidden = true; };
   }
@@ -901,7 +964,7 @@
     if (saveWhy === 'list') return 'The account you signed in with (' + esc(signIn.email) + ') is not on the class list, so nothing is recorded for it. The list is matched on email address, not on name.';
     if (saveWhy === 'setup') return 'The records are not set up to accept sign-ins yet, so nothing is recorded. Show your teacher this message.';
     if (saveWhy === 'offline') return 'Could not reach the records just now. Your work is kept here and sent again in a minute.';
-    if (saveWhy === 'stale') return 'Your sign-in has run out. Sign in again and it is sent.';
+    if (saveWhy === 'stale') return 'Your sign-in has expired. Sign in again and your work is sent.';
     if (saveWhy === 'rejected') return 'The records would not accept this. Show your teacher.';
     if (savePending) return 'What you have done since the last save goes within two minutes.';
     if (savedAt) return 'Saved at ' + hhmm(savedAt) + '. Everything you have done here is in the records.';
@@ -917,15 +980,20 @@
       go.style.display = 'none'; return;
     }
     if (signIn) {
-      var stale = !haveToken();
+      var stale = !canSend();
+      /* an expired sign-in: Google's own button, here, for one press; the same pupil carries on and onSignIn sends what waits.
+         Until 6 Oct 2026 "sign in again" signed the pupil out first, so it took two presses and a second look */
       body.innerHTML = sofar +
-        '<div class="who">Saving as <b>' + esc(signIn.name) + '</b><button type="button" class="tourcard__link" id="subOut">' + (stale ? 'sign in again' : 'not you?') + '</button></div>' +
-        (stale ? '<p class="submsg no">Your Google sign-in has run out — they last about an hour, and a lab takes longer than that. Press <b>sign in again</b>; nothing is lost, it is sent afterwards.</p>' : '') +
-        '<p class="submsg' + (saveWhy && saveWhy !== 'signin' ? ' no' : ' ok') + '">' + saveLine() + '</p>' +
+        '<div class="who">Saving as <b>' + esc(signIn.name) + '</b><button type="button" class="tourcard__link" id="subOut">not you?</button></div>' +
+        (stale ? '<p class="submsg no">Your Google sign-in has expired: it lasts about an hour, and a lab takes longer than that. Sign in again below. Nothing is lost: your work is sent after you sign in.</p><div id="subWho" class="signinbox"></div>'
+               : '<p class="submsg' + (saveWhy && saveWhy !== 'signin' ? ' no' : ' ok') + '">' + saveLine() + '</p>') +
         '<p class="fineprint">Every check is sent to Dr&nbsp;Mompel’s records on its own — within two minutes, and at once when you finish or leave. There is nothing to hand in. If you are on his class list it goes into his records; if you are not — anyone in the world is welcome here — nothing is recorded anywhere.</p>';
-      go.style.display = (savePending || saveWhy) ? '' : 'none'; go.textContent = 'Save now';
+      go.style.display = (savePending || saveWhy) && !stale ? '' : 'none'; go.textContent = 'Save now';
       go.onclick = function () { queueSave(true); fillSaveDialog(); };
       document.getElementById('subOut').onclick = signOut;
+      if (stale && !mountSignIn(document.getElementById('subWho'))) {
+        document.getElementById('subWho').innerHTML = '<p class="fineprint">Google sign-in could not load here — offline, or a school filter has blocked accounts.google.com. Your work stays in this browser; sign in later and it is sent then.</p>';
+      }
       return;
     }
     body.innerHTML = sofar +
@@ -1182,6 +1250,7 @@
       } else {
         if (!confirm('Start every station again?\n\nYour answers will be cleared from this page, so you can practise the questions again. Your record keeps everything you have already done.')) return;
         ids.forEach(function (id) { window.LabSync.newGo(progress, id, S); });
+        if (window.LabSync.resets) window.LabSync.resets(LAB_ID, true);   /* the whole lab, started again: counted (7 Oct 2026) */
       }
       save(); if (typeof queueSave === 'function') queueSave(true);
       paintHeader(); paintRail(); paintPanel();
