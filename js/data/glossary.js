@@ -293,7 +293,7 @@ window.GLOSSARY = [
  },
  {
   "term": "cell",
-  "def": "The basic unit of every living organism. New cells are produced by the division of existing cells."
+  "def": "The basic unit of life: every living organism is made of one or more cells. New cells are produced by the division of existing cells."
  },
  {
   "term": "cell elongation",
