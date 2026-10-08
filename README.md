@@ -34,9 +34,11 @@ there, in the wording the exam wants, and questions that say right or wrong — 
 | 📖 **A shared glossary** | one wording per term, the same in every lab |
 
 > [!NOTE]
-> **The answers are not in the page — at all.** The lab can tell a student they are wrong, but
-> nothing in it knows what *right* is. There is no setting that reveals the answers, because
-> there is nothing to reveal. How that works is explained below.
+> **The right answers are stored only as scrambled fingerprints.** The lab can tell a student they
+> are wrong, but its questions cannot show what *right* is. The explanations of the multiple-choice
+> options are published with the lab, scrambled, for the pupils whose teacher gives them the Accommodation:
+> each sees an explanation after a second wrong try. Someone who unscrambles them could learn an
+> answer. How that works is explained below.
 
 ## Where it sits
 
@@ -62,7 +64,7 @@ so both draw exactly the same tree and correcting it once corrects it in both. T
 silhouettes come from PhyloPic, are free to use, and are built into the page so it opens without
 fetching anything.
 
-**Why the answers are not in the page.** This is the part worth understanding.
+**Why the right answers are not in the page.** This is the part worth understanding.
 
 Anything a web page can show, a student can find by digging around in it. So the answers are
 never sent to the student at all. Instead, each question carries a *scrambled fingerprint* of
@@ -71,9 +73,16 @@ compares the two fingerprints. The same answer always makes the same fingerprint
 means they were right.
 
 Scrambling only works one way — you cannot start from a fingerprint and work back to the answer.
-So nothing in the page can say what the right answer is. It can only ever say *not that one*.
+So no fingerprint can say what the right answer is. It can only ever say *not that one*.
 
 The real answers live in one file on my own computer, which is never published.
+
+**The one exception: the explanations (since 8 October 2026).** For a pupil whose teacher has
+switched on the Accommodation, the page fetches `js/data/whys.js` and, after a second, different
+wrong try at a multiple-choice question, shows the explanation of each option they chose. That file
+is public like every file here and scrambled with a key the page itself carries, so it is not a
+secret: no other pupil's page fetches it, but someone who unscrambles it by hand could learn which
+options are right.
 
 **Two kinds of question that only this lab has.** Ticking a grid of features, and clicking the
 right part of a photograph. The machinery that runs questions is shared with every other lab, so
