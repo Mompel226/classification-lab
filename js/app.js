@@ -327,12 +327,12 @@
            what earns the last marks — so the card says so, and nothing in it says "you will not be asked" */
         '<p class="offsyl__lead">Do not skip this card. The syllabus for 2026\u20132029 does not list these, but an exam question can still use them \u2014 and knowing them can be what earns you full marks.</p>';
       if (off.old.children.length || goldOld) {
-        oc.insertAdjacentHTML('beforeend', '<div class="offsyl__h">In older syllabuses \u2014 you may meet these in past papers</div>');
+        oc.insertAdjacentHTML('beforeend', '<div class="offsyl__h">In older syllabuses \u2014 you may see these in past papers</div>');
         oc.appendChild(off.old);
         if (goldOld) oc.appendChild(goldOld);
       }
       if (off.beyond.children.length) {
-        oc.insertAdjacentHTML('beforeend', '<div class="offsyl__h">Beyond the syllabus \u2014 here to help the rest make sense</div>');
+        oc.insertAdjacentHTML('beforeend', '<div class="offsyl__h">Beyond the syllabus \u2014 here to help you understand the rest</div>');
         oc.appendChild(off.beyond);
       }
       pane.appendChild(oc);
@@ -360,7 +360,7 @@
         '<dl class="kw-grid">' +
         st.keywords.map(function (w) {
           var g2 = (window.GLOSSARY || []).filter(function (e) { return e.term.toLowerCase() === w.term.toLowerCase(); })[0] || {};
-          var tag = pastTerm(w.term) ? ' ' + pastBadge(pastTerm(w.term), 'tier tier--old') : g2.ext ? ' <span class="tier tier--ext tip" tabindex="0" data-tip="The 0610 syllabus does not name it, but it is worth knowing: an exam question can still use it.">beyond 0610</span>'
+          var tag = pastTerm(w.term) ? ' ' + pastBadge(pastTerm(w.term), 'tier tier--old') : g2.ext ? ' <span class="tier tier--ext tip" tabindex="0" data-tip="The 0610 syllabus does not name it, but it is useful to know: an exam question can still use it.">beyond 0610</span>'
                   : g2.sup ? ' <span class="tier tier--sup" title="Supplement — Extended papers (2 and 4) only">Supplement</span>' : '';
           return '<div class="kw kw--flip" role="button" tabindex="0" aria-expanded="false">' +
                  '<dt>' + M(w.term) + numberOf(g2) + tag + '</dt><p class="kw__ask">Do you know it? Tap to check</p><dd>' + M(w.def) + '</dd></div>';
@@ -967,13 +967,13 @@
     if (!signIn) { cls += ' is-off'; text = 'Sign in to save'; tip = 'Your work stays in this browser until you sign in with your school account. Sign in and it goes to Dr Mompel’s records — what you have done already, too.'; }
     else if (saving) { cls += ' is-busy'; text = 'Saving…'; tip = 'Sending your work to Dr Mompel’s records.'; }
     else if (saveWhy === 'list') { cls += ' is-no'; text = 'Not on the class list'; tip = 'The account you signed in with is not on Dr Mompel’s class list, so nothing is recorded for it. Your work stays in this browser.'; }
-    else if (saveWhy === 'setup') { cls += ' is-no'; text = 'Not being collected'; tip = 'The records are not set up to accept sign-ins yet. Your work stays in this browser.'; }
+    else if (saveWhy === 'setup') { cls += ' is-no'; text = 'Not being collected'; tip = 'The records do not accept sign-ins yet. Your work stays in this browser.'; }
     else if (saveWhy === 'stale') { cls += ' is-no'; text = 'Sign in again'; tip = 'Your Google sign-in has expired (it lasts about an hour). Press here to sign in again. Nothing is lost: your work is sent after you sign in.'; }
     else if (saveWhy === 'offline') { cls += ' is-no'; text = 'Offline · will retry'; tip = 'Could not reach the records. Your work is kept here and sent again in a minute.'; }
     else if (saveWhy === 'rejected') { cls += ' is-no'; text = 'Not saved'; tip = 'The records would not accept this. Show your teacher.'; }
-    else if (savePending) { cls += ' is-busy'; text = 'Saving…'; tip = 'Sent to Dr Mompel’s records within two minutes, and at once when you finish or leave.'; }
-    else if (savedAt) { cls += ' is-ok'; text = 'Saved ✓ ' + hhmm(savedAt); tip = 'In Dr Mompel’s records. Every check is sent on its own — there is nothing to hand in.'; }
-    else { cls += ' is-ok'; text = 'Saves as you go'; tip = 'Signed in: every check is sent to Dr Mompel’s records on its own — there is nothing to hand in.'; }
+    else if (savePending) { cls += ' is-busy'; text = 'Saving…'; tip = 'Sent to Dr Mompel’s records within two minutes, and immediately when you finish or leave.'; }
+    else if (savedAt) { cls += ' is-ok'; text = 'Saved ✓ ' + hhmm(savedAt); tip = 'In Dr Mompel’s records. Every check is sent automatically — you do not need to submit anything.'; }
+    else { cls += ' is-ok'; text = 'Saves as you go'; tip = 'Signed in: every check is sent to Dr Mompel’s records automatically — you do not need to submit anything.'; }
     b.className = cls; b.textContent = text; b.setAttribute('data-tip', tip);
   }
   function openSaveDialog() {
@@ -987,11 +987,11 @@
   function saveLine() {
     if (saving) return 'Saving…';
     if (saveWhy === 'list') return 'The account you signed in with (' + esc(signIn.email) + ') is not on the class list, so nothing is recorded for it. The list is matched on email address, not on name.';
-    if (saveWhy === 'setup') return 'The records are not set up to accept sign-ins yet, so nothing is recorded. Show your teacher this message.';
+    if (saveWhy === 'setup') return 'The records do not accept sign-ins yet, so nothing is recorded. Show your teacher this message.';
     if (saveWhy === 'offline') return 'Could not reach the records just now. Your work is kept here and sent again in a minute.';
     if (saveWhy === 'stale') return 'Your sign-in has expired. Sign in again and your work is sent.';
     if (saveWhy === 'rejected') return 'The records would not accept this. Show your teacher.';
-    if (savePending) return 'What you have done since the last save goes within two minutes.';
+    if (savePending) return 'What you have done since the last save is sent within two minutes.';
     if (savedAt) return 'Saved at ' + hhmm(savedAt) + '. Everything you have done here is in the records.';
     return 'Saves as you go.';
   }
@@ -1012,7 +1012,7 @@
         '<div class="who">Saving as <b>' + esc(signIn.name) + '</b><button type="button" class="tourcard__link" id="subOut">not you?</button></div>' +
         (stale ? '<p class="submsg no">Your Google sign-in has expired: it lasts about an hour, and a lab takes longer than that. Sign in again below. Nothing is lost: your work is sent after you sign in.</p><div id="subWho" class="signinbox"></div>'
                : '<p class="submsg' + (saveWhy && saveWhy !== 'signin' ? ' no' : ' ok') + '">' + saveLine() + '</p>') +
-        '<p class="fineprint">Every check is sent to Dr&nbsp;Mompel’s records on its own — within two minutes, and at once when you finish or leave. There is nothing to hand in. If you are on his class list it goes into his records; if you are not — anyone in the world is welcome here — nothing is recorded anywhere.</p>';
+        '<p class="fineprint">Every check is sent to Dr&nbsp;Mompel’s records automatically — within two minutes, and immediately when you finish or leave. You do not need to submit anything. If you are on his class list it is added to his records; if you are not — anyone in the world is welcome here — nothing is recorded anywhere.</p>';
       go.style.display = (savePending || saveWhy) && !stale ? '' : 'none'; go.textContent = 'Save now';
       go.onclick = function () { queueSave(true); fillSaveDialog(); };
       document.getElementById('subOut').onclick = signOut;
@@ -1022,7 +1022,7 @@
       return;
     }
     body.innerHTML = sofar +
-      '<p class="fineprint">Sign in with your school Google account and your work is sent to Dr&nbsp;Mompel’s records as you go — what you have done here already goes too. The lab is open to everyone; signing in is only how a result reaches his records.</p>' +
+      '<p class="fineprint">Sign in with your school Google account and your work is sent to Dr&nbsp;Mompel’s records while you work — what you have done here already is sent too. The lab is open to everyone; signing in is only how a result reaches his records.</p>' +
       '<div id="subWho" class="signinbox"></div>' +
       (t.tried ? '<p class="fineprint">Not your work? <button type="button" class="tourcard__link" id="subClear">Clear this computer</button> \u2014 the answers kept in this browser are removed; nothing in anybody\u2019s record changes.</p>' : '');
     go.style.display = 'none';
@@ -1153,7 +1153,7 @@
       var built = false, pinTerm = null, atOpen = null;
       function tierTag(w) {
         var pid = pastTerm(w.term); if (pid) return ' ' + pastBadge(pid, 'tier tier--old');
-        if (w.ext) return ' <span class="tier tier--ext tip" tabindex="0" data-tip="The 0610 syllabus does not name it, but it is worth knowing: an exam question can still use it.">beyond 0610</span>';
+        if (w.ext) return ' <span class="tier tier--ext tip" tabindex="0" data-tip="The 0610 syllabus does not name it, but it is useful to know: an exam question can still use it.">beyond 0610</span>';
         if (w.sup) return ' <span class="tier tier--sup" title="Supplement — examined on the Extended papers (2 and 4) only">Supplement</span>';
         return '';
       }
