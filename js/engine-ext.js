@@ -106,6 +106,8 @@
     if (a.credit) { var cr = h('p', 'act__credit'); cr.innerHTML = a.credit; card.appendChild(cr); }
     card.appendChild(count); paintCount();
 
+    /* its own wrong-answer words: a hotspot colours none of the features chosen (the right ones stay hidden), so the
+       engine's "look again at the ones marked in red" would point at nothing (answers audit 3, 8 Oct 2026) */
     U.foot(card, function () {
       var sel = Object.keys(picked);
       if (!sel.length) return null;
@@ -114,7 +116,7 @@
       picked = {};
       Array.prototype.forEach.call(stage.querySelectorAll('.hs__pt'), function (b) { b.setAttribute('aria-pressed', 'false'); b.dataset.locked = ''; });
       paintCount();
-    });
+    }, 'Not right yet. Check each feature you chose, and how many the question asks for, then try once more.');
     return card;
   }
 
