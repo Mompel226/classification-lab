@@ -17,7 +17,7 @@
   'use strict';
 
   var KIND_NAME = { blank:'Fill the gaps', drag:'Drag & drop', mcq:'Multiple choice',
-                    order:'Put in order', match:'Match up', sort:'Sort into groups', ph:'Set the pH' };
+                    order:'Put in order', match:'Match the pairs', sort:'Sort into groups', ph:'Set the pH' };
 
 
   /* ---------- the accommodation (Daniel, 8 Oct 2026) ----------
@@ -227,7 +227,7 @@
   /* Dragging is not the only way in — say so, because a reader who cannot
      make the drag work will otherwise think the question is broken. */
   function dragHint(card) {
-    var hint = h('div', 'act__hint', 'Drag a word into a box \u2014 or just click it to move it along.');
+    var hint = h('div', 'act__hint', 'Drag a word into a box \u2014 or click the word to move it.');
     card.appendChild(hint);
   }
 
@@ -322,7 +322,7 @@
         if (!res.correct) {
           fb.className = 'feedback no'; fb.style.display = '';
           fb.innerHTML = (typeof wrongMsg === 'string' ? wrongMsg
-            : 'Not right yet — look again at the ones marked in red, and try once more.') +
+            : 'Not right yet — check the ones marked in red, and try once more.') +
             (res.help ? '<div class="helpbox"><p class="helpbox__h">Why</p>' + res.help + '</div>' : '');
         }
         card.dispatchEvent(new CustomEvent('result', { bubbles:true, detail:res }));
@@ -380,7 +380,7 @@
       if (hint || (pile && pile.length)) {
         var hb = h('button', 'hintbtn', '?');
         hb.type = 'button';
-        hb.title = pile ? 'Turn over a clue for these gaps' : 'Show a hint for this gap';
+        hb.title = pile ? 'Show a clue for these gaps' : 'Show a hint for this gap';
         hb.setAttribute('aria-label', pile ? 'Hint for ' + label : 'Hint for gap ' + key);
         hb.addEventListener('click', function () {
           var clue;
@@ -798,7 +798,7 @@
     function words() {
       say.innerHTML = '<b>Redo</b> · practice: your record does not change. ' + (done
         ? 'Right at the first try this time: <b>' + firstRight + '</b> of ' + done + (done < list.length ? ' so far.' : '.')
-        : 'The ' + (list.length === 1 ? 'question' : list.length + ' questions') + ' you did not get right at the first try.');
+        : 'The ' + (list.length === 1 ? 'question' : list.length + ' questions') + ' you did not answer correctly at the first try.');
     }
     function backBtn() { var b = h('button', 'btn btn--quiet', 'Back to all the questions'); b.type = 'button'; b.addEventListener('click', onBack); return b; }
     words(); line.appendChild(say); line.appendChild(backBtn()); host.appendChild(line);
