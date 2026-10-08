@@ -5,7 +5,9 @@
    Types: blank · drag · mcq · order · match · sort · ph
 
    Check as often as you like. Right or wrong only — you have to think,
-   not read the answer off the screen.
+   not read the answer off the screen. One exception, by the teacher's
+   choice (LabHelp, below): a pupil with the accommodation sees why the
+   option they chose is wrong after their SECOND wrong check of an MCQ.
 
    Marking goes through Marking.check(), which compares hashes. The correct
    answer is never in the page: there is no way to be shown it, only to be
@@ -17,6 +19,61 @@
   var KIND_NAME = { blank:'Fill the gaps', drag:'Drag & drop', mcq:'Multiple choice',
                     order:'Put in order', match:'Match up', sort:'Sort into groups', ph:'Set the pH' };
 
+
+  /* ---------- the accommodation (Daniel, 8 Oct 2026) ----------
+     A pupil the teacher gave the accommodation (the Students tab; the labs script's progress answer says acc: 1, for that
+     pupil only, and the lab's pull() calls LabHelp.set) sees, after their SECOND wrong check of a multiple-choice question,
+     the explanation written for each option they chose (the master's `why`, which the page otherwise never shows).
+     Everyone else: right or wrong only (Daniel: "if I'm a lazy student … I click, I get the explanation … I don't even
+     have to find the right answer"). The explanations come from js/data/whys.js, written by the lab's build and fetched
+     ONLY for these pupils; it is scrambled with the build's salt, a lock a pupil could pick rather than a safe (the
+     answers themselves are no safer: an MCQ can be clicked through). It is on only while the pupil it was set for is the
+     one signed in: another account or a sign-out turns it off by itself. */
+  var LabHelp = { email: '', whys: null, asked: false };
+  LabHelp.set = function (on, email) {
+    LabHelp.email = on ? String(email || '').trim().toLowerCase() : '';
+    if (LabHelp.email) LabHelp.load();
+  };
+  LabHelp.on = function () {
+    var who = global.SignIn && global.SignIn.who ? global.SignIn.who() : null;
+    return !!LabHelp.email && !!who && String(who.email || '').trim().toLowerCase() === LabHelp.email;
+  };
+  LabHelp.load = function () {
+    if (LabHelp.whys || LabHelp.asked || !global.document) return;
+    LabHelp.asked = true;
+    var me = document.querySelector('script[src*="js/engine.js"]'), v = me ? (/[?&]v=([^&]+)/.exec(me.getAttribute('src')) || [])[1] : '';
+    var sc = document.createElement('script');
+    sc.src = 'js/data/whys.js' + (v ? '?v=' + v : '');
+    sc.onload = function () {
+      try {
+        var key = String(global.ANSWER_SALT || ''), bin = atob(String(global.LAB_WHYS || '')), out = '';
+        for (var i = 0; i < bin.length; i++) out += String.fromCharCode(bin.charCodeAt(i) ^ key.charCodeAt(i % key.length));
+        LabHelp.whys = JSON.parse(decodeURIComponent(escape(out)));
+      } catch (e) { LabHelp.whys = null; }
+    };
+    sc.onerror = function () { LabHelp.asked = false; };
+    document.head.appendChild(sc);
+  };
+  /* the explanation of each option chosen, as the pupil saw the options (A, B, …) */
+  LabHelp.mcq = function (a, id, sel, shown) {
+    var w = LabHelp.whys && LabHelp.whys[id];
+    if (!w) return '';
+    return sel.map(function (i) {
+      if (!w[i]) return '';
+      var pos = shown.indexOf(i);
+      return '<p class="helpbox__l"><b>' + (pos >= 0 ? String.fromCharCode(65 + pos) + '. ' : '') + escH((a.options || [])[i] || '') + '</b> — ' + escH(w[i]) + '</p>';
+    }).filter(Boolean).join('');
+  };
+  function escH(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;' }[c]; }); }
+  /* its look, once, here: each lab keeps its own stylesheet, and this box is the engine's */
+  function helpStyle() {
+    if (!global.document || document.getElementById('helpbox-css')) return;
+    var st = document.createElement('style'); st.id = 'helpbox-css';
+    st.textContent = '.helpbox{margin-top:10px;padding:9px 11px;border-left:3px solid rgba(30,79,168,.6);background:rgba(30,79,168,.07);border-radius:0 6px 6px 0;line-height:1.5}' +
+      '.helpbox__h{margin:0 0 4px;font-weight:600;font-size:.72rem;letter-spacing:.09em;text-transform:uppercase;opacity:.8}.helpbox__l{margin:4px 0 0}' +
+      '.goline--redo{flex-wrap:wrap}';
+    document.head.appendChild(st);
+  }
 
   /* ---------- utilities ---------- */
   function h(tag, cls, txt) {
@@ -234,11 +291,12 @@
     f.appendChild(check); f.appendChild(again); f.appendChild(verdict);
     card.appendChild(f);
     var fb = h('div', 'feedback'); fb.style.display = 'none'; card.appendChild(fb);
+    var checks = 0;
 
     check.addEventListener('click', function () {
       check.disabled = true;
       var run;
-      try { run = Promise.resolve(onCheck()); } catch (err) { run = Promise.reject(err); }
+      try { run = Promise.resolve(onCheck(checks + 1)); } catch (err) { run = Promise.reject(err); }
       run.catch(function (err) {
         /* Marking can only fail if the browser has no crypto.subtle — a page served over plain
            http, or opened from a downloaded copy. Say so: a button that goes grey and never
@@ -253,6 +311,7 @@
       }).then(function (res) {
         check.disabled = false;
         if (res == null) return;
+        checks++;
         card.classList.toggle('is-right', res.correct);
         card.classList.toggle('is-wrong', !res.correct);
         verdict.className = 'verdict ' + (res.correct ? 'ok' : 'no');
@@ -262,8 +321,9 @@
         again.style.display = res.correct ? 'none' : '';
         if (!res.correct) {
           fb.className = 'feedback no'; fb.style.display = '';
-          fb.innerHTML = typeof wrongMsg === 'string' ? wrongMsg
-            : 'Not right yet — look again at the ones marked in red, and try once more.';
+          fb.innerHTML = (typeof wrongMsg === 'string' ? wrongMsg
+            : 'Not right yet — look again at the ones marked in red, and try once more.') +
+            (res.help ? '<div class="helpbox"><p class="helpbox__h">Why</p>' + res.help + '</div>' : '');
         }
         card.dispatchEvent(new CustomEvent('result', { bubbles:true, detail:res }));
       });
@@ -390,6 +450,7 @@
     });
     card.appendChild(box);
 
+    var wrongTried = {};          /* the different wrong answers this pupil has checked on this card */
     foot(card, function () {
       var sel = Object.keys(picked).map(Number).sort(function (x, y) { return x - y; });
       if (!sel.length) return null;
@@ -398,6 +459,10 @@
         btns.forEach(function (b, pos) {
           if (sel.indexOf(order[pos]) >= 0) b.classList.add(res.correct ? 'ok' : 'no');
         });
+        /* the accommodation: from the SECOND different wrong answer on, why each option chosen is right or wrong (the same
+           option checked again is not a new try: the audit, 8 Oct 2026) */
+        if (!res.correct) wrongTried[sel.join(',')] = 1;
+        if (!res.correct && Object.keys(wrongTried).length >= 2 && LabHelp.on()) { helpStyle(); res.help = LabHelp.mcq(a, id, sel, order); }
         return res;
       });
     }, function () {
@@ -723,6 +788,33 @@
 
   var MAKERS = { blank:blank, drag:drag, mcq:mcq, order:order, match:match, sort:sort, ph:ph };
 
+  /* ---------- redo (Daniel, 8 Oct 2026: "redo the ones I got wrong") ----------
+     A station's questions that were not right at the first try in this round, again, as practice: drawn fresh, checked as
+     usual, never recorded (the cards' results go to no record and no save), with "right at the first try this time"
+     counted on the line above them. The lab's app.js decides which questions and gives the way back. */
+  function redo(host, st, list, onBack) {
+    helpStyle();
+    var line = h('div', 'goline goline--redo'), say = h('span'), firstRight = 0, done = 0;
+    function words() {
+      say.innerHTML = '<b>Redo</b> · practice: your record does not change. ' + (done
+        ? 'Right at the first try this time: <b>' + firstRight + '</b> of ' + done + (done < list.length ? ' so far.' : '.')
+        : 'The ' + (list.length === 1 ? 'question' : list.length + ' questions') + ' you did not get right at the first try.');
+    }
+    function backBtn() { var b = h('button', 'btn btn--quiet', 'Back to all the questions'); b.type = 'button'; b.addEventListener('click', onBack); return b; }
+    words(); line.appendChild(say); line.appendChild(backBtn()); host.appendChild(line);
+    list.forEach(function (i) {
+      var card = global.Engine.render(st.activities[i], i, st.id + ':' + i), counted = false;   /* as the lab draws it (engine-ext wraps render) */
+      card.addEventListener('result', function (e) {
+        if (counted || !e.detail) return; counted = true; done++;
+        if (e.detail.correct) firstRight++;
+        words();
+      });
+      host.appendChild(card);
+    });
+    var foot2 = h('div', 'act__foot'); foot2.appendChild(backBtn()); host.appendChild(foot2);
+  }
+
+  global.LabHelp = LabHelp;
   global.Engine = {
     render: function (a, idx, id) {
       var maker = MAKERS[a.type];
@@ -733,6 +825,7 @@
        The maker gets (a, idx, id) and returns the card; the helpers below build the shell and
        the Check / Try again foot exactly as the built-in types do. */
     register: function (type, maker, name) { MAKERS[type] = maker; if (name) KIND_NAME[type] = name; },
+    redo: redo,
     util: { h:h, shell:shell, foot:foot, shuffle:shuffle, imgEl:imgEl, makeDraggable:makeDraggable, dropTarget:dropTarget, dragHint:dragHint },
     KIND_NAME: KIND_NAME
   };

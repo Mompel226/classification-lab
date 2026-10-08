@@ -416,9 +416,32 @@
       });
       line.appendChild(again);
     }
+    /* Redo the ones you missed (Daniel, 8 Oct 2026): this round's questions answered right, but not at the first try, again
+       as practice (Engine.redo): nothing a redo does is recorded or sent */
+    var miss = missedNow(st);
+    if (miss.length && window.Engine && window.Engine.redo) {
+      var rd = document.createElement('button');
+      rd.type = 'button'; rd.className = 'btn btn--quiet'; rd.textContent = 'Redo the ' + miss.length + ' you missed';
+      rd.addEventListener('click', function () { redoOf = { id: st.id, list: missedNow(st), who: redoWho(), go: stationScore(st.id).go }; paintPanel(); });
+      line.appendChild(rd);
+    }
     pane.appendChild(line);
   }
+  var redoOf = null;          /* the redo on screen: { id, list, who, go } of one station, or null */
+  function redoWho() { return signIn && signIn.email ? String(signIn.email).toLowerCase() : ''; }
+  function missedNow(st) {
+    var rec = progress[st.id] || {}, out = [];
+    (st.activities || []).forEach(function (a, i) { if (rec.done && rec.done[i] && !(rec.one && rec.one[i])) out.push(i); });
+    return out;
+  }
   function paintDo(pane, st) {
+    /* a redo belongs to one station, one pupil and one round: another station, another account (or none), Reset or a new
+       round ends it (the audit, 8 Oct 2026: pupil B saw pupil A's missed question) */
+    if (redoOf && (redoOf.id !== st.id || redoOf.who !== redoWho() || redoOf.go !== stationScore(st.id).go)) redoOf = null;
+    if (redoOf && window.Engine && window.Engine.redo) {
+      window.Engine.redo(pane, st, redoOf.list, function () { redoOf = null; paintPanel(); });
+      return;
+    }
     paintGoLine(pane, st);
     (st.activities || []).forEach(function (a, i) {
       var card = window.Engine.render(a, i, st.id + ':' + i);
@@ -813,6 +836,8 @@
         var mine = j && j.ok && j.labs && j.labs[LAB_ID]; applySnap(mine, true);
         /* and their homework here, which the same answer carries (a script from before sends none) */
         if (window.LabHomework) window.LabHomework.take(j && j.ok ? j.homework : null, signIn && signIn.email);
+        /* the teacher's accommodation for this pupil (8 Oct 2026): help after a second wrong try (engine.js LabHelp) */
+        if (window.LabHelp) window.LabHelp.set(!!(j && j.ok && j.acc), signIn && signIn.email);
       })
       .catch(function () {})
       .then(function () { if (then && still()) then(); });
