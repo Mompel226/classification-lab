@@ -76,6 +76,9 @@ h1,h2,h3,h4{margin:0;font-weight:700;line-height:1.25}
   transition:background .15s
 }
 .hbtn:hover{background:rgba(255,255,255,.24)}
+/* the way back (14 Oct 2026, Daniel: pupils missed it): a solid pill, first in the header */
+.hbtn--back{background:#fff;color:#14572B;border-color:#fff;font-weight:650;text-decoration:none;flex:none;box-shadow:0 1px 2px rgba(0,0,0,.18)}
+.hbtn--back:hover,.hbtn--back:focus-visible{background:#E9F6EC;color:#0E3D1E}
 
 /* ---------- header buttons, the saving chip, dialogs ---------- */
 /* the saving chip: what the records know, at a glance */
@@ -1440,6 +1443,12 @@ svg.lit .kl--all.is-on{opacity:1}
 
 /* up to 820px the header takes two rows — the name and byline above, the counts and buttons below — so the name is never cut short on an upright tablet */
 @media (max-width:820px){ .hdr{flex-wrap:wrap;row-gap:6px} .hdr__mark{flex:1 1 100%;overflow:visible} .hdr__spacer{display:none} .hdr__stats{flex:1 1 100%} }
+/* the way back shares the first row with the name (the name and byline stack beside it if they must), so the header is no taller than before it moved (14 Oct 2026) */
+@media (max-width:820px){ .hbtn--back + .hdr__mark{flex:1 1 0;min-width:0;flex-wrap:wrap;row-gap:2px} }
+/* a laptop: the way back says it short (← The body); the lab's name never shrinks to "D…" and the byline is never cut: the subtitle,
+   which only ever showed as "Top…" here, goes, and the byline steps under the name when the row is full, as it does on a tablet (14 Oct 2026) */
+@media (max-width:1440px){ .hbtn--back .hbtn__long{display:none} .hbtn--back .hbtn__short{display:inline} .hdr__sub{display:none} .hdr__mark{flex-wrap:wrap;row-gap:0} .hdr__title{line-height:1.1} .hdr__by{line-height:1.15} }
+@media (min-width:821px){ .hdr__title{flex-shrink:0} }
 
 /* a tablet held flat (1024px) and every narrower screen: no subtitle, and a smaller name up to 1000px, so the name is never cut short */
 @media (max-width:1100px){ .hdr__sub{display:none} }
