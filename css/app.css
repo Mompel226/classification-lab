@@ -42,10 +42,13 @@ h1,h2,h3,h4{margin:0;font-weight:700;line-height:1.25}
 .app{height:100dvh;display:grid;grid-template-rows:auto minmax(0,1fr) auto}
 
 /* ---------- Header ---------- */
+/* one look for every topic lab (14 Oct 2026, Daniel): a white bar, as the Cells Lab's, and this lab's own colour — Life on Earth's cyan, deepened to read on white,
+   the colour of its card in the hub — on the way back, the progress rings and a pressed button. Saved stays green: it is a status. */
+:root{--hdr-bg:#FFFFFF;--hdr-ink:#1A1A1A;--hdr-veil:rgba(60,45,25,.045);--hdr-line:#E7DFD1;--lab:#0E6A85;--lab-2:#0A546A;--lab-tint:#E3F1F5}
 .hdr{
   display:flex;align-items:center;gap:14px;padding:9px 16px;min-width:0;
-  background:linear-gradient(180deg,#17603045,#14572B00),var(--green);
-  color:#fff;box-shadow:0 1px 0 rgba(0,0,0,.15)
+  background:var(--hdr-bg);
+  color:var(--hdr-ink);box-shadow:0 1px 0 var(--hdr-line)
 }
 .hdr__mark{display:flex;align-items:baseline;gap:9px;min-width:0;overflow:hidden}
 .hdr__title{font-size:19px;letter-spacing:.2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -55,40 +58,40 @@ h1,h2,h3,h4{margin:0;font-weight:700;line-height:1.25}
 .hdr__by:hover,.hdr__by:focus-visible{opacity:.95}
 .badge{
   font-size:11px;font-weight:700;letter-spacing:.06em;padding:4px 10px;border-radius:var(--r-pill);
-  background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.28);white-space:nowrap
+  background:var(--hdr-veil);border:1px solid var(--hdr-line);white-space:nowrap
 }
 .hdr__spacer{flex:1}
 .hdr__stats{display:flex;align-items:center;gap:10px;flex:none}
 .stat{
-  display:flex;align-items:center;gap:7px;background:rgba(255,255,255,.12);
-  border:1px solid rgba(255,255,255,.2);border-radius:var(--r-pill);padding:4px 12px 4px 6px;font-size:12.5px
+  display:flex;align-items:center;gap:7px;background:var(--hdr-veil);
+  border:1px solid var(--hdr-line);border-radius:var(--r-pill);padding:4px 12px 4px 6px;font-size:12.5px
 }
 .stat b{font-size:14px;font-variant-numeric:tabular-nums}
 .stat--go{cursor:pointer;transition:background .15s}
-.stat--go:hover,.stat--go:focus-visible{background:rgba(255,255,255,.26)}
+.stat--go:hover,.stat--go:focus-visible{background:var(--lab-tint)}
 .ring{width:26px;height:26px;flex:none}
 .ring circle{fill:none;stroke-width:4}
-.ring .bg{stroke:rgba(255,255,255,.25)}
-.ring .fg{stroke:#8FE0A8;stroke-linecap:round;transition:stroke-dasharray .5s ease}
+.ring .bg{stroke:var(--hdr-line)}
+.ring .fg{stroke:var(--lab);stroke-linecap:round;transition:stroke-dasharray .5s ease}
 .hbtn{
-  background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);color:#fff;
+  background:var(--hdr-veil);border:1px solid var(--hdr-line);color:var(--hdr-ink);
   border-radius:var(--r-pill);padding:6px 13px;font-size:13px;cursor:pointer;white-space:nowrap;
   transition:background .15s
 }
-.hbtn:hover{background:rgba(255,255,255,.24)}
+.hbtn:hover{background:var(--lab-tint)}
 /* the way back (14 Oct 2026, Daniel: pupils missed it): a solid pill, first in the header */
-.hbtn--back{background:#fff;color:#14572B;border-color:#fff;font-weight:650;text-decoration:none;flex:none;box-shadow:0 1px 2px rgba(0,0,0,.18)}
-.hbtn--back:hover,.hbtn--back:focus-visible{background:#E9F6EC;color:#0E3D1E}
+.hbtn--back{background:var(--lab);color:#fff;border-color:var(--lab);font-weight:650;text-decoration:none;flex:none;box-shadow:0 1px 2px rgba(0,0,0,.18)}
+.hbtn--back:hover,.hbtn--back:focus-visible{background:var(--lab-2);border-color:var(--lab-2);color:#fff}
 
 /* ---------- header buttons, the saving chip, dialogs ---------- */
 /* the saving chip: what the records know, at a glance */
 .hbtn--save{font-weight:600}
-.hbtn--save.is-ok{background:#8FE0A8;color:#0E3D1E;border-color:#8FE0A8}
-.hbtn--save.is-ok:hover{background:#A6EBBC}
-.hbtn--save.is-busy{background:rgba(255,255,255,.18);color:#fff;border-style:dashed}
-.hbtn--save.is-no{background:#F4C2BA;color:#5A1A12;border-color:#F4C2BA}
-.hbtn--save.is-no:hover{background:#F8D3CC}
-.hbtn--save.is-off{background:transparent;color:#fff;border-style:dashed}
+.hbtn--save.is-ok{background:var(--ok-tint);color:var(--ok);border-color:var(--ok)}
+.hbtn--save.is-ok:hover{background:#DCEFE2}
+.hbtn--save.is-busy{background:var(--hdr-veil);color:var(--hdr-ink);border-style:dashed}
+.hbtn--save.is-no{background:var(--bad-tint);color:var(--bad);border-color:var(--bad)}
+.hbtn--save.is-no:hover{background:#F8DCD7}
+.hbtn--save.is-off{background:transparent;color:var(--hdr-ink);border-style:dashed}
 .modal__box--sm{max-width:460px}
 .dlgrow{display:flex;gap:9px;justify-content:flex-end;margin-top:18px}
 .submsg{font-size:14px;line-height:1.5;margin-top:8px}
@@ -1449,6 +1452,13 @@ svg.lit .kl--all.is-on{opacity:1}
    which only ever showed as "Top…" here, goes, and the byline steps under the name when the row is full, as it does on a tablet (14 Oct 2026) */
 @media (max-width:1440px){ .hbtn--back .hbtn__long{display:none} .hbtn--back .hbtn__short{display:inline} .hdr__sub{display:none} .hdr__mark{flex-wrap:wrap;row-gap:0} .hdr__title{line-height:1.1} .hdr__by{line-height:1.15} }
 @media (min-width:821px){ .hdr__title{flex-shrink:0} }
+/* the way back's short words are the pill's own size, not the 15 px of the icon-like short labels (A–Z, ?); on a phone a long name
+   (Classification Lab) goes onto two lines rather than being cut (14 Oct 2026) */
+.hbtn--back .hbtn__short{font-size:inherit;font-weight:inherit}
+@media (max-width:820px){ .hbtn--back + .hdr__mark .hdr__title{white-space:normal;flex:0 1 auto;min-width:0} }
+/* a small phone (370 px or less: 360 and 320): the way back and the name have the first row to themselves, so the name and the byline are
+   never cut; the IGCSE 0610 badge wraps to start the second row, beside the counts (14 Oct 2026) */
+@media (max-width:370px){ .hbtn--back + .hdr__mark{flex:1 1 calc(100% - 140px)} .hdr__stats{flex:1 1 0;min-width:0} .hbtn--back ~ .badge{align-self:flex-start;margin-top:8px} }
 
 /* a tablet held flat (1024px) and every narrower screen: no subtitle, and a smaller name up to 1000px, so the name is never cut short */
 @media (max-width:1100px){ .hdr__sub{display:none} }
