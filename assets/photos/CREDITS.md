@@ -33,6 +33,8 @@ the page and in the "How to use" panel, from `js/tree.js` (the shared register i
 
 ## The silhouettes on the tree
 
+The `tools/` named here stay on Daniel's computer: they are not in this repository (since 18 Oct 2026).
+
 From [PhyloPic](https://www.phylopic.org), CC0 or Public Domain Mark, copied in by `tools/build.mjs` from
 `labs-shared/tree/silhouettes/` and inlined into `index.html`. The full table, with contributors and links,
 is in the hub's `assets/CREDITS.md`; the credits also print in the "How to use" panel from `js/tree.js`.
