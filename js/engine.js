@@ -476,43 +476,61 @@
   }
 
   /* ============================= ORDER ============================= */
+  /* The numbers are PLACES (1 = first) and never move; only the step cards move beside them.
+     Until 21 Oct 2026 each card carried its own number and was renumbered on the drop, so the
+     column always read 1, 2, 3 … and a pupil thought nothing had moved (only the words had
+     changed). The numbers now stand in their own column outside the cards, the other cards slide
+     out of the way while one is dragged, and the card just dropped is outlined for a moment. */
+  var still = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)');
+  function slide(nodes, was) {
+    if (still && still.matches) return;
+    nodes.forEach(function (n, i) {
+      var dy = was[i] - n.getBoundingClientRect().top;
+      if (dy && n.animate) n.animate([{ transform:'translateY(' + dy + 'px)' }, { transform:'none' }], { duration:200, easing:'ease-out' });
+    });
+  }
   function order(a, idx, id) {
     var card = shell(a, idx);
     var list = h('div', 'order');
-    function build(items) {
-      list.innerHTML = '';
-      items.forEach(function (txt) {
-        var row = h('div', 'oitem');
-        row.dataset.txt = txt;
-        row.appendChild(h('span', 'oitem__n', ''));
-        row.appendChild(h('span', 'oitem__grip', '⋮⋮'));
-        row.appendChild(h('span', null, txt));
-        makeDraggable(row, {
-          onOver:function (x, y) {
-            var target = null;
-            Array.prototype.forEach.call(list.children, function (r) {
-              if (r === row) return;
-              var b = r.getBoundingClientRect();
-              if (y > b.top && y < b.bottom) target = { r:r, before:y < b.top + b.height / 2 };
-            });
-            if (target) list.insertBefore(row, target.before ? target.r : target.r.nextSibling);
-          },
-          onDrop:renumber
-        });
-        list.appendChild(row);
+    function cards() { return Array.prototype.slice.call(list.querySelectorAll('.oitem')); }
+    (a.items || []).forEach(function (_, i) {
+      var n = h('span', 'oitem__n', String(i + 1));
+      n.style.gridRow = String(i + 1);
+      list.appendChild(n);
+    });
+    shuffle(a.items || []).forEach(function (txt) {
+      var row = h('div', 'oitem');
+      row.dataset.txt = txt;
+      row.appendChild(h('span', 'oitem__grip', '⋮⋮'));
+      row.appendChild(h('span', null, txt));
+      makeDraggable(row, {
+        onOver:function (x, y) {
+          var all = cards(), target = null;
+          all.forEach(function (r) {
+            if (r === row) return;
+            var b = r.getBoundingClientRect();
+            if (y > b.top && y < b.bottom) target = { r:r, before:y < b.top + b.height / 2 };
+          });
+          if (!target) return;
+          var was = all.map(function (r) { return r.getBoundingClientRect().top; });
+          list.insertBefore(row, target.before ? target.r : target.r.nextSibling);
+          slide(all, was);
+        },
+        onDrop:function () {
+          row.classList.add('is-moved');
+          setTimeout(function () { row.classList.remove('is-moved'); }, 900);
+        }
       });
-      renumber();
-    }
-    function renumber() {
-      Array.prototype.forEach.call(list.children, function (r, i) { r.querySelector('.oitem__n').textContent = i + 1; });
-    }
-    build(shuffle(a.items || []));
+      list.appendChild(row);
+    });
     card.appendChild(list);
 
     foot(card, function () {
-      var got = Array.prototype.map.call(list.children, function (r) { return r.dataset.txt; });
+      var got = cards().map(function (r) { return r.dataset.txt; });
       return window.Marking.check(a, id, got).then(function (res) {
-        Array.prototype.forEach.call(list.children, function (r) {
+        list.classList.toggle('is-ok', res.correct);
+        list.classList.toggle('is-no', !res.correct);
+        cards().forEach(function (r) {
           r.classList.toggle('ok', res.correct);
           r.classList.toggle('no', !res.correct);
         });
@@ -521,7 +539,8 @@
     }, function () {
       /* Keep the order the student arranged. Re-shuffling here threw away every
          decision they had made and sent them back to a fresh random list. */
-      Array.prototype.forEach.call(list.children, function (r) { r.classList.remove('ok', 'no'); });
+      list.classList.remove('is-ok', 'is-no');
+      cards().forEach(function (r) { r.classList.remove('ok', 'no'); });
     }, 'Not right yet. Your answer is kept as you left it \u2014 move only what you want to change, then check again.');
     return card;
   }

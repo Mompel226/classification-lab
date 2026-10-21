@@ -424,7 +424,7 @@ h1,h2,h3,h4{margin:0;font-weight:700;line-height:1.25}
 .tok:focus-visible,.oitem:focus-visible{outline:3px solid var(--teal);outline-offset:2px}
 .act__hint{font-size:12.5px;color:var(--grey);margin:2px 0 8px}
 
-.tok.is-ghost{position:fixed;z-index:999;pointer-events:none;transform:translate(-50%,-50%) scale(1.06);
+.tok.is-ghost,.oitem.is-ghost{position:fixed;z-index:999;pointer-events:none;transform:translate(-50%,-50%) scale(1.06);
               box-shadow:var(--shadow-lg);opacity:.96}
 .slots{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:10px}
 /* label above, drop-well below: long labels then have the full width and can
@@ -462,7 +462,11 @@ h1,h2,h3,h4{margin:0;font-weight:700;line-height:1.25}
 .opt__why{display:block;font-size:13px;color:#4A4A4A;margin-top:5px;line-height:1.45}
 
 /* order */
-.order{display:flex;flex-direction:column;gap:7px}
+.order{display:grid;grid-template-columns:auto minmax(0,1fr);gap:7px 10px;align-items:center}
+/* the numbers are places and stay in their own column; only the cards move (21 Oct 2026) */
+.order>.oitem__n{grid-column:1}
+.order>.oitem{grid-column:2;transition:box-shadow .5s}
+.oitem.is-moved{box-shadow:0 0 0 3px var(--teal);transition:none}
 .oitem{
   display:flex;align-items:center;gap:11px;border:1.5px solid var(--edge);background:var(--card-2);
   border-radius:var(--r);padding:10px 13px;font-size:15px;cursor:grab;user-select:none;touch-action:none
@@ -471,8 +475,8 @@ h1,h2,h3,h4{margin:0;font-weight:700;line-height:1.25}
 .oitem__grip{color:var(--line);font-size:15px;letter-spacing:-2px;flex:none}
 .oitem__n{width:23px;height:23px;flex:none;border-radius:50%;background:var(--red);color:#fff;display:grid;
           place-items:center;font-size:12.5px;font-weight:700}
-.oitem.ok{border-color:#A9D6BA;background:var(--green-tint)} .oitem.ok .oitem__n{background:var(--green-2)}
-.oitem.no{border-color:#E3B4AC;background:var(--bad-tint)} .oitem.no .oitem__n{background:var(--red)}
+.oitem.ok{border-color:#A9D6BA;background:var(--green-tint)} .order.is-ok .oitem__n{background:var(--green-2)}
+.oitem.no{border-color:#E3B4AC;background:var(--bad-tint)} .order.is-no .oitem__n{background:var(--red)}
 
 /* match */
 .match{display:grid;grid-template-columns:1fr 1fr;gap:10px 16px;align-items:start}
