@@ -1286,6 +1286,9 @@
     /* §practise-link (22 Oct 2026, My assessments' Revise tab): "?tab=practise" (or "#<station>/practise") opens that
        station on its Practise tab, and the address keeps only "#<station>" after. A link without it opens Learn, as before. */
     var wantDo = /[?&]tab=practise(&|$)/.test(location.search) || /\/practise$/.test(location.hash);
+    function tidyAddress() {   // a part of the picture named with a Practise link: the address keeps the part only
+      if (/[?&]tab=practise(&|$)/.test(location.search) || /\/practise$/.test(location.hash)) history.replaceState(null, '', location.pathname + location.hash.replace(/\/practise$/, ''));
+    }
     function practiseTab(id) {
       if (/[?&]tab=practise(&|$)/.test(location.search) || /\/practise$/.test(location.hash)) history.replaceState(null, '', location.pathname + '#' + id);
       if (wantDo && S[id] && current === id) { tab = 'do'; paintPanel(); }
@@ -1294,15 +1297,15 @@
     function fromHash() {
       var hsh = (location.hash || '').slice(1).replace(/\/practise$/, '');
       if (S[hsh]) { open(hsh); practiseTab(hsh); return true; }
-      if (OWNER[hsh]) { open(OWNER[hsh]); openGroup(hsh); return true; }
+      if (OWNER[hsh]) { open(OWNER[hsh]); openGroup(hsh); wantDo = false; tidyAddress(); return true; }
       return false;
     }
-    if (!fromHash()) open(ORDER[0]);
+    if (!fromHash()) { open(ORDER[0]); wantDo = false; practiseTab(ORDER[0]); }   // no such station: the first one, on Learn, the address tidied
     paintHeader();
     window.addEventListener('hashchange', function () {
       var raw = location.hash.slice(1), hsh = raw.replace(/\/practise$/, '');
       if (S[hsh] && (hsh !== current || raw !== hsh)) { if (hsh !== current) open(hsh); if (raw !== hsh) { wantDo = true; practiseTab(hsh); } }
-      else if (OWNER[hsh]) openGroup(hsh);
+      else if (OWNER[hsh]) { openGroup(hsh); tidyAddress(); }
     });
   }
 
