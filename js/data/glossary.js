@@ -198,7 +198,7 @@ window.GLOSSARY = [
  },
  {
   "term": "balanced diet",
-  "def": "A diet containing carbohydrates, fats and oils, proteins, vitamins, mineral ions, fibre and water in the correct proportions and amounts."
+  "def": "A diet containing carbohydrates, fats and oils, proteins, vitamins, mineral ions, fibre and water in the correct proportions."
  },
  {
   "term": "base",
@@ -1130,7 +1130,7 @@ window.GLOSSARY = [
  },
  {
   "term": "hydrogencarbonate indicator",
-  "def": "A solution that changes colour with the carbon dioxide dissolved in it: purple with less than air holds, orange-red at the amount in air, yellow with more. Used to show gas exchange in an aquatic plant in the light and in the dark."
+  "def": "A solution that changes colour with the carbon dioxide dissolved in it: purple with less than air holds, orange-red at the concentration in air, yellow with more. Used to show gas exchange in an aquatic plant in the light and in the dark."
  },
  {
   "term": "hydrolysis",
