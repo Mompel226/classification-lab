@@ -284,7 +284,11 @@
       var pe = st.past && st.past.exam ? st.past.exam[i] : null;
       if (pe != null) badge = pastBadge(pe);
       else if (offK === 'beyond') badge = '';
+      /* the sentences a student reads, not the card below: the only place a word goes down to its key-word card */
+      var teachHere = !offK;
+      if (window.Terms && Terms.teach) Terms.teach(teachHere);
       li.innerHTML = badge + M(txt);
+      if (window.Terms && Terms.teach) Terms.teach(false);
       li.setAttribute('data-i', i);
       if (offK) offAt[offK].push({ k: typeof b === 'object' && b.near != null ? b.near + 0.5 : i, li: li });
       else list.appendChild(li);
@@ -362,12 +366,12 @@
           var g2 = (window.GLOSSARY || []).filter(function (e) { return e.term.toLowerCase() === w.term.toLowerCase(); })[0] || {};
           var tag = pastTerm(w.term) ? ' ' + pastBadge(pastTerm(w.term), 'tier tier--old') : g2.ext ? ' <span class="tier tier--ext tip" tabindex="0" data-tip="The 0610 syllabus does not name it, but it is useful to know: an exam question can still use it.">beyond 0610</span>'
                   : g2.sup ? ' <span class="tier tier--sup" title="Supplement — Extended papers (2 and 4) only">Supplement</span>' : '';
-          return '<div class="kw kw--flip" role="button" tabindex="0" aria-expanded="false">' +
+          return '<div class="kw kw--flip" role="button" tabindex="0" aria-expanded="false" data-kwcard="' + esc(w.term.toLowerCase()) + '">' +
                  '<dt>' + M(w.term) + numberOf(g2) + tag + '</dt><p class="kw__ask">Do you know it? Tap to check</p><dd>' + M(w.def) + '</dd></div>';
         }).join('') + '</dl>';
       Array.prototype.forEach.call(k.querySelectorAll('.kw--flip'), function (c) {
         var turn = function () { var o = c.classList.toggle('is-open'); c.setAttribute('aria-expanded', o ? 'true' : 'false'); };
-        c.addEventListener('click', function (e) { if (e.target.closest('[data-peek],[data-jump],[data-gloss],.tip')) return; turn(); });
+        c.addEventListener('click', function (e) { if (e.target.closest('[data-peek],[data-jump],[data-gloss],[data-kw],.tip')) return; turn(); });
         c.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); turn(); } });
       });
       pane.appendChild(k);
@@ -575,6 +579,33 @@
     placeBlock(target, smooth);
     requestAnimationFrame(function () { placeBlock(target, false); });
     setTimeout(function () { placeBlock(target, false); }, 160);
+  }
+  /* A key-word card the page goes down to comes wholly into view (Daniel, 25 Oct 2026, in the Cells Lab: "make sure that
+     that section is completely visible"): a card already wholly in view stays where it is; one whose end is below the
+     view scrolls up just enough to show its end, but never so far that its top goes out of view; one whose top is out
+     of view, or that is taller than the view, comes to the top. Checked again a moment later (a picture above it may
+     still be growing), unless the reader has scrolled by then. The Cells Lab's showWhole. */
+  function showWhole(card, smooth) {
+    function place(sm) {
+      var sc = scrollerFor(card), box = sc === document.scrollingElement || sc === document.documentElement;
+      var top = topOf(sc) + stickyInset(sc) + 10, bottom = (box ? window.innerHeight : sc.getBoundingClientRect().bottom) - 10;
+      var r = card.getBoundingClientRect(), dy = 0;
+      if (r.top < top) dy = r.top - top;
+      else if (r.bottom > bottom) dy = Math.min(r.bottom - bottom, r.top - top);
+      if (Math.abs(dy) < 1) return sc.scrollTop;
+      var prev = sc.style.scrollBehavior;
+      sc.style.scrollBehavior = sm ? 'smooth' : 'auto';
+      sc.scrollTop += dy;
+      sc.style.scrollBehavior = prev || '';
+      return sc.scrollTop;
+    }
+    place(smooth);
+    var sc0 = scrollerFor(card), mine = null;
+    setTimeout(function () {
+      if (!card.isConnected) return;
+      mine = sc0.scrollTop;
+      setTimeout(function () { if (card.isConnected && Math.abs(sc0.scrollTop - mine) <= 2) place(false); }, 260);
+    }, 420);
   }
   function panelScroller() {
     var inner = document.getElementById('panelInner');
@@ -1087,21 +1118,34 @@
     pk.querySelector('.peek__x').addEventListener('click', closePeek);
     peekEl = pk;
   }
+  /* down to this station's key-word card for a word (Daniel, 25 Oct 2026: the word "should then link to the flashcard at
+     the bottom of it"): the card comes wholly into view and rings once; it stays unturned, so the reader says the
+     definition first, as the card asks (the Cells Lab's toKeyCard) */
+  function toKeyCard(term) {
+    var c = document.querySelector('#panelInner [data-kwcard="' + String(term).replace(/"/g, '') + '"]');
+    if (!c) return;
+    showWhole(c, true);
+    c.classList.remove('flash'); void c.offsetWidth; c.classList.add('flash');
+    setTimeout(function () { c.classList.remove('flash'); }, 2800);
+    try { c.focus({ preventScroll: true }); } catch (e) {}
+  }
+
   function wireTermClicks(root) {
     function act(t) {
       markWhereWeAre();
       if (t.hasAttribute('data-peek')) openPeek(t);
       else if (t.hasAttribute('data-gloss')) { closePeek(); window.LabGlossary(t.getAttribute('data-gloss')); }
+      else if (t.hasAttribute('data-kw')) { closePeek(); toKeyCard(t.getAttribute('data-kw')); }
       else { closePeek(); open(t.getAttribute('data-jump'), (t.getAttribute('data-term') || t.textContent).trim(), current); }
     }
     root.addEventListener('click', function (e) {
-      var t = e.target.closest('[data-peek],[data-jump],[data-gloss]');
+      var t = e.target.closest('[data-peek],[data-jump],[data-gloss],[data-kw]');
       if (!t) { closePeek(); return; }
       e.preventDefault(); act(t);
     });
     root.addEventListener('keydown', function (e) {
       if (e.key !== 'Enter' && e.key !== ' ') return;
-      var t = e.target.closest('[data-peek],[data-jump],[data-gloss]');
+      var t = e.target.closest('[data-peek],[data-jump],[data-gloss],[data-kw]');
       if (!t) return;
       e.preventDefault(); act(t);
     });

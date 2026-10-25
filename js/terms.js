@@ -236,9 +236,10 @@
 
   var JUMP = {};
   function jump(list, st) { list.forEach(function (w) { JUMP[w] = st; }); }
-  jump(['movement','respiration','sensitivity','growth','reproduction','excretion','nutrition','characteristics','characteristic','metabolism','dry mass','stimulus','stimuli'], 'alive');
+  jump(['movement','respiration','sensitivity','growth','reproduction','excretion','nutrition','characteristics','characteristic','metabolism','dry mass','stimulus','stimuli','feature','features'], 'alive');
+  /* a feature is taught in Alive?, where its key-word card is (25 Oct 2026); it was Naming and grouping's */
   jump(['species','genus','genera','binomial system','binomial','binomial name','binomial names','scientific name','scientific names','classification','classification system',
-        'classification systems','classify','classified','classifying','taxonomy','taxon','taxa','phylum','phyla','class','classes','order','family','linnaeus','fertile offspring','interbreed','feature','features'], 'naming');
+        'classification systems','classify','classified','classifying','taxonomy','taxon','taxa','phylum','phyla','class','classes','order','family','linnaeus','fertile offspring','interbreed'], 'naming');
   jump(['dna','base sequence','base sequences','bases','evolutionary relationships','evolutionary relationship','common ancestor','common ancestors','ancestor','ancestors','ancestry'], 'dna');
   jump(['dichotomous key','dichotomous keys'], 'keys');
   jump(['kingdom','kingdoms','five kingdoms','animal','animals','animal kingdom','plant kingdom','fungus','fungi','fungal','prokaryote','prokaryotes','prokaryotic','bacterium','bacteria','bacterial',
@@ -318,11 +319,22 @@
    'dichotomous key', 'dichotomous keys', 'binomial system', 'base sequence', 'base sequences']
     .forEach(function (w) { GOES_THERE[w] = true; });
 
-  var here = null, seen = null, quiet = false, wentTo = null;
-  function setStation(id) { here = id; seen = Object.create(null); quiet = false; wentTo = Object.create(null); }
+  var here = null, seen = null, quiet = false, wentTo = null, teaching = false;
+  /* this station's key-word cards (the flip cards at the bottom of its Learn tab), by the word in lower case. Each key word
+     has ONE card in the lab, in the station that first teaches it (Daniel, 25 Oct 2026: "please do not repeat keywords"),
+     and in that station the word's first mention leads down to its card ("should then link to the flashcard at the
+     bottom of it"), never away to another station. KW_DONE: the
+     cards a mention has led down to; KW_OFF: the words marked outside What you need to know without using up their
+     way down; UNDER: the words met inside an underlined syllabus phrase */
+  var KW = {}, KW_DONE = {}, KW_OFF = {}, UNDER = {};
+  function setStation(id) {
+    here = id; seen = Object.create(null); quiet = false; wentTo = Object.create(null); KW = {}; KW_DONE = {}; KW_OFF = {}; UNDER = {};
+    (global.STATIONS || []).forEach(function (s) { if (s.id === id) (s.keywords || []).forEach(function (w) { KW[String(w.term).toLowerCase()] = w.term; }); });
+  }
   /* a widget built afresh (its reset) marks its words as it did the first time: forget what it introduced */
   function unsee(words, jumps) { if (seen) (words || []).forEach(function (w) { delete seen[String(w).toLowerCase()]; }); if (wentTo) (jumps || []).forEach(function (j) { delete wentTo[j]; }); }
   function setQuiet(v) { quiet = !!v; }
+  function teach(v) { teaching = !!v; }
 
   /* _like this_ underlines a phrase the syllabus wants written; the sentinels keep the
      glossary pass off it, and a term inside it comes out plain */
@@ -384,15 +396,36 @@
       if (NEGATED.test(before)) return m;
       if (wrongSense(low, before, String(whole).slice(at + m.length).replace(/<[^>]*>/g, ''))) return m;
       var cat = e[1], act = '', cls = '';
-      var first = !quiet && !(seen && seen[low]);
-      if (seen) seen[low] = true;
-      if (!first) return m;
       var ctx = (CONTEXT[here] || {})[low];
-      if (ctx || PEEK[low]) {
+      var def = defined(low), card = !e[2] && (KW[low] || (def && KW[def.toLowerCase()]));
+      /* a word whose key-word card is in this station and has not led down to it yet: its first mention in What you
+         need to know (Terms.teach) goes down to the card. Before that, a mention inside an underlined syllabus phrase
+         (never clickable) or anywhere else (a widget, a caption, the card below) comes out as it always did without
+         using up that way down, and a picture opens where it always did */
+      var down = card && !quiet && !KW_DONE[card], keep = false, under = false, inUnder = false;
+      if (down) {
+        var raw = String(whole).slice(0, at);
+        inUnder = raw.lastIndexOf(U0) > raw.lastIndexOf(U1);
+        if (inUnder) UNDER[low] = true;
+        else if (!teaching) {
+          if (KW_OFF[low] || (seen && seen[low])) return m;
+          if (!(ctx || PEEK[low])) { KW_OFF[low] = card; keep = true; }
+        } else under = !!UNDER[low] && !!def && !KNOWN[def.toLowerCase()];
+      }
+      var first = keep || under || (!quiet && !(seen && seen[low]));
+      if (seen && !keep) seen[low] = true;
+      if (!first) return m;
+      if ((ctx || PEEK[low]) && !under) {     /* a picture an underline used to hide stays hidden */
         var pk = ctx || PEEK[low];
         act = ' data-peek="' + pk[0] + '" data-note="' + esc(pk[1]) + '"' +
               (pk[2] ? ' data-credit="' + esc(pk[2]) + '"' : '') + ' tabindex="0" role="button"';
         cls = ' is-peek';
+      } else if (down && teaching && !inUnder && def && !KNOWN[def.toLowerCase()]) {
+        /* its key-word card is at the bottom of this station: down to it, not away */
+        KW_DONE[card] = true;
+        if (seen) for (var w in KW_OFF) if (KW_OFF[w] === card) seen[w] = true;   /* its other words, as they were */
+        act = ' data-kw="' + esc(card.toLowerCase()) + '" tabindex="0" role="button"';
+        cls = ' is-kw';
       } else if (JUMP[low] === here) {
         /* the station being read is the one that teaches this word: no link, no glossary
            marker — the widget below it is where the definition is learnt */
@@ -436,7 +469,7 @@
   }
 
   global.Terms = { unsee: unsee, setKnown:setKnown, isKnown:isKnown, forgetAll:forgetAll, knownCount:knownCount, mark:mark, legend:legend,
-                   CATS:CATS, setStation:setStation, setQuiet:setQuiet, PEEK:PEEK, JUMP:JUMP };
+                   CATS:CATS, setStation:setStation, setQuiet:setQuiet, teach:teach, PEEK:PEEK, JUMP:JUMP };
 })(window);
 
 /* A number never parts from its unit at a line break — 20 °C, 5 min, 48 mm, 60 %, 4 marks, pH 2 — wherever the page

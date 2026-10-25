@@ -262,6 +262,12 @@ h1,h2,h3,h4{margin:0;font-weight:700;line-height:1.25}
 .t.is-peek:hover,.tc.is-peek:hover,.t.is-jump:hover,.tc.is-jump:hover{background:rgba(20,87,43,.10);border-radius:3px}
 .t.is-peek:focus-visible,.tc.is-peek:focus-visible,
 .t.is-jump:focus-visible,.tc.is-jump:focus-visible{outline:2px solid var(--green);outline-offset:2px;border-radius:3px}
+/* a word whose key-word card is at the bottom of this station: the faint rule of a definition and a small arrow down,
+   for "down to its card here" (25 Oct 2026, as in the Cells Lab) */
+.t.is-kw,.tc.is-kw{cursor:pointer;border-bottom:1px dotted rgba(0,0,0,.28);padding-bottom:1px}
+.t.is-kw::after,.tc.is-kw::after{content:"\2193";font-size:.72em;vertical-align:.2em;margin-left:1px;opacity:.75}
+.t.is-kw:hover,.tc.is-kw:hover{background:rgba(20,87,43,.10);border-radius:3px}
+.t.is-kw:focus-visible,.tc.is-kw:focus-visible{outline:2px solid var(--green);outline-offset:2px;border-radius:3px}
 
 /* the small picture that opens where you clicked */
 .peek{
