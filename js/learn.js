@@ -1509,7 +1509,7 @@
         '<path class="diag__head" d="M104 150 C104 104 130 74 170 72 C210 74 236 104 236 150 C236 186 210 208 170 208 C130 208 104 186 104 150 Z"/>' +
         '<g class="diag__legs">' + both('M152 76 L148 62', 170) + '</g><circle class="diag__eye" cx="147" cy="58" r="4"/><circle class="diag__eye" cx="193" cy="58" r="4"/>' +
         lab(210, 56, 340, 30, 'antennae — two pairs, one short') + lab(196, 58, 340, 52, 'eye on a stalk', 'extra') + lab(326, 84, 340, 96, 'claw — the first pair of legs') +
-        lab(220, 100, 340, 124, 'exoskeleton over the body') + lab(294, 174, 340, 180, 'walking legs — four more pairs') + lab(170, 206, 340, 232, 'the abdomen is folded under the body') +
+        lab(220, 100, 340, 124, 'carapace (part of the exoskeleton)') + lab(294, 174, 340, 180, 'walking legs — four more pairs') + lab(170, 206, 340, 232, 'the abdomen is folded under the body') +
         '<text class="diag__title" x="8" y="280">A crab, from above</text></svg>' },
     virus: { summary: 'What no photograph can show, drawn', caption: 'A virus, drawn: genetic material — DNA or RNA — inside a coat made of protein units, and nothing else. No cytoplasm, no membrane, no cell. Neither feature can be seen in a photograph, which is why this is drawn. The grey label is not in the 0610 syllabus.',
       svg: '<svg viewBox="0 0 520 250" class="diag__svg" role="img" aria-label="A labelled diagram of a virus: genetic material inside a protein coat">' +
