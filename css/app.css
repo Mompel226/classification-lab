@@ -712,9 +712,10 @@ picture{display:block;line-height:0}
 .examfocus li{font-size:14.5px;color:#3A2E14;margin-bottom:7px;line-height:1.5}
 .examfocus li:last-child{margin-bottom:0}
 .examfocus__tag{color:#8A5A0E}
-/* going further: one list, three kinds of tag */
-.later__ref--ib{background:#EFE9F8;color:#4C2E85;border-color:#C9B8E6}
-.later__ref--beyond{background:#F1F1EE;color:#5A5A5A;border-color:#C9C9C4;font-style:italic}
+/* going further: one list, three kinds of tag. IB in the IB blue of the practicals (--ib), beyond the syllabus in grey;
+   two classes, so the plain .later__ref rule further down cannot paint over them */
+.later__ref.later__ref--ib{background:#E7E9F7;color:#2E3A8C;border:1px solid #B9C0E8}
+.later__ref.later__ref--beyond{background:#F1F1EE;color:#5A5A5A;border:1px solid #C9C9C4;font-style:italic}
 
 /* ---- instant tooltips on the badges (hover, keyboard focus, or a tap) ---- */
 .tip{position:relative;cursor:help}
