@@ -501,3 +501,52 @@
   }
   if (document.body) watch(); else document.addEventListener('DOMContentLoaded', watch);
 })();
+
+/* Scientific names in italics, as biologists print them (Daniel, 4 Nov 2026, of Vibrio cholerae in the Immunity Lab: "It
+   is a species. So why did you not italicize it like a binomial name?"), wherever the page writes them: the theory, a
+   question, a caption, a card. Made as the page changes, like the join above, so no question's words change. Only a name
+   written correctly is italicised (a genus with a capital, alone or with its species in lower case, or shortened to its
+   initial: P. leo), so the wrong forms this lab teaches against ("Panthera Leo", "carabus violaceus") stay as written; a
+   species word alone only after "species" or at the start of a hint ("leo, in Panthera leo"). A question option that
+   names its own format ("Panthera leo, in bold") stays as written too: italics there would answer it. */
+(function () {
+  var GEN = 'Panthera|Felis|Homo|Escherichia|Scolopendra|Polypodium|Phaseolus|Perca|Araneus|Amoeba|Paramecium|Plasmodium|' +
+            'Carabus|Vulpes|Vespula|Paragrapsus|Elephas|Columba|Iguana|Rana|Lithobius|Apis|Carcinus|Oryza|Helianthus|Amanita|Lycosa|Bellis';
+  var EPI = 'leo|tigris|pardus|catus|sapiens|coli|canidens|glycyrrhiza|vulgare|vulgaris|fluviatilis|flavescens|diadematus|proteus|' +
+            'caudatum|vivax|violaceus|vulpes|quadridentatus|maximus|livia|iguana|temporaria|forficatus|mellifera|maenas|sativa|annuus|' +
+            'muscaria|erythrognatha|perennis';
+  var SCI = new RegExp('(^|\\bspecies )(' + EPI + ')\\b|\\b(?:' + GEN + ')(?: (?:' + EPI + '))?\\b(?! [A-Z][a-z])|\\b[A-Z]\\. (?:' + EPI + ')\\b');
+  var FORMAT = /\bin (?:italics|bold)\b|\bunderlined\b/;
+  var SVG = 'http://www.w3.org/2000/svg';
+  function fix(t) {
+    var p = t.parentNode; if (!p || p.nodeType !== 1) return;
+    var tag = p.nodeName.toUpperCase();
+    if (tag === 'SCRIPT' || tag === 'STYLE' || tag === 'TEXTAREA' || tag === 'OPTION' || tag === 'TITLE' || tag === 'I' || tag === 'EM') return;
+    if (p.classList && p.classList.contains('sci')) return;
+    var m = SCI.exec(t.nodeValue); if (!m) return;
+    if (p.closest && p.closest('.act')) { var opt = p.closest('.opt, li, label, button, .tok') || p; if (FORMAT.test(opt.textContent)) return; }
+    var at = m[2] ? m.index + m[1].length : m.index, word = m[2] || m[0];
+    var svg = p.namespaceURI === SVG, w = svg ? document.createElementNS(SVG, 'tspan') : document.createElement('span');
+    w.setAttribute('class', 'sci'); w.textContent = word;
+    var rest = t.splitText(at);
+    rest.nodeValue = rest.nodeValue.slice(word.length);
+    p.insertBefore(w, rest);
+    fix(rest);
+  }
+  function walk(node) {
+    if (!node) return;
+    if (node.nodeType === 3) { fix(node); return; }
+    if (node.nodeType !== 1 && node.nodeType !== 11) return;
+    var w = document.createTreeWalker(node, NodeFilter.SHOW_TEXT), t, list = [];
+    while ((t = w.nextNode())) list.push(t);
+    list.forEach(fix);
+  }
+  function watch() {
+    walk(document.body);
+    new MutationObserver(function (recs) {
+      recs.forEach(function (r) { if (r.type === 'characterData') fix(r.target); else for (var i = 0; i < r.addedNodes.length; i++) walk(r.addedNodes[i]); });
+    }).observe(document.body, { subtree: true, childList: true, characterData: true });
+  }
+  if (document.body) watch(); else document.addEventListener('DOMContentLoaded', watch);
+})();
+
