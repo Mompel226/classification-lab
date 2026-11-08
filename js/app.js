@@ -367,7 +367,7 @@
           var tag = pastTerm(w.term) ? ' ' + pastBadge(pastTerm(w.term), 'tier tier--old') : g2.ext ? ' <span class="tier tier--ext tip" tabindex="0" data-tip="The 0610 syllabus does not name it, but it is useful to know: an exam question can still use it.">beyond 0610</span>'
                   : g2.sup ? ' <span class="tier tier--sup" title="Supplement — Extended papers (2 and 4) only">Supplement</span>' : '';
           return '<div class="kw kw--flip" role="button" tabindex="0" aria-expanded="false" data-kwcard="' + esc(w.term.toLowerCase()) + '">' +
-                 '<dt>' + M(w.term) + numberOf(g2) + tag + '</dt><p class="kw__ask">Do you know it? Tap to check</p><dd>' + M(w.def) + '</dd></div>';
+                 '<dt>' + M(w.term) + numberOf(g2) + tag + (window.Say ? window.Say.html(w.term) : '') + '</dt><p class="kw__ask">Do you know it? Tap to check</p><dd>' + M(w.def) + '</dd></div>';
         }).join('') + '</dl>';
       Array.prototype.forEach.call(k.querySelectorAll('.kw--flip'), function (c) {
         var turn = function () { var o = c.classList.toggle('is-open'); c.setAttribute('aria-expanded', o ? 'true' : 'false'); };
@@ -1220,7 +1220,7 @@
             var got = '<button type="button" class="gloss__got' + (known ? ' is-known' : '') + '" data-got="' + esc(w.term) + '">' +
                       (known ? '✓ you know this — show it again' : 'I know this one — stop marking it') + '</button>';
             var also = (w.also || []).length ? '<p class="gloss__also">See also: ' + w.also.map(function (t) { return '<button type="button" class="gloss__see" data-see="' + esc(t) + '">' + esc(t) + '</button>'; }).join(' ') + '</p>' : '';
-            return '<div class="gloss__row" data-term="' + esc((w.term + ' ' + (w.plural || '') + ' ' + (w.singular || '') + ' ' + w.def).toLowerCase()) + '"><dt>' + esc(w.term) + numberOf(w) + tierTag(w) + '</dt><dd>' + esc(w.def) + also + got + '</dd></div>';
+            return '<div class="gloss__row" data-term="' + esc((w.term + ' ' + (w.plural || '') + ' ' + (w.singular || '') + ' ' + w.def).toLowerCase()) + '"><dt>' + esc(w.term) + numberOf(w) + tierTag(w) + (window.Say ? window.Say.html(w.term) : '') + '</dt><dd>' + esc(w.def) + also + got + '</dd></div>';
           }).join('') + '</dl></section>';
         }).join('');
       }

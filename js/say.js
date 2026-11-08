@@ -1,0 +1,597 @@
+/* ============================================================
+   labs-shared/say/say.js — how to say the hard words, for every engine lab (8 Nov 2026).
+   ONE copy: each lab's tools/build.mjs copies it to js/say.js (and labs-shared/say/audio/ to assets/say/) through
+   labs-shared/say/copy.mjs, which also checks the word list. Edit it HERE, never in a lab: the next build overwrites a
+   lab's copy. Daniel, 8 Nov 2026: "I would like you to do the Cambridge button, the link to all of the complex words in
+   all of the other labs"; "the idea is for complex words to have the pronunciation, not necessarily for simple ones".
+   It was the Say block of the Inheritance Lab's js/terms.js (5–8 Nov 2026), and its look was in css/inheritance.css;
+   both moved here unchanged, the look as the CSS below (each lab's own colour: --accent, or --green in the older labs).
+   A lab shows it with window.Say.html(term) after the word on a key-word card and on a glossary row (js/app.js).
+   ============================================================ */
+/* ============================================================
+   Say — how to say the hard words (Daniel, 5 Nov 2026: "some … keywords are hard to pronounce … have an option to
+   listen to the right pronunciation"; then "the sounds are absolutely horrible … very robotic … I like the ones that
+   were recordings, but I just wanted high quality recordings … it doesn't matter if it's UK US"). Each hard word: a
+   spelling guide (uh-LEEL); and ONE button, only where Wikimedia Commons has a clear recording by a real speaker
+   (assets/say/<word>-<uk|us|en>.mp3, the accent named beside the button when it is known; credited in assets/say/CREDITS.md and, as it
+   plays, under the word). No browser voice, ever. Say.html(term) gives them for a key-word card or a glossary row (a
+   phrase gets its hard words' guides, and no button); a press plays, and never turns the card.
+   CAMBRIDGE (Daniel, 8 Nov 2026: "I really like the fact that in the Cambridge you have the UK version and the US version
+   … link it directly so it sounds from the Cambridge website, but directly from my website … clearly referencing them";
+   he chose to play in place without asking Cambridge first): a word Cambridge Dictionary pronounces on its own page has
+   two buttons, UK and US, that play Cambridge's recordings from Cambridge's own server (nothing of theirs is stored
+   here), with "Audio: Cambridge Dictionary" beside them, a link to that word's page. The addresses were read from each
+   word's page on 8 Nov 2026 (its headword the word itself; each recording 0.6–2.4 s, none cut short). A recording that
+   will not play here plays the Commons one instead, if the word has one, or says so and offers Cambridge's page.
+   The Commons recordings stay for the words Cambridge has no page for (centromere).
+   The other engine labs' complex words joined on 8 Nov 2026 (Daniel: "the idea is for complex words to have the
+   pronunciation, not necessarily for simple ones"), their addresses read the same way, each recording 0.6–2.5 s; a word
+   with no Cambridge page, or one whose recording is outside that, keeps its spelling guide and has no button.
+   THE Y7 CELL GAME (practicals/ks3-y7-cell-organelles; Daniel, 8 Nov 2026: "all of the words and organelles that are
+   complex in these key stage 3 game ... pause for a moment the running music and then relaunch it after the word is
+   done", then "and us pronunciation too") uses it as well: tools/practicals-sync.mjs copies it there as js/say.js. Its
+   words joined the list the same day, read the same way (each recording 0.6–2.4 s). As a recording starts and ends,
+   the document gets a 'say' event, detail.on true or false: the game pauses its music for the word.
+   ============================================================ */
+(function (global) {
+  'use strict';
+  /* the look: the spelling guide and small buttons under the word, on a key-word card and in the glossary; the credit
+     shows under it while it is the last one played; Cambridge's name beside the UK and US buttons, a link to the word's page */
+  var CSS = '.say{display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px;margin:5px 0 0;font-weight:400;font-size:12.5px;line-height:1.3}.say__g{color:var(--grey);letter-spacing:.01em}.say__b{font:inherit;font-size:11.5px;font-weight:600;display:inline-flex;align-items:center;gap:3px;padding:2px 8px 2px 6px;border-radius:var(--r-pill);border:1px solid var(--edge);background:var(--card);color:var(--ink);cursor:pointer}.say__b svg{width:13px;height:13px;flex:none}.say__a{font-size:10px;font-weight:600;letter-spacing:.04em;color:var(--grey);margin-left:2px}.say__b:hover,.say__b:focus-visible{border-color:var(--accent,var(--green));color:var(--accent,var(--green))}.say__b:focus-visible{outline:2px solid var(--accent,var(--green));outline-offset:1px}.say__b.is-playing{background:var(--accent-tint,var(--green-tint));border-color:var(--accent,var(--green));color:var(--accent,var(--green))}.say__c{flex-basis:100%;font-size:11.5px;color:var(--grey)}.say__c[hidden]{display:none}.say__c a{color:inherit}.say__bs{display:inline-flex;gap:6px;white-space:nowrap}.say__src{flex-basis:100%;font-size:11px;color:var(--grey);text-decoration:underline;text-decoration-color:var(--edge);text-underline-offset:2px;white-space:nowrap}.say__src:hover,.say__src:focus-visible{color:var(--accent,var(--green));text-decoration-color:currentColor}';
+  if (!document.getElementById('say-css')) {
+    var st = document.createElement('style'); st.id = 'say-css'; st.textContent = CSS;
+    (document.head || document.documentElement).appendChild(st);
+  }
+  var DIR = 'assets/say/';
+  /* word: [spelling guide, { uk / us: [speaker, licence, its Commons page] }] */
+  var W = {
+    "allele": ["uh-LEEL (UK also AL-eel)", {"us": ["Wodencafe", "CC0", "https://commons.wikimedia.org/wiki/File:LL-Q1860_%28eng%29-Wodencafe-allele.wav"]}],
+    "chromosome": ["KROH-muh-sohm", {"us": ["BirdHopper", "CC BY-SA 4.0", "https://commons.wikimedia.org/wiki/File:en-us-chromosome.ogg"]}],
+    "chromatid": ["KROH-muh-tid", {}],
+    "gene": ["jeen", {"en": ["Grendelkhan", "CC0", "https://commons.wikimedia.org/wiki/File:LL-Q1860_%28eng%29-Grendelkhan-gene.wav"]}],
+    "genome": ["JEE-nohm", {"us": ["Wodencafe", "CC0", "https://commons.wikimedia.org/wiki/File:LL-Q1860_%28eng%29-Wodencafe-genome.wav"]}],
+    "genotype": ["JEN-uh-type or JEE-nuh-type", {"us": ["Denendaden", "CC0", "https://commons.wikimedia.org/wiki/File:LL-Q1860_%28eng%29-Denendaden-genotype.wav"]}],
+    "phenotype": ["FEE-nuh-type", {"us": ["Denendaden", "CC0", "https://commons.wikimedia.org/wiki/File:LL-Q1860_%28eng%29-Denendaden-phenotype.wav"]}],
+    "phenotypic": ["fee-nuh-TIP-ik", {}],
+    "homozygous": ["hoh-muh-ZY-gus", {"us": ["Denendaden", "CC0", "https://commons.wikimedia.org/wiki/File:LL-Q1860_%28eng%29-Denendaden-homozygous.wav"]}],
+    "heterozygous": ["het-uh-roh-ZY-gus", {}],
+    "diploid": ["DIP-loyd", {}],
+    "haploid": ["HAP-loyd", {"en": ["Back ache", "CC BY-SA 4.0", "https://commons.wikimedia.org/wiki/File:LL-Q1860_%28eng%29-Back_ache-haploid.wav"]}],
+    "ribosome": ["RY-buh-sohm", {"en": ["Mathmitch7", "CC0", "https://commons.wikimedia.org/wiki/File:LL-Q1860_%28eng%29-Mathmitch7-ribosome.wav"]}],
+    "mitosis": ["my-TOH-sis", {"en": ["عُثمان (Middle river exports)", "CC0", "https://commons.wikimedia.org/wiki/File:LL-Q1860_%28eng%29-%D8%B9%D9%8F%D8%AB%D9%85%D8%A7%D9%86_%28Middle_river_exports%29-mitosis.wav"]}],
+    "meiosis": ["my-OH-sis", {"us": ["Emw", "CC BY-SA 3.0", "https://commons.wikimedia.org/wiki/File:en-us-meiosis.ogg"]}],
+    "gamete": ["GAM-eet", {"us": ["Wodencafe", "CC0", "https://commons.wikimedia.org/wiki/File:LL-Q1860_%28eng%29-Wodencafe-gamete.wav"]}],
+    "zygote": ["ZY-goht", {"us": ["Naomi Persephone Amethyst", "CC BY-SA 4.0", "https://commons.wikimedia.org/wiki/File:LL-Q1860_%28eng%29-Naomi_Persephone_Amethyst_%28NaomiAmethyst%29-zygote.wav"]}],
+    "nucleus": ["NYOO-klee-us (US NOO-klee-us)", {"us": ["Wodencafe", "CC0", "https://commons.wikimedia.org/wiki/File:LL-Q1860_%28eng%29-Wodencafe-nucleus.wav"]}],
+    "nucleotide": ["NYOO-klee-uh-tide (US NOO-…)", {"us": ["Flame, not lame", "CC0", "https://commons.wikimedia.org/wiki/File:LL-Q1860_%28eng%29-Flame%2C_not_lame-nucleotide.wav"]}],
+    "fertilisation": ["fur-tih-ly-ZAY-shun", {"us": ["Vininn126", "CC BY-SA 4.0", "https://commons.wikimedia.org/wiki/File:LL-Q1860_%28eng%29-Vininn126-fertilization.wav"]}],
+    "codominance": ["koh-DOM-ih-nunss", {}],
+    "codominant": ["koh-DOM-ih-nunt", {}],
+    "dominant": ["DOM-ih-nunt", {"us": ["NaomiAmethyst", "CC BY-SA 4.0", "https://commons.wikimedia.org/wiki/File:LL-Q1860_%28eng%29-NaomiAmethyst-dominant.wav"]}],
+    "recessive": ["rih-SESS-iv", {"uk": ["Vealhurl", "CC BY-SA 4.0", "https://commons.wikimedia.org/wiki/File:LL-Q1860_%28eng%29-Vealhurl-recessive.wav"]}],
+    "monohybrid": ["mon-oh-HY-brid", {}],
+    "Punnett": ["PUN-it", {}],
+    "pedigree": ["PED-ih-gree", {}],
+    "inheritance": ["in-HERR-ih-tunss", {"us": ["Wodencafe", "CC0", "https://commons.wikimedia.org/wiki/File:LL-Q1860_%28eng%29-Wodencafe-inheritance.wav"]}],
+    "asexual": ["ay-SEK-shoo-ul", {"us": ["Naomi Persephone Amethyst", "CC BY-SA 4.0", "https://commons.wikimedia.org/wiki/File:LL-Q1860_%28eng%29-Naomi_Persephone_Amethyst_%28NaomiAmethyst%29-asexual.wav"]}],
+    "characteristic": ["karr-uk-tuh-RIS-tik", {}],
+    "centromere": ["SEN-truh-meer", {"en": ["Yangolin", "CC BY-SA 4.0", "https://commons.wikimedia.org/wiki/File:LL-Q1860_%28eng%29-Yangolin-centromere.wav"]}],
+    "mRNA": ["em-ar-en-AY", {}],
+    "cytoplasm": ["SY-tuh-plaz-um", {"us": ["Wodencafe", "CC0", "https://commons.wikimedia.org/wiki/File:LL-Q1860_%28eng%29-Wodencafe-cytoplasm.wav"]}],
+    "mitochondria": ["my-tuh-KON-dree-uh", {}],
+    "chiasma": ["ky-AZ-muh", {}],
+    "homologous": ["huh-MOL-uh-gus", {}],
+    /* 8 Nov 2026: the other engine labs' hard words (Cells, Circulation, Immunity, Classification, Digestion, Plants); a
+       word inside a phrase card ("pulmonary artery") has its guide only */
+    "mitochondrion": ["my-tuh-KON-dree-un (plural my-tuh-KON-dree-uh)", {}],
+    "cellulose": ["SEL-yuh-lohss", {}],
+    "chloroplast": ["KLOR-uh-plast (UK also KLOR-uh-plahst)", {}],
+    "vacuole": ["VAK-yoo-ohl", {}],
+    "chlorophyll": ["KLOR-uh-fil", {}],
+    "bacterium": ["bak-TEER-ee-um (plural bak-TEER-ee-uh)", {}],
+    "plasmid": ["PLAZ-mid", {}],
+    "prokaryote": ["proh-KARR-ee-oht", {}],
+    "neurone": ["NYOOR-ohn", {}],
+    "micrometre": ["MY-kroh-mee-tuh", {}],
+    "magnification": ["mag-nih-fih-KAY-shun", {}],
+    "organism": ["OR-guh-niz-um", {}],
+    "tissue": ["TISH-oo", {}],
+    "ciliated": ["SIL-ee-ay-tid", {}],
+    "palisade": ["pal-ih-SAYD", {}],
+    "mesophyll": ["MEZ-oh-fil or MESS-oh-fil", {}],
+    "atrium": ["AY-tree-um (plural AY-tree-uh)", {}],
+    "ventricle": ["VEN-trih-kul", {}],
+    "septum": ["SEP-tum", {}],
+    "systole": ["SIS-tuh-lee", {}],
+    "diastole": ["dy-AS-tuh-lee", {}],
+    "electrocardiogram": ["ih-lek-troh-KAR-dee-uh-gram", {}],
+    "stethoscope": ["STETH-uh-skohp", {}],
+    "hypothesis": ["hy-POTH-uh-sis", {}],
+    "artery": ["AR-tuh-ree", {}],
+    "capillary": ["kuh-PIL-uh-ree (US KAP-uh-ler-ee)", {}],
+    "lumen": ["LOO-min", {}],
+    "aorta": ["ay-OR-tuh", {}],
+    "vena cava": ["VEE-nuh KAY-vuh", {}],
+    "plasma": ["PLAZ-muh", {}],
+    "platelet": ["PLAYT-lit", {}],
+    "haemoglobin": ["hee-muh-GLOH-bin", {}],
+    "phagocyte": ["FAG-uh-site", {}],
+    "lymphocyte": ["LIM-fuh-site", {}],
+    "phagocytosis": ["fag-uh-sy-TOH-sis", {}],
+    "antibody": ["AN-tee-bod-ee", {}],
+    "fibrinogen": ["fih-BRIN-uh-jun (US fy-BRIN-uh-jun)", {}],
+    "fibrin": ["FIB-rin (US FY-brin)", {}],
+    "oxygenated": ["OK-sih-juh-nay-tid", {}],
+    "deoxygenated": ["dee-OK-sih-juh-nay-tid", {}],
+    "atrioventricular": ["ay-tree-oh-ven-TRIK-yoo-luh", {}],
+    "semilunar": ["sem-ee-LOO-nuh", {}],
+    "coronary": ["KORR-uh-nuh-ree", {}],
+    "pulmonary": ["PUL-muh-nuh-ree", {}],
+    "systemic": ["sis-TEM-ik", {}],
+    "aerobic": ["air-OH-bik", {}],
+    "anaerobic": ["an-air-OH-bik", {}],
+    "lactic": ["LAK-tik", {}],
+    "renal": ["REE-nul", {}],
+    "hepatic": ["hih-PAT-ik", {}],
+    "predisposition": ["pree-dis-puh-ZISH-un", {}],
+    "circulation": ["sur-kyoo-LAY-shun", {}],
+    "circulatory": ["sur-kyoo-LAY-tuh-ree (US SUR-kyuh-luh-tor-ee)", {}],
+    "pathogen": ["PATH-uh-jun", {}],
+    "mucus": ["MYOO-kus", {}],
+    "antigen": ["AN-tih-jun", {}],
+    "complementary": ["kom-plih-MEN-tuh-ree", {}],
+    "vaccination": ["vak-sih-NAY-shun", {}],
+    "cholera": ["KOL-uh-ruh", {}],
+    "toxin": ["TOK-sin", {}],
+    "diarrhoea": ["dy-uh-REE-uh", {}],
+    "dehydration": ["dee-hy-DRAY-shun", {}],
+    "transmissible": ["tranz-MIS-uh-bul", {}],
+    "hydrochloric": ["hy-druh-KLOR-ik", {}],
+    "immunity": ["ih-MYOO-nih-tee", {}],
+    "respiration": ["res-pih-RAY-shun", {}],
+    "excretion": ["ik-SKREE-shun", {}],
+    "metabolism": ["muh-TAB-uh-liz-um", {}],
+    "stimulus": ["STIM-yoo-lus (plural STIM-yoo-ly)", {}],
+    "species": ["SPEE-sheez", {}],
+    "genus": ["JEE-nus", {}],
+    "taxonomy": ["tak-SON-uh-mee", {}],
+    "morphology": ["mor-FOL-uh-jee", {}],
+    "photosynthesis": ["foh-toh-SIN-thuh-sis", {}],
+    "hypha": ["HY-fuh (plural HY-fee)", {}],
+    "mycelium": ["my-SEE-lee-um", {}],
+    "protoctist": ["proh-TOK-tist", {}],
+    "fungus": ["FUNG-gus (plural FUNG-gy or FUN-jy)", {}],
+    "arthropod": ["AR-thruh-pod", {}],
+    "exoskeleton": ["ek-soh-SKEL-ih-tun", {}],
+    "arachnid": ["uh-RAK-nid", {}],
+    "crustacean": ["krus-TAY-shun", {}],
+    "myriapod": ["MIRR-ee-uh-pod", {}],
+    "antenna": ["an-TEN-uh (plural an-TEN-ee)", {}],
+    "cephalothorax": ["sef-uh-loh-THOR-aks", {}],
+    "thorax": ["THOR-aks", {}],
+    "abdomen": ["AB-duh-mun", {}],
+    "cotyledon": ["kot-ih-LEE-dun", {}],
+    "monocotyledon": ["mon-oh-kot-ih-LEE-dun", {}],
+    "dicotyledon": ["dy-kot-ih-LEE-dun", {}],
+    "xylem": ["ZY-lum", {}],
+    "phloem": ["FLOH-em", {}],
+    "virus": ["VY-rus", {}],
+    "specimen": ["SPESS-uh-min", {}],
+    "dichotomous": ["dy-KOT-uh-mus", {}],
+    "binomial": ["by-NOH-mee-ul", {}],
+    "autotrophic": ["aw-toh-TROF-ik", {}],
+    "heterotrophic": ["het-uh-roh-TROF-ik", {}],
+    "saprotrophic": ["sap-roh-TROF-ik", {}],
+    "evolutionary": ["ee-vuh-LOO-shuh-nuh-ree", {}],
+    "carbohydrate": ["kar-boh-HY-drayt", {}],
+    "anaemia": ["uh-NEE-mee-uh", {}],
+    "calcium": ["KAL-see-um", {}],
+    "ingestion": ["in-JES-chun", {}],
+    "absorption": ["ub-ZORP-shun", {}],
+    "assimilation": ["uh-sim-ih-LAY-shun", {}],
+    "egestion": ["ih-JES-chun", {}],
+    "peristalsis": ["perr-ih-STAL-sis", {}],
+    "mastication": ["mas-tih-KAY-shun", {}],
+    "bolus": ["BOH-lus", {}],
+    "incisor": ["in-SY-zuh", {}],
+    "canine": ["KAY-nine", {}],
+    "premolar": ["pree-MOH-luh", {}],
+    "enamel": ["ih-NAM-ul", {}],
+    "dentine": ["DEN-teen", {}],
+    "plaque": ["plak (UK also plahk)", {}],
+    "saliva": ["suh-LY-vuh", {}],
+    "amylase": ["AM-ih-layz", {}],
+    "carbohydrase": ["kar-boh-HY-drayz", {}],
+    "maltose": ["MAWL-tohz", {}],
+    "maltase": ["MAWL-tayz", {}],
+    "epiglottis": ["ep-ih-GLOT-is", {}],
+    "pharynx": ["FARR-inks", {}],
+    "trachea": ["truh-KEE-uh (US TRAY-kee-uh)", {}],
+    "oesophagus": ["ih-SOF-uh-gus", {}],
+    "pepsin": ["PEP-sin", {}],
+    "protease": ["PROH-tee-ayz", {}],
+    "chyme": ["kime", {}],
+    "denatured": ["dee-NAY-chud", {}],
+    "hepatocyte": ["hih-PAT-uh-site", {}],
+    "glycogen": ["GLY-kuh-jun", {}],
+    "emulsification": ["ih-mul-sih-fih-KAY-shun", {}],
+    "neutralise": ["NYOO-truh-lyz", {}],
+    "duodenum": ["joo-uh-DEE-num (US doo-uh-DEE-num)", {}],
+    "trypsin": ["TRIP-sin", {}],
+    "lipase": ["LY-payz (US LIP-ayss)", {}],
+    "villus": ["VIL-us (plural VIL-y)", {}],
+    "microvilli": ["my-kroh-VIL-y", {}],
+    "epithelium": ["ep-ih-THEE-lee-um", {}],
+    "enterocyte": ["EN-tuh-roh-site", {}],
+    "lacteal": ["LAK-tee-ul", {}],
+    "ileum": ["IL-ee-um", {}],
+    "faeces": ["FEE-seez", {}],
+    "reabsorption": ["ree-ub-ZORP-shun", {}],
+    "urea": ["yoo-REE-uh", {}],
+    "enzyme": ["EN-zime", {}],
+    "polymer": ["POL-ih-muh", {}],
+    "monomer": ["MON-uh-muh", {}],
+    "triglyceride": ["try-GLIS-uh-ride", {}],
+    "catalyst": ["KAT-uh-list", {}],
+    "substrate": ["SUB-strayt", {}],
+    "diffusion": ["dih-FYOO-zhun", {}],
+    "osmosis": ["oz-MOH-sis", {}],
+    "hydrolysis": ["hy-DROL-uh-sis", {}],
+    "catabolic": ["kat-uh-BOL-ik", {}],
+    "alimentary": ["al-ih-MEN-tuh-ree", {}],
+    "salivary": ["SAL-ih-vuh-ree (US SAL-uh-ver-ee)", {}],
+    "gastric": ["GAS-trik", {}],
+    "pancreatic": ["pang-kree-AT-ik", {}],
+    "periodontal": ["perr-ee-oh-DON-tul", {}],
+    "longitudinal": ["lon-jih-TYOO-dih-nul", {}],
+    "permeable": ["PUR-mee-uh-bul", {}],
+    "vitamin": ["VIT-uh-min (US VY-tuh-min)", {}],
+    "germination": ["jur-mih-NAY-shun", {}],
+    "radicle": ["RAD-ih-kul", {}],
+    "plumule": ["PLOO-myool", {}],
+    "testa": ["TES-tuh", {}],
+    "lignin": ["LIG-nin", {}],
+    "cambium": ["KAM-bee-um", {}],
+    "cuticle": ["KYOO-tih-kul", {}],
+    "epidermis": ["ep-ih-DUR-mis", {}],
+    "stoma": ["STOH-muh (plural STOH-muh-tuh)", {}],
+    "glucose": ["GLOO-kohss", {}],
+    "sucrose": ["SOO-krohz", {}],
+    "transpiration": ["tran-spih-RAY-shun", {}],
+    "humidity": ["hyoo-MID-ih-tee", {}],
+    "turgid": ["TUR-jid", {}],
+    "flaccid": ["FLAS-id", {}],
+    "cohesion": ["koh-HEE-zhun", {}],
+    "adhesion": ["ud-HEE-zhun", {}],
+    "potometer": ["puh-TOM-ih-tuh", {}],
+    "translocation": ["tranz-loh-KAY-shun", {}],
+    "tropism": ["TROH-piz-um", {}],
+    "gravitropism": ["grav-ih-TROH-piz-um", {}],
+    "phototropism": ["foh-TOT-ruh-piz-um (US foh-toh-TROH-piz-um)", {}],
+    "auxin": ["AWK-sin", {}],
+    "sepal": ["SEP-ul (US SEE-pul)", {}],
+    "stamen": ["STAY-mun", {}],
+    "anther": ["AN-thuh", {}],
+    "carpel": ["KAR-pul", {}],
+    "stigma": ["STIG-muh", {}],
+    "ovary": ["OH-vuh-ree", {}],
+    "ovule": ["OV-yool", {}],
+    "pollination": ["pol-ih-NAY-shun", {}],
+    "xerophyte": ["ZEER-oh-fite", {}],
+    "hydrophyte": ["HY-droh-fite", {}],
+    "cortex": ["KOR-teks", {}],
+    "vascular": ["VAS-kyoo-luh", {}],
+    "nitrate": ["NY-trayt", {}],
+    "magnesium": ["mag-NEE-zee-um", {}],
+    "variegated": ["VAIR-ee-uh-gay-tid", {}],
+    "iodine": ["EYE-uh-deen", {}],
+    "elongation": ["ee-long-GAY-shun", {}],
+    "pollen": ["POL-un", {}],
+    /* the Y7 cell game (8 Nov 2026) */
+    "organelle": ["or-guh-NEL", {}],
+    "vesicle": ["VES-ih-kul", {}],
+    "microtubule": ["my-kroh-TYOO-byool (US my-kroh-TOO-byool)", {}],
+    "endoplasmic reticulum": ["en-doh-PLAZ-mik ruh-TIK-yuh-lum", {}],
+    "nanometre": ["NAN-oh-mee-tuh", {}],
+    "lipid": ["LIP-id", {}],
+    "nuclear": ["NYOO-klee-uh (US NOO-klee-er)", {}],
+    "hydrogen": ["HY-druh-jun", {}],
+    "ion": ["EYE-on", {}],
+    "amino acid": ["uh-MEE-noh AS-id", {}],
+    "carbon dioxide": ["KAR-bun dy-OK-side", {}],
+    "membrane": ["MEM-brayn", {}],
+    "electron microscope": ["ih-LEK-tron MY-kruh-skohp", {}],
+    "electron": ["ih-LEK-tron", {}],
+    "hydrophobic": ["hy-droh-FOH-bik", {}],
+    "proton": ["PROH-ton", {}],
+    "gradient": ["GRAY-dee-unt", {}],
+    "apparatus": ["ap-uh-RAY-tus (US ap-uh-RAT-us)", {}],
+    "cytosol": ["SY-tuh-sol", {}],
+    "nucleolus": ["nyoo-KLEE-uh-lus (US noo-…)", {}],
+    "histone": ["HIS-tohn", {}],
+    "centrosome": ["SEN-truh-sohm", {}],
+    "lysosome": ["LY-suh-sohm", {}],
+    "exocytosis": ["ek-soh-sy-TOH-sis", {}],
+    "Golgi": ["GOL-jee (US GOHL-jee)", {}],
+    "cristae": ["KRIS-tee", {}],
+    "intermembrane": ["in-tuh-MEM-brayn", {}],
+    "synthase": ["SIN-thayz", {}],
+    "pyruvate": ["py-ROO-vayt", {}],
+    "glycolysis": ["gly-KOL-ih-sis", {}],
+    "phosphorylation": ["fos-fuh-rih-LAY-shun", {}],
+    "Krebs cycle": ["KREBZ SY-kul", {}],
+    "chemiosmosis": ["kem-ee-oz-MOH-sis", {}],
+    "decarboxylation": ["dee-kar-bok-sih-LAY-shun", {}],
+    "dehydrogenation": ["dee-hy-druh-juh-NAY-shun", {}],
+    "facilitated": ["fuh-SIL-ih-tay-tid", {}]
+  };
+  /* word: [its UK recording, its US recording, its page], each under https://dictionary.cambridge.org
+     (/media/english/uk_pron/….mp3, /media/english/us_pron/….mp3, /dictionary/english/…) */
+  var CAM_HOST = 'https://dictionary.cambridge.org';
+  var CAM = {
+    "allele": ["e/epd/epd00/epd00940", "e/eus/eus00/eus00917", "allele"],
+    "chromosome": ["u/ukc/ukcho/ukchora028", "c/chr/chrom/chromosome", "chromosome"],
+    "chromatid": ["c/csd/csdk0/csdk0132", "c/csd/csds0/csds0132", "chromatid"],
+    "gene": ["u/ukg/ukgec/ukgecko022", "g/gen/gene_/gene", "gene"],
+    "genome": ["u/ukg/ukgen/ukgenit006", "u/usg/usgec/usgecko027", "genome"],
+    "genotype": ["u/ukg/ukgen/ukgenit007", "e/eus/eus72/eus72009", "genotype"],
+    "phenotype": ["u/ukp/ukphe/ukpheno002", "u/usp/uspha/usphant011", "phenotype"],
+    "phenotypic": ["c/cdo/cdo08/cdo0824ukphen1774", "c/cdo/cdo08/cdo0824usphen1819", "phenotypic"],
+    "homozygous": ["e/epd/epd14/epd14287", "e/eus/eus14/eus14018", "homozygous"],
+    "heterozygous": ["e/epd/epd13/epd13969", "e/eus/eus13/eus13702", "heterozygous"],
+    "diploid": ["e/epd/epd08/epd08625", "e/eus/eus08/eus08449", "diploid"],
+    "haploid": ["e/epd/epd13/epd13421", "e/eus/eus13/eus13161", "haploid"],
+    "ribosome": ["c/cdo/cdo02/cdo0216ribouk1664", "c/cdo/cdo03/cdo0318usribo4160", "ribosome"],
+    "mitosis": ["u/ukm/ukmis/ukmiste025", "u/usm/usmis/usmisle029", "mitosis"],
+    "meiosis": ["e/epd/epd18/epd18821", "e/eus/eus18/eus18499", "meiosis"],
+    "gamete": ["u/ukg/ukgam/ukgambl009", "e/eus/eus71/eus71973", "gamete"],
+    "zygote": ["u/ukz/ukzit/ukzit__024", "u/usz/uszip/uszippy016", "zygote"],
+    "nucleus": ["u/ukn/uknow/uknowac018", "e/eus/eus73/eus73270", "nucleus"],
+    "nucleotide": ["e/epd/epd20/epd20509", "e/eus/eus20/eus20107", "nucleotide"],
+    "fertilisation": ["u/ukf/ukfer/ukferre007", "f/fer/ferti/fertilization", "fertilization"],
+    "dominant": ["u/ukd/ukdol/ukdolph013", "d/dom/domin/dominant", "dominant"],
+    "recessive": ["u/ukr/ukrec/ukrecep005", "u/usr/usrea/usreaso015", "recessive"],
+    "pedigree": ["u/ukp/ukped/ukpedal015", "e/eus/eus75/eus75860", "pedigree"],
+    "inheritance": ["u/uki/uking/ukingra016", "i/inh/inher/inheritance", "inheritance"],
+    "asexual": ["u/uka/ukasb/ukasbes017", "u/usa/usart/usartle017", "asexual"],
+    "characteristic": ["u/ukc/ukcha/ukchaot022", "c/cha/chara/characteristic", "characteristic"],
+    "mRNA": ["c/cdo/cdo02/cdo0216mrnauk1260", "c/cdo/cdo03/cdo0318usmrna3145", "mrna"],
+    "cytoplasm": ["u/ukc/ukcys/ukcyst_005", "e/eus/eus71/eus71126", "cytoplasm"],
+    "chiasma": ["c/cdo/cdo08/cdo0824ukchia0440", "c/cdo/cdo08/cdo0824uschia0450", "chiasma"],
+    "homologous": ["e/epd/epd14/epd14278", "e/eus/eus14/eus14009", "homologous"],
+    /* 8 Nov 2026, the other engine labs: read the same way, each recording 0.6–2.5 s */
+    "mitochondrion": ["e/epd/epd34/epd34408", "e/eus/eus18/eus18988", "mitochondrion"],
+    "cellulose": ["u/ukc/ukcel/ukceleb022", "e/eus/eus75/eus75505", "cellulose"],
+    "chloroplast": ["e/epd/epd33/epd33827", "e/eus/eus05/eus05788", "chloroplast"],
+    "vacuole": ["e/epd/epd29/epd29421", "e/eus/eus28/eus28890", "vacuole"],
+    "chlorophyll": ["u/ukc/ukchi/ukchirp023", "c/chl/chlor/chlorophyll", "chlorophyll"],
+    "bacterium": ["u/ukb/ukb00/ukb00196", "u/usb/usb00/usb00196", "bacterium"],
+    "plasmid": ["c/cdo/cdo07/cdo0725ukplas1413", "c/cdo/cdo07/cdo0725usplas1376", "plasmid"],
+    "prokaryote": ["c/cdo/cdo11/cdo1121ukprok3553", "c/cdo/cdo11/cdo1121usprok3492", "prokaryote"],
+    "neurone": ["c/cdo/cdo12/cdo124ukneur0943", "u/usn/usneo/usneoli023", "neurone"],
+    "micrometre": ["u/ukz/ukzzz/ukzzzze056", "u/usz/uszzz/uszzzzd056", "micrometre"],
+    "magnification": ["u/ukm/ukmad/ukmade_027", "m/mag/magni/magnification", "magnification"],
+    "organism": ["u/uko/ukord/ukordin007", "e/eus/eus75/eus75289", "organism"],
+    "tissue": ["u/ukt/uktip/uktippe021", "t/tis/tissu/tissue", "tissue"],
+    "mesophyll": ["u/uka/uka31/uka31297", "u/usa/usa31/usa31297", "mesophyll"],
+    "atrium": ["u/uka/ukato/ukatomi007", "u/usa/usatc/usatcho013", "atrium"],
+    "ventricle": ["u/ukv/ukven/ukventr001", "u/usv/usven/usvenez009", "ventricle"],
+    "septum": ["c/ces/cespu/cespuk001033", "c/ces/cespu/cespus001033", "septum"],
+    "systole": ["e/epd/epd27/epd27149", "c/cdo/cdo03/cdo0318ussyst4909", "systole"],
+    "diastole": ["c/ces/cespu/cespuk000332", "c/ces/cespu/cespus000332", "diastole"],
+    "electrocardiogram": ["u/ukb/ukb00/ukb00488", "e/eus/eus71/eus71471", "electrocardiogram"],
+    "stethoscope": ["u/uks/ukste/ukstere021", "s/ste/steth/stethoscope", "stethoscope"],
+    "hypothesis": ["u/ukh/ukhyp/ukhyper030", "h/hyp/hypot/hypothesis", "hypothesis"],
+    "artery": ["u/uka/ukarr/ukarriv021", "e/eus/eus70/eus70317", "artery"],
+    "capillary": ["u/ukc/ukcan/ukcant_025", "c/cap/capil/capillary", "capillary"],
+    "lumen": ["c/ces/cespu/cespuk000623", "c/ces/cespu/cespus000623", "lumen"],
+    "aorta": ["u/uka/ukant/ukantis028", "e/eus/eus70/eus70274", "aorta"],
+    "vena cava": ["e/epd/epd29/epd29560", "e/eus/eus29/eus29024", "vena-cava"],
+    "plasma": ["u/ukp/ukpla/ukplain022", "p/pla/plasm/plasma", "plasma"],
+    "platelet": ["u/ukp/ukpla/ukplate006", "u/usp/uspla/usplain022", "platelet"],
+    "haemoglobin": ["u/ukh/ukhae/ukhaema002", "h/hem/hemog/hemoglobin", "haemoglobin"],
+    "phagocyte": ["u/ukp/ukpff/ukpfft_006", "e/eus/eus73/eus73526", "phagocyte"],
+    "lymphocyte": ["e/epd/epd17/epd17825", "e/eus/eus17/eus17498", "lymphocyte"],
+    "phagocytosis": ["c/cdo/cdo07/cdo0725ukphag1369", "c/cdo/cdo07/cdo0725usphag1334", "phagocytosis"],
+    "antibody": ["u/uka/ukant/ukantep024", "a/ant/antib/antibody", "antibody"],
+    "fibrinogen": ["e/epd/epd11/epd11079", "e/eus/eus10/eus10849", "fibrinogen"],
+    "fibrin": ["e/epd/epd11/epd11078", "e/eus/eus10/eus10848", "fibrin"],
+    "pathogen": ["u/ukp/ukpat/ukpatch023", "u/usp/uspat/uspatho001", "pathogen"],
+    "mucus": ["u/ukb/ukb02/ukb02702", "u/usb/usb02/usb02701", "mucus"],
+    "antigen": ["u/uka/ukant/ukantic005", "e/eus/eus70/eus70256", "antigen"],
+    "complementary": ["u/ukc/ukcom/ukcompe017", "c/com/compl/complimentary", "complementary"],
+    "vaccination": ["u/uku/ukutt/ukutter016", "v/vac/vacci/vaccination", "vaccination"],
+    "toxin": ["u/ukt/uktow/uktowni012", "t/tox/toxin/toxin", "toxin"],
+    "diarrhoea": ["u/ukd/ukdia/ukdiaph004", "d/dia/diarr/diarrhea", "diarrhoea"],
+    "dehydration": ["u/ukd/ukdef/ukdeftl018", "c/cdo/cdo03/cdo0318usdehy1313", "dehydration"],
+    "respiration": ["u/ukr/ukres/ukresou019", "r/res/respi/respiration", "respiration"],
+    "excretion": ["u/uke/ukexc/ukexcre004", "e/exc/excre/excretion", "excretion"],
+    "metabolism": ["u/ukm/ukmes/ukmesh_016", "m/met/metab/metabolism", "metabolism"],
+    "stimulus": ["u/uks/uksti/ukstimu002", "s/sti/stimu/stimulus", "stimulus"],
+    "species": ["u/uks/ukspe/ukspeci007", "s/spe/speci/species", "species"],
+    "genus": ["u/ukg/ukgen/ukgenit028", "g/gen/genus/genus", "genus"],
+    "taxonomy": ["u/ukt/uktaw/uktawny016", "e/eus/eus74/eus74501", "taxonomy"],
+    "morphology": ["u/ukm/ukmor/ukmorda023", "m/mor/morph/morphology", "morphology"],
+    "photosynthesis": ["u/ukp/ukpho/ukphoto007", "e/eus/eus73/eus73541", "photosynthesis"],
+    "mycelium": ["c/cdo/cdo02/cdo0225ukmyce1408", "c/cdo/cdo02/cdo0225usmyce1411", "mycelium"],
+    "fungus": ["u/ukf/ukfum/ukfumes028", "f/fun/fungu/fungus", "fungus"],
+    "arthropod": ["e/epd/epd01/epd01996", "e/eus/eus01/eus01952", "arthropod"],
+    "exoskeleton": ["e/epd/epd10/epd10533", "e/eus/eus10/eus10322", "exoskeleton"],
+    "arachnid": ["u/uka/ukaqu/ukaquat011", "u/usa/usaqu/usaquat007", "arachnid"],
+    "crustacean": ["u/ukc/ukcru/ukcrumb014", "c/cru/crust/crustacean", "crustacean"],
+    "myriapod": ["c/cdo/cdo03/cdo0318ukmyri0915", "c/cdo/cdo03/cdo0318usmyri3179", "myriapod"],
+    "antenna": ["u/uka/ukano/ukanore028", "a/ant/anten/antenna", "antenna"],
+    "thorax": ["u/ukt/ukthi/ukthirt012", "u/ust/usthi/usthist005", "thorax"],
+    "abdomen": ["u/uka/ukabd/ukabdic002", "a/abd/abdom/abdomen", "abdomen"],
+    "cotyledon": ["e/epd/epd07/epd07159", "e/eus/eus06/eus06981", "cotyledon"],
+    "monocotyledon": ["e/epd/epd19/epd19452", "e/eus/eus19/eus19108", "monocotyledon"],
+    "dicotyledon": ["e/epd/epd08/epd08502", "e/eus/eus08/eus08327", "dicotyledon"],
+    "xylem": ["e/epd/epd30/epd30837", "e/eus/eus30/eus30288", "xylem"],
+    "phloem": ["e/epd/epd22/epd22268", "e/eus/eus41/eus41381", "phloem"],
+    "virus": ["u/ukv/ukvir/ukvirgi019", "v/vir/virus/virus", "virus"],
+    "specimen": ["u/uks/ukspe/ukspeci015", "s/spe/speci/specimen", "specimen"],
+    "carbohydrate": ["u/ukc/ukcar/ukcarap008", "e/eus/eus70/eus70700", "carbohydrate"],
+    "anaemia": ["u/uka/ukamu/ukamusi009", "a/ane/anemi/anemia", "anaemia"],
+    "calcium": ["u/ukc/ukcaj/ukcajun011", "c/cal/calci/calcium", "calcium"],
+    "ingestion": ["u/uki/ukinf/ukinfor025", "c/cdo/cdo03/cdo0318usinge2481", "ingestion"],
+    "absorption": ["u/uka/ukabs/ukabsor001", "a/abs/absor/absorption", "absorption"],
+    "assimilation": ["u/uka/ukass/ukassau027", "a/ass/assim/assimilation", "assimilation"],
+    "egestion": ["u/uka/uka31/uka31158", "u/usa/usa31/usa31158", "egestion"],
+    "peristalsis": ["e/epd/epd22/epd22083", "e/eus/eus41/eus41365", "peristalsis"],
+    "mastication": ["u/ukm/ukmas/ukmassi017", "c/cdo/cdo03/cdo0318usmast2909", "mastication"],
+    "bolus": ["c/cdo/cdo03/cdo0318ukbolu0197", "c/cdo/cdo03/cdo0318usbolu0601", "bolus"],
+    "incisor": ["u/uki/ukinc/ukincen026", "i/inc/incis/incisor", "incisor"],
+    "canine": ["u/ukc/ukcan/ukcandy004", "c/can/canin/canine", "canine"],
+    "premolar": ["e/epd/epd22/epd22995", "e/eus/eus22/eus22568", "premolar"],
+    "enamel": ["u/uke/ukemp/ukemplo024", "e/eus/eus71/eus71525", "enamel"],
+    "dentine": ["e/epd/epd08/epd08254", "e/eus/eus08/eus08081", "dentine"],
+    "saliva": ["u/uks/uksal/uksalaa018", "s/sal/saliv/saliva", "saliva"],
+    "amylase": ["e/epd/epd33/epd33513", "e/eus/eus40/eus40126", "amylase"],
+    "carbohydrase": ["u/uka/uka31/uka31088", "u/usa/usa31/usa31088", "carbohydrase"],
+    "maltose": ["e/epd/epd18/epd18184", "e/eus/eus17/eus17855", "maltose"],
+    "maltase": ["e/epd/epd18/epd18177", "c/cdo/cdo03/cdo0318usmalt2869", "maltase"],
+    "epiglottis": ["u/uke/ukepe/ukepee_013", "u/use/usent/usentre018", "epiglottis"],
+    "pharynx": ["u/ukp/ukpff/ukpfft_022", "u/usp/uspha/usphant006", "pharynx"],
+    "trachea": ["u/ukt/uktow/uktowni018", "t/tra/trach/trachea", "trachea"],
+    "oesophagus": ["u/uke/ukesc/ukescap016", "e/eus/eus73/eus73303", "oesophagus"],
+    "pepsin": ["e/epd/epd22/epd22020", "e/eus/eus21/eus21597", "pepsin"],
+    "protease": ["e/epd/epd32/epd32748", "c/cus/cus01/cus01627", "protease"],
+    "chyme": ["e/epd/epd06/epd06055", "e/eus/eus05/eus05897", "chyme"],
+    "hepatocyte": ["c/cdo/cdo08/cdo0824ukhepa1196", "c/cdo/cdo08/cdo0824ushepa1226", "hepatocyte"],
+    "glycogen": ["e/epd/epd12/epd12523", "e/eus/eus40/eus40918", "glycogen"],
+    "neutralise": ["u/ukn/ukneu/ukneuro015", "n/neu/neutr/neutralize", "neutralize"],
+    "duodenum": ["u/ukd/ukdun/ukdunny005", "u/usd/usduc/usduckw026", "duodenum"],
+    "trypsin": ["e/epd/epd28/epd28477", "e/eus/eus27/eus27964", "trypsin"],
+    "lipase": ["e/epd/epd17/epd17336", "e/eus/eus17/eus17034", "lipase"],
+    "villus": ["e/epd/epd29/epd29711", "e/eus/eus29/eus29178", "villus"],
+    "epithelium": ["c/ces/cespu/cespuk000392", "c/ces/cespu/cespus000392", "epithelium"],
+    "lacteal": ["e/epd/epd16/epd16623", "c/cdo/cdo03/cdo0318uslact2669", "lacteal"],
+    "faeces": ["u/ukf/ukfac/ukfacin028", "f/fec/feces/feces", "faeces"],
+    "reabsorption": ["c/cdo/cdo02/cdo0225ukreab1859", "c/cdo/cdo02/cdo0225usreab1865", "reabsorption"],
+    "urea": ["e/epd/epd29/epd29365", "e/eus/eus28/eus28835", "urea"],
+    "enzyme": ["u/uke/ukent/ukentre029", "e/enz/enzym/enzyme", "enzyme"],
+    "polymer": ["u/ukp/ukpol/ukpolka026", "p/pol/polym/polymer", "polymer"],
+    "monomer": ["c/cdo/cdo02/cdo0216monouk1238", "m/mon/monom/monomer", "monomer"],
+    "triglyceride": ["c/cdo/cdo11/cdo1121uktrig4211", "c/cdo/cdo11/cdo1121ustrig4315", "triglyceride"],
+    "catalyst": ["u/ukc/ukcas/ukcaste019", "e/eus/eus70/eus70718", "catalyst"],
+    "substrate": ["e/epd/epd26/epd26833", "e/eus/eus26/eus26350", "substrate"],
+    "diffusion": ["u/ukd/ukdif/ukdiffi011", "u/usd/usdif/usdiffi007", "diffusion"],
+    "osmosis": ["u/uko/ukosc/ukoscil003", "e/eus/eus75/eus75314", "osmosis"],
+    "hydrolysis": ["u/ukh/ukhyd/ukhydra010", "u/ush/ushun/ushunga026", "hydrolysis"],
+    "catabolic": ["c/cdo/cdo07/cdo0725ukcata0513", "c/cdo/cdo07/cdo0725uscata0501", "catabolic"],
+    "germination": ["u/ukg/ukger/ukgerma007", "u/usg/usgen/usgenti026", "germination"],
+    "radicle": ["c/cdo/cdo08/cdo0824ukradi1928", "c/cdo/cdo08/cdo0824usradi1972", "radicle"],
+    "plumule": ["e/epd/epd22/epd22610", "e/eus/eus22/eus22181", "plumule"],
+    "testa": ["u/uka/uka31/uka31481", "u/usa/usa31/usa31481", "testa"],
+    "lignin": ["c/csd/csdk0/csdk0214", "c/csd/csds0/csds0214", "lignin"],
+    "cambium": ["e/epd/epd04/epd04956", "e/eus/eus04/eus04811", "cambium"],
+    "cuticle": ["u/ukc/ukcut/ukcut__007", "c/cut/cutic/cuticle", "cuticle"],
+    "epidermis": ["u/uke/ukepe/ukepee_011", "u/use/usent/usentre016", "epidermis"],
+    "stoma": ["e/epd/epd26/epd26585", "e/eus/eus26/eus26109", "stoma"],
+    "glucose": ["u/ukg/ukglo/ukglori016", "u/usg/usglo/usglobu009", "glucose"],
+    "sucrose": ["u/uks/uksuc/uksucro001", "u/uss/ussub/ussubtr015", "sucrose"],
+    "transpiration": ["u/ukt/uktra/uktrans114", "u/ust/ustra/ustrans008", "transpiration"],
+    "humidity": ["u/ukh/ukhum/ukhuman013", "e/eus/eus72/eus72274", "humidity"],
+    "flaccid": ["u/ukf/ukfla/ukflacc001", "f/fla/flacc/flaccid", "flaccid"],
+    "cohesion": ["u/ukc/ukcoh/ukcohab006", "c/coh/cohes/cohesion", "cohesion"],
+    "adhesion": ["u/uka/ukadh/ukadher004", "e/eus/eus70/eus70078", "adhesion"],
+    "potometer": ["e/epd/epd22/epd22880", "e/eus/eus41/eus41416", "potometer"],
+    "translocation": ["e/epd/epd33/epd33157", "c/cdo/cdo03/cdo0318ustran5169", "translocation"],
+    "tropism": ["e/epd/epd28/epd28432", "e/eus/eus27/eus27921", "tropism"],
+    "phototropism": ["e/epd/epd22/epd22325", "c/cdo/cdo07/cdo0725usphot1350", "phototropism"],
+    "auxin": ["e/epd/epd02/epd02412", "e/eus/eus02/eus02356", "auxin"],
+    "sepal": ["e/epd/epd25/epd25386", "e/eus/eus24/eus24940", "sepal"],
+    "stamen": ["u/uks/uksta/ukstair019", "u/uss/ussta/usstadi017", "stamen"],
+    "anther": ["u/uka/ukant/ukantep006", "u/usa/usano/usanoph021", "anther"],
+    "carpel": ["e/epd/epd33/epd33755", "e/eus/eus05/eus05083", "carpel"],
+    "stigma": ["u/uks/uksti/ukstick014", "s/sti/stigm/stigma", "stigma"],
+    "ovary": ["u/uko/ukova/ukovary001", "e/eus/eus75/eus75389", "ovary"],
+    "ovule": ["e/epd/epd21/epd21354", "e/eus/eus20/eus20932", "ovule"],
+    "pollination": ["u/ukp/ukpol/ukpolka004", "u/usp/uspol/uspolec006", "pollination"],
+    /* the Y7 cell game (8 Nov 2026) */
+    "organelle": ["e/epd/epd21/epd21030", "e/eus/eus20/eus20613", "organelle"],
+    "vesicle": ["c/cdo/cdo02/cdo0216vesiuk2234", "c/cdo/cdo03/cdo0319usvesi1876", "vesicle"],
+    "microtubule": ["c/cdo/cdo08/cdo0824ukmicr1490", "c/cdo/cdo08/cdo0824usmicr1528", "microtubule"],
+    "endoplasmic reticulum": ["c/cdo/cdo02/cdo0216endouk0637", "e/end/endop/endoplasmic_reticulum", "endoplasmic-reticulum"],
+    "aerobic": ["u/uka/ukadv/ukadver025", "e/eus/eus75/eus75468", "aerobic"],
+    "iodine": ["u/uki/ukiod/ukiodin001", "i/iod/iodin/iodine", "iodine"],
+    "nanometre": ["u/ukn/uknam/uknamel013", "c/cal/cald4/cald4us1543", "nanometre"],
+    "salivary": ["c/ces/cespu/cespuk001014", "c/ces/cespu/cespus001014", "salivary"],
+    "nuclear": ["u/ukn/uknow/uknowac015", "n/nuc/nucle/nuclear", "nuclear"],
+    "hydrogen": ["u/ukh/ukhyd/ukhydra009", "h/hyd/hydro/hydrogen", "hydrogen"],
+    "amino acid": ["u/uka/ukami/ukamiab008", "u/usa/usami/usamiab003", "amino-acid"],
+    "carbon dioxide": ["u/ukc/ukcld/ukcld00160", "u/usc/uscld/uscld00160", "carbon-dioxide"],
+    "membrane": ["u/ukm/ukmel/ukmelod011", "m/mem/membr/membrane", "membrane"],
+    "electron microscope": ["u/uka/uka32/uka32701", "u/usa/usa32/usa32701", "electron-microscope"],
+    "electron": ["u/uke/ukele/ukelect002", "e/eus/eus71/eus71476", "electron"],
+    "hydrophobic": ["e/epd/epd14/epd14607", "e/eus/eus14/eus14343", "hydrophobic"],
+    "proton": ["u/ukp/ukpro/ukprote014", "p/pro/proto/proton", "proton"],
+    "gradient": ["u/ukg/ukgra/ukgraci008", "u/usg/usgos/usgossa024", "gradient"],
+    "apparatus": ["u/uka/ukapo/ukapolo018", "e/eus/eus70/eus70281", "apparatus"]
+  };
+  function camUrl(w, acc) { var c = CAM[w]; return CAM_HOST + '/media/english/' + acc + '_pron/' + c[acc === 'uk' ? 0 : 1] + '.mp3'; }
+  function camPage(w) { return CAM_HOST + '/dictionary/english/' + CAM[w][2]; }
+  var LOW = {}; Object.keys(W).forEach(function (w) { LOW[w.toLowerCase()] = w; });
+  function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+  function one(w) { var l = String(w).toLowerCase(); return LOW[l] || LOW[l.replace(/s$/, '')] || LOW[l.replace(/es$/, '')] || null; }
+  /* the words of a term that are here: the term itself, or each of its words */
+  function words(term) { var w = one(term); if (w) return [w]; return String(term).split(/[\s-]+/).map(one).filter(Boolean); }
+  /* a word's one recording: [accent, speaker, licence, page] */
+  function rec(w) { var r = W[w][1], a = r.us ? 'us' : r.uk ? 'uk' : r.en ? 'en' : null; return a ? [a].concat(r[a]) : null; }
+  var ICON = '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2 6h3l4-3v10L5 10H2z" fill="currentColor"/><path d="M11 5.5a3.5 3.5 0 0 1 0 5M12.6 3.6a6 6 0 0 1 0 8.8" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>';
+  var ACC = { uk: 'British English', us: 'American English', en: 'English' };
+  function html(term) {
+    var ws = words(term); if (!ws.length) return '';
+    var w = one(term), r = w ? rec(w) : null, c = w && CAM[w];
+    var buttons = c ? '<span class="say__bs">' + ['uk', 'us'].map(function (a) {
+        return '<button type="button" class="say__b" data-acc="' + a + '" aria-label="Listen to ' + esc(term) + ', ' + ACC[a] + ', from the Cambridge Dictionary">' + ICON + a.toUpperCase() + '</button>';
+      }).join('') + '</span><a class="say__src" href="' + esc(camPage(w)) + '" target="_blank" rel="noopener">Audio: Cambridge Dictionary \u2197</a>'
+      : r ? '<button type="button" class="say__b" aria-label="Listen to ' + esc(term) + ', ' + ACC[r[0]] + '">' + ICON + 'Listen' + (r[0] === 'en' ? '' : '<span class="say__a">' + r[0].toUpperCase() + '</span>') + '</button>' : '';
+    return '<span class="say" data-say="' + esc(term) + '"><span class="say__g">' + esc(ws.map(function (x) { return W[x][0]; }).join(' · ')) + '</span>' + buttons + '</span>';
+  }
+  var audio = null, busy = null;
+  /* the page hears it too: 'say' on the document, detail.on true as a recording starts and false as it ends */
+  function tell(on) { try { document.dispatchEvent(new CustomEvent('say', { detail: { on: on } })); } catch (e) {} }
+  function done() { var was = busy; if (busy) busy.classList.remove('is-playing'); busy = null; if (was) tell(false); }
+  function credit(box, r) {
+    var el = box.querySelector('.say__c'); if (!el) { el = document.createElement('span'); el.className = 'say__c'; box.appendChild(el); }
+    el.innerHTML = r ? 'Recording: ' + esc(r[1]) + ', <a href="' + esc(r[3]) + '" target="_blank" rel="noopener">Wikimedia Commons</a>, ' + esc(r[2]) : '';
+    el.hidden = !r;
+  }
+  function commons(btn, box, w, r) {
+    credit(box, r);
+    audio = new Audio(DIR + w.toLowerCase() + '-' + r[0] + '.mp3');
+    audio.onended = audio.onerror = done;
+    var p = audio.play(); if (p && p.catch) p.catch(done);
+  }
+  function play(btn) {
+    var box = btn.closest('.say'), w = one(box.getAttribute('data-say')), r = w && rec(w), acc = btn.getAttribute('data-acc');
+    if (audio) { try { audio.pause(); } catch (e) {} audio = null; }
+    done(); if (!w) return;
+    busy = btn; btn.classList.add('is-playing'); tell(true);
+    if (acc && CAM[w]) {
+      /* Cambridge's recording, from Cambridge; if it will not play here, the Commons one, or a note and their page */
+      credit(box, null);
+      var a = audio = new Audio(camUrl(w, acc)), failed = false;
+      function fail() {
+        if (failed || audio !== a) return; failed = true;
+        if (r) { commons(btn, box, w, r); return; }
+        done();
+        var el = box.querySelector('.say__c'); if (!el) { el = document.createElement('span'); el.className = 'say__c'; box.appendChild(el); }
+        el.innerHTML = 'It did not play here: <a href="' + esc(camPage(w)) + '" target="_blank" rel="noopener">listen on the Cambridge Dictionary \u2197</a>'; el.hidden = false;
+      }
+      a.onended = function () { if (audio === a) done(); };
+      a.onerror = fail;
+      var q = a.play(); if (q && q.catch) q.catch(function (e) { if (e && e.name === 'NotAllowedError') done(); else fail(); });
+      return;
+    }
+    if (r) commons(btn, box, w, r); else done();
+  }
+  /* before the card or the row hears it: a press plays, it never turns the card */
+  document.addEventListener('click', function (e) {
+    /* Cambridge's page (and a fallback note's link) opens in a new tab without turning the card */
+    if (e.target.closest && e.target.closest('.say__src, .say__c a')) { e.stopPropagation(); return; }
+    var b = e.target.closest && e.target.closest('.say__b'); if (!b) return; e.stopPropagation(); e.preventDefault(); play(b); }, true);
+  document.addEventListener('keydown', function (e) { if ((e.key === 'Enter' || e.key === ' ') && e.target.closest && e.target.closest('.say__b, .say__src, .say__c a')) e.stopPropagation(); }, true);
+  global.Say = { html: html, words: words, CAM: CAM, W: W };
+})(window);
