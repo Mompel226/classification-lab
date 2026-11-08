@@ -207,6 +207,10 @@
     }
     function layout() {
       var sb = stage.getBoundingClientRect(), lb = list.getBoundingClientRect();
+      /* In a shut card (8 Nov 2026, the cards) nothing can be measured: decide nothing, or the names would be put under
+         the picture for good (.finder--narrow makes one column, so stacked() then always finds them there). The card
+         calls Learn.relayout when it opens. */
+      if (!sb.width && !sb.height && !lb.width && !lb.height) return;
       var narrow = stacked();
       if (list.parentNode) list.parentNode.classList.toggle('finder--narrow', narrow);
       if (!sb.width || !sb.height || narrow) {
@@ -1548,6 +1552,14 @@
        means what it looks like it means. Pruning at push time would be wrong: a widget is
        always still detached when it registers. */
     reap: function () { for (var i = LIVE.length - 1; i >= 0; i--) if (!LIVE[i].box.isConnected) LIVE.splice(i, 1); },
+    /* A pinned picture in a shut card cannot be measured, so its labels wait in a plain list; the card calls this when
+       it opens, and the labels go level with their pins (8 Nov 2026, the cards: js/app.js makeCard). */
+    relayout: function (root) {
+      for (var i = LIVE.length - 1; i >= 0; i--) {
+        if (!LIVE[i].box.isConnected) { LIVE.splice(i, 1); continue; }
+        if (!root || root.contains(LIVE[i].box)) LIVE[i].layout();
+      }
+    },
     widget: function (spec, ctx) {
       var mk = MAKERS[spec.type];
       if (!mk) return h('p', 'widget__note', 'Unknown widget: ' + esc(spec.type));

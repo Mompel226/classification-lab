@@ -290,10 +290,18 @@
       li.innerHTML = badge + M(txt);
       if (window.Terms && Terms.teach) Terms.teach(false);
       li.setAttribute('data-i', i);
+      /* the branch of the tree the sentence is about: opening its card lights it, and pressing it on the tree opens the card */
+      if (typeof b === 'object' && b.group) li.setAttribute('data-group', [].concat(b.group).join(' '));
+      /* A sentence with a heading is a card: its heading always shows, its words open one card at a time
+         (Daniel, 8 Nov 2026, after the Inheritance Lab: "I would like to apply this system … just to standardize
+         things"; memory explore-dont-scroll; docs/LAB-STRUCTURE-PLAN.md section 5). A sentence with no heading is a
+         plain line: the first line of a station, and the Keys station's instructions. The Circulation Lab's code. */
+      if (typeof b === 'object' && b.head) makeCard(li, b.head);
       if (offK) offAt[offK].push({ k: typeof b === 'object' && b.near != null ? b.near + 0.5 : i, li: li });
       else list.appendChild(li);
-      /* the thing to press, drag or count sits under the sentence it belongs to */
-      widgets.filter(function (w) { return w.after === i; }).forEach(function (w) { li.appendChild(window.Learn.widget(w, WIDGET_CTX)); });
+      /* the thing to press, drag or count sits under the sentence it belongs to: inside its card, so it shows while
+         the card is open, and only then */
+      widgets.filter(function (w) { return w.after === i; }).forEach(function (w) { (li.__body || li).appendChild(window.Learn.widget(w, WIDGET_CTX)); });
     });
     widgets.filter(function (w) { return w.after == null; }).forEach(function (w) { card.appendChild(window.Learn.widget(w, WIDGET_CTX)); });
     /* the card below reads in the station's order: a part moved out of sentence 3 comes after sentence 3 (`near`) */
@@ -613,18 +621,70 @@
   }
   function toStationTop() { var sc = panelScroller(); if (sc) sc.scrollTop = 0; }
 
-  /* a group clicked on the tree opens the station that teaches it, on that group */
+  /* a group clicked on the tree opens the station that teaches it, on that group. The station being read comes first
+     when one of its sentences is about that branch (on Five kingdoms, Plants opens the Plants card there); otherwise the
+     station that teaches the group. The sentence's card opens, and the tree shows the branch for as long as it is open
+     (closing it gives the station's view back: makeCard). The Circulation Lab's explains(). */
+  function explains(id, gid) {
+    var st = S[id]; if (!st || !st.learn) return false;
+    return (st.learn.exam || []).some(function (b) { return !!(b && typeof b === 'object' && b.group && [].concat(b.group).indexOf(gid) >= 0); });
+  }
   function openGroup(gid) {
-    var id = OWNER[gid];
+    var id = explains(current, gid) ? current : OWNER[gid];
     if (!id) { toast('No station teaches that group yet.'); return; }
     if (current !== id || tab !== 'learn') { current = id; tab = 'learn'; p(id).opened = true; save(); paintPanel(); paintRail(); }
     if (window.Plate) window.Plate.focus(gid);
     history.replaceState(null, '', '#' + gid);
-    var target = document.querySelector('#panelInner [data-group="' + gid + '"]');
+    /* the sentence about the branch first: a tool inside another card can name it too (the Five kingdoms tool, inside
+       the Animals card, has a button for each kingdom) */
+    var target = document.querySelector('#panelInner li[data-i][data-group~="' + gid + '"]') || document.querySelector('#panelInner [data-group~="' + gid + '"]');
     if (!target) return;
+    var card = target.__open ? target : target.closest('.xcard');
+    if (card && card.__open) card.__open(true, true);
     landOn(target, true);
     target.classList.add('flash');
     setTimeout(function () { target.classList.remove('flash'); }, 2800);
+  }
+
+  /* the card that holds an element (or the card itself), opened if it is shut; returns it, or null */
+  function openCardOf(el) {
+    var c = el ? (el.__open ? el : (el.closest ? el.closest('.xcard') : null)) : null;
+    if (c && c.__open && !c.classList.contains('is-open')) c.__open(true);
+    return c;
+  }
+
+  /* ---------- a sentence as a card ----------
+     The heading is a button; the words under it open on a press, one card at a time in the station. Opening one lights
+     its branch on the tree (its `group`); closing it, or opening a card with no branch, gives the station's own view of
+     the tree back (Plate.showStation: in this lab there is no Plate.unfocus). A pinned picture inside lays its labels
+     out again once it can be measured (Learn.relayout). The Circulation Lab's makeCard. */
+  function makeCard(li, head) {
+    var body = document.createElement('div');
+    body.className = 'xcard__b';
+    while (li.firstChild) body.appendChild(li.firstChild);
+    var btn = document.createElement('button');
+    btn.type = 'button'; btn.className = 'xcard__h'; btn.setAttribute('aria-expanded', 'false');
+    btn.innerHTML = '<span class="xcard__t">' + esc(head) + '</span><span class="xcard__a" aria-hidden="true"></span>';
+    li.classList.add('xcard');
+    li.appendChild(btn); li.appendChild(body);
+    body.hidden = true;
+    li.__body = body;
+    li.__open = function (on, fromPicture) {
+      if (on) Array.prototype.forEach.call(document.querySelectorAll('#panelInner .xcard.is-open'), function (o) { if (o !== li && o.__open) o.__open(false, true); });
+      li.classList.toggle('is-open', !!on);
+      body.hidden = !on;
+      btn.setAttribute('aria-expanded', on ? 'true' : 'false');
+      if (on && window.Learn && window.Learn.relayout) { window.Learn.relayout(body); requestAnimationFrame(function () { window.Learn.relayout(body); }); }
+      if (fromPicture || !window.Plate || current === 'keys') return;
+      var g0 = on ? (li.getAttribute('data-group') || '').split(' ')[0] : '';
+      if (g0) window.Plate.focus(g0);
+      else if (S[current]) window.Plate.showStation(S[current]);
+    };
+    btn.addEventListener('click', function () {
+      var on = !li.classList.contains('is-open');
+      li.__open(on);
+      if (on) showWhole(li, true);
+    });
   }
 
   /* Plurals English refuses to make regularly, and which this lab uses constantly. */
@@ -637,7 +697,8 @@
      systems" — and a whole-word search then fails on a word that is plainly there. */
   function wordsOf(el) {
     var out = '', w = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, null, false), n;
-    while ((n = w.nextNode())) out += ' ' + n.nodeValue;
+    /* a card's heading is not its sentence: a word followed here lands where it did before the cards (8 Nov 2026) */
+    while ((n = w.nextNode())) if (!(n.parentNode && n.parentNode.closest && n.parentNode.closest('.xcard__h'))) out += ' ' + n.nodeValue;
     return out.replace(/\s+/g, ' ').trim();
   }
 
@@ -689,6 +750,9 @@
       if (cameFrom && S[cameFrom]) showBackChip(cameFrom, term);
       return;
     }
+    /* the line found may be inside a sentence's card: open it, or the page would land on words nobody can see
+       (8 Nov 2026, the cards; the Circulation Lab's audit) */
+    openCardOf(target);
     /* arriving from another station: there is nothing to animate from, so land instantly */
     landOn(target, cameFrom == null);
     target.classList.add('flash');
@@ -698,11 +762,17 @@
 
   var backChip = null, whereWeWere = null;
   function jumpTo(el, top) { var prev = el.style.scrollBehavior; el.style.scrollBehavior = 'auto'; el.scrollTop = top; el.style.scrollBehavior = prev || ''; }
-  function markWhereWeAre() { var sc = panelScroller(); whereWeWere = { id: current, top: sc ? sc.scrollTop : 0, tab: tab }; }
+  /* where the reader was, and which card they had open (its place among the station's cards, which a repaint keeps):
+     the way back opens it again, or "← back" would return to a page of closed cards (the Circulation Lab's audit) */
+  function markWhereWeAre() {
+    var sc = panelScroller(), cards = document.querySelectorAll('#panelInner .xcard'), was = document.querySelector('#panelInner .xcard.is-open');
+    whereWeWere = { id: current, top: sc ? sc.scrollTop : 0, tab: tab, card: was ? Array.prototype.indexOf.call(cards, was) : -1 };
+  }
   function goBackToMark(id) {
     var w = whereWeWere && whereWeWere.id === id ? whereWeWere : null;
     open(id);
     if (!w) return;
+    if (w.card > -1) openCardOf(document.querySelectorAll('#panelInner .xcard')[w.card]);
     requestAnimationFrame(function () { requestAnimationFrame(function () { var sc = panelScroller(); if (sc) jumpTo(sc, w.top); }); });
   }
   function showBackChip(id, term) {

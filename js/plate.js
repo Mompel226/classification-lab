@@ -81,7 +81,9 @@
      so the box came out as big as the whole tree and nothing appeared to move. */
   function boxOf(id) {
     var g = tree.G[id], size = 380;
-    var a = g.a != null ? g.a : tree.angle(id);
+    /* viruses stand off the tree at their own angle (tree.js `angle`): tree.angle() knows only branches, and threw here,
+       so pressing Viruses on the tree did nothing (found 8 Nov 2026 with the cards) */
+    var a = g.a != null ? g.a : (id === 'viruses' ? g.angle : tree.angle(id));
     var rad = id === 'viruses' ? (g.r || 190) : tree.R.tip;
     var p = tree.P(a, rad);
     var box = { x: p[0] - size / 2, y: p[1] - size * 0.42, w: size, h: size };

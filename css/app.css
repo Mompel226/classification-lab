@@ -1511,3 +1511,32 @@ svg.lit .kl--all.is-on{opacity:1}
 .goline span:empty{display:none}
 .goline .btn{margin-left:auto}
 .goline--bare{background:none;border:0;padding:0}
+
+/* ============================================================
+   The Inheritance Lab's structure (8 Nov 2026; docs/LAB-STRUCTURE-PLAN.md, section 5): the Circulation Lab's sentence
+   cards, in this lab's green. This lab has no step animations, so no film cards and no levels.
+   ============================================================ */
+/* ---------- a sentence as a card: the heading always shows, the words open one card at a time ---------- */
+.exam-list > li.xcard{padding:0;margin:0 0 8px}
+.exam-list > li.xcard::before{display:none}
+.exam-list > li.xcard.flash{padding-left:0;margin-left:0}
+.xcard__h{width:100%;display:flex;align-items:center;gap:10px;text-align:left;cursor:pointer;
+  font:inherit;font-size:15.5px;font-weight:600;color:var(--ink);background:var(--card-2);
+  border:1px solid var(--edge);border-radius:var(--r);padding:10px 14px}
+.xcard__h:hover{border-color:var(--green-2)}
+.xcard__h:focus-visible{outline:2px solid var(--green-2);outline-offset:2px}
+.xcard__t{flex:1;min-width:0}
+.xcard__a{width:9px;height:9px;border-right:2px solid var(--grey);border-bottom:2px solid var(--grey);transform:rotate(45deg);transition:transform .2s;flex:none;margin-top:-4px}
+.xcard.is-open .xcard__h{border-color:var(--green-2);background:var(--green-tint);border-bottom-left-radius:0;border-bottom-right-radius:0}
+.xcard.is-open .xcard__a{transform:rotate(225deg);margin-top:4px}
+.xcard__b{border:1px solid var(--green-2);border-top:0;border-radius:0 0 var(--r) var(--r);padding:12px 14px;background:var(--card);font-size:16.5px;line-height:1.62;
+  display:flow-root}   /* a small picture floated beside the words stays inside the card, caption and all */
+.xcard__b[hidden]{display:none}
+.xcard__b > .sup:first-child{margin-left:0}
+/* a sentence in the card below What you need to know: its card in that card's grey */
+.exam-list--off > li.xcard .xcard__h:hover,.exam-list--off > li.xcard.is-open .xcard__h{border-color:#9A9A9A}
+.exam-list--off > li.xcard.is-open .xcard__h{background:#F1F1EE}
+.exam-list--off > li.xcard .xcard__b{border-color:#9A9A9A}
+/* a widget, photo or table inside a card sits inside it: the list's bullet margin (-26px above) does not apply here */
+.exam-list li.xcard .widget,.exam-list li.xcard .media,.exam-list li.xcard .photo,.exam-list li.xcard .ctable{margin-left:0;margin-right:0;max-width:100%}
+@media (prefers-reduced-motion: reduce){ .xcard__a{transition:none} }
