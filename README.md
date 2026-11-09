@@ -31,7 +31,7 @@ there, in the wording the exam wants, and questions that say right or wrong — 
 | ✍️ **64 questions** | fill the gaps · drag & drop · multiple choice · put in order · match up · sort into groups · **tick a grid** · **click the picture** |
 | ✏️ **Biological drawing** | pairs of drawings of the same specimen, one that scores and one that does not — decide which, and why |
 | 🐛 **Real organisms** | photographs to look at and count from: limbs, wings, antennae, body sections |
-| 📖 **A shared glossary** | one wording per term, the same in every lab |
+| 📖 **A shared glossary** | one wording per term, the same in every lab; press 한국어, 中文 or 日本語 to see each word's name in Korean, Chinese or Japanese (the definitions stay in English) |
 
 > [!NOTE]
 > **The right answers are stored only as scrambled fingerprints.** The lab can tell a student they
