@@ -20,11 +20,18 @@
    seconds, from]}, dirty: {id: 1} }, from = "l:<lab>". Signed in, each move goes to the labs script (words.save, a few
    seconds later, and as the page is left); words.mine brings the moves made elsewhere. Signed out, the moves wait here and
    go to the first account that signs in; another account signing in removes the last pupil's words from this computer
-   (as the labs' own work: claimFor). The rule everywhere: the newest move of each word wins (couplings C120). */
+   (as the labs' own work: claimFor). The rule everywhere: the newest move of each word wins (couplings C120). Since part 3 (9 Nov
+   2026) words.mine also brings the moves made on My assessments (`moves`), joined the same way and sent on to the records.
+   Quick, and few reads (the audit of 9 Nov 2026; Daniel: "readily and quickly saved … resyncing with the spreadsheet, but
+   that doesn't happen all the time"): a move is sent 3 s later at most (later moves join it, never pushing it back), and
+   as the page is hidden or left; a failure tries again 30 s later and the line says so. words.mine is asked when this
+   browser has not asked for 10 minutes (S.at), when another account signs in, when the browser was emptied (cookies
+   cleared: everything comes back from the records), or when Bio English Lab saved a move since ("biology.mywords.saved",
+   { who, t, by }: each side writes it after a save, the other reads it). Times use the server's clock (S.skew). */
 (function () {
   'use strict';
   var CFG = window.LAB_CONFIG || {}, SI = window.SignIn || null, IDS = window.MW_IDS || {};
-  var KEY = 'biology.mywords', LINK = '../bio-english-lab/#/my';
+  var KEY = 'biology.mywords', LINK = '../bio-english-lab/#/my', SAID = 'biology.mywords.saved', FRESH = 10 * 60 * 1000;
   var LAB = (location.pathname.split('/').filter(function (p) { return /-lab$/.test(p); }).pop()) || 'lab';
   var CSS = '.mw-g__note{margin:8px 0 0;padding:7px 11px;font-size:13px;line-height:1.45;color:var(--ink);background:var(--accent-tint,var(--green-tint,rgba(0,0,0,.04)));border-radius:var(--r-sm,6px)}' +
     '.mw-g__note a{font-weight:600;color:var(--accent,var(--green));white-space:nowrap}' +
@@ -41,15 +48,19 @@
   function load() {
     var o = null; try { o = JSON.parse(localStorage.getItem(KEY) || 'null'); } catch (e) {}
     if (!o || typeof o !== 'object') o = {};
-    return { who: String(o.who || ''), words: o.words && typeof o.words === 'object' ? o.words : {}, dirty: o.dirty && typeof o.dirty === 'object' ? o.dirty : {}, off: o.off || '' };
+    return { who: String(o.who || ''), words: o.words && typeof o.words === 'object' ? o.words : {}, dirty: o.dirty && typeof o.dirty === 'object' ? o.dirty : {}, off: o.off || '',
+      at: +o.at || 0, skew: +o.skew || 0 };
   }
+  /* the last save on this computer by either side (labs or Bio English): { who, t (ms), by } */
+  function said() { try { var o = JSON.parse(localStorage.getItem(SAID) || 'null'); return o && typeof o === 'object' ? o : {}; } catch (e) { return {}; } }
+  function tellSaved(email) { try { localStorage.setItem(SAID, JSON.stringify({ who: email, t: Date.now(), by: 'labs' })); } catch (e) {} }
   function save(S) { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} }
   function me() { var v = SI && SI.who ? SI.who() : null; return v && v.email ? String(v.email).toLowerCase() : ''; }
   /* whose words this browser holds: another account signing in removes the last pupil's; words made signed out (no owner)
      go to the first account that signs in */
   function claim(S, email) {
     if (!email) return S;
-    if (S.who && S.who !== email) S = { who: email, words: {}, dirty: {}, off: '' };
+    if (S.who && S.who !== email) S = { who: email, words: {}, dirty: {}, off: '', at: 0, skew: 0 };
     S.who = email; return S;
   }
   function idOf(term) {
@@ -57,13 +68,16 @@
     return IDS[t] || ('g.' + t.replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '').slice(0, 56));
   }
   function stateOf(S, id) { var x = S.words[id]; return x && /^[nry]$/.test(x[0]) ? x[0] : ''; }
-  var timer = null;
+  var timer = null, failed = false;
+  function later(ms) { if (!timer) timer = setTimeout(function () { timer = null; flush(); }, ms); }
   function setWord(id, b) {
-    var S = claim(load(), me()), was = S.words[id], now = Math.floor(Date.now() / 1000);
+    var S = claim(load(), me()), was = S.words[id], now = Math.floor(Date.now() / 1000) + (S.skew || 0);
     S.words[id] = [b, Math.max(now, was ? (+was[1] || 0) + 1 : 0), (was && was[2]) || ('l:' + LAB)];
     S.dirty[id] = 1; save(S);
-    clearTimeout(timer); timer = setTimeout(function () { timer = null; flush(); }, 4000);
+    later(3000);   /* the first waiting move sets the time; the next ones go with it */
   }
+  /* seconds to add to this computer's clock (the server's `now`); under two minutes counts as none */
+  function skewOf(j) { var k = j && j.now > 1500000000 ? Math.round(j.now - Date.now() / 1000) : 0; return Math.abs(k) < 120 ? 0 : k; }
   /* the records' list joins this browser's, word by word: the newest move wins */
   function adopt(S, sw) {
     Object.keys(sw || {}).forEach(function (id) {
@@ -82,6 +96,7 @@
   function creds(email) { var c = SI && SI.creds ? SI.creds() : null; return c && c.email && String(c.email).toLowerCase() === email ? c : null; }
   var sending = false;
   function flush(leaving) {
+    clearTimeout(timer); timer = null;
     var email = me(); if (!CFG.submitUrl || !SI || !email || sending) return;
     var S = claim(load(), email); save(S);
     if (S.off === email) return;                       /* not on a class list: kept here (asked again on the next visit) */
@@ -97,36 +112,42 @@
       if (me() !== email) return;
       var T = load();
       if (j && !j.ok && /^not on your teacher/.test(String(j.why || ''))) { T.off = email; save(T); paint(); return; }
-      if (!j || !j.ok) { if (j && j.why === 'not signed in' && c.pass && SI.dropPass) SI.dropPass(c.pass); setTimeout(flush, 60000); return; }
+      if (!j || !j.ok) { if (j && j.why === 'not signed in' && c.pass && SI.dropPass) SI.dropPass(c.pass); failed = true; paint(); later(30000); return; }
       /* a move made while this was out is newer: it stays waiting */
       Object.keys(sent).forEach(function (id) { if (T.words[id] && T.words[id][1] === sent[id]) delete T.dirty[id]; });
-      T = adopt(T, j.words); save(T); paint();
-      if (Object.keys(T.dirty).length) flush();
-    }).catch(function () { sending = false; setTimeout(flush, 60000); });
+      T = adopt(T, j.words); T.skew = skewOf(j) || T.skew; save(T); failed = false; tellSaved(email); paint();
+      if (Object.keys(T.dirty).length) later(1000);
+    }).catch(function () { sending = false; failed = true; paint(); later(30000); });
   }
-  /* as soon as the page knows who is signed in: their words from the records, so the glossary is ready when it opens */
-  var asked = '';
+  /* as soon as the page knows who is signed in: their words from the records, so the glossary is ready when it opens; not
+     again within 10 minutes unless Bio English Lab saved since (the list in this browser is already right) */
+  var asking = false;
   function mine() {
-    var email = me(); if (!CFG.submitUrl || !SI || !email || asked === email) return;
+    var email = me(); if (!CFG.submitUrl || !SI || !email || asking) return;
+    var S0 = load(), k = said();
+    if (S0.who === email && S0.at && Date.now() - S0.at < FRESH && !(k.who === email && k.by !== 'labs' && +k.t > S0.at)) return;
     var c = creds(email); if (!c) return;
-    asked = email;
+    asking = true;
     post({ action: 'words.mine', token: c.token, pass: c.pass }).then(function (j) {
-      if (me() !== email || !j || !j.ok) { if (asked === email && (!j || !j.ok)) asked = ''; return; }
+      asking = false;
+      if (me() !== email || !j || !j.ok) return;
       var S = claim(load(), email);
+      S.at = Date.now(); S.skew = skewOf(j);
       if (!j.onList) { S.off = email; save(S); paint(); return; }
-      S.off = ''; S = adopt(S, j.words);
+      S.off = ''; S = adopt(S, j.words); S = adopt(S, j.moves);   /* part 3: the moves made on My assessments (the tracker) */
       /* a move this browser made that the records do not have yet goes to them */
       Object.keys(S.words).forEach(function (id) { var s = (j.words || {})[id]; if (!s || (+S.words[id][1] || 0) > (+s[1] || 0)) S.dirty[id] = 1; });
       save(S); paint();
       if (Object.keys(S.dirty).length) flush();
-    }).catch(function () { if (asked === email) asked = ''; });
+    }).catch(function () { asking = false; });
   }
 
   /* ---------- the glossary ---------- */
   function each(list, fn) { Array.prototype.forEach.call(list, fn); }
   function noteHtml() {
     var email = me(), S = load();
-    var tail = !SI || !CFG.submitUrl ? '' : !email ? 'Sign in to keep your words on every computer.' : S.off === email ? 'You are not on a class list yet, so your words stay on this computer.' : 'Your words are saved for you on every computer.';
+    var tail = !SI || !CFG.submitUrl ? '' : !email ? 'Sign in to keep your words on every computer.' : S.off === email ? 'You are not on a class list yet, so your words stay on this computer.' :
+      failed && Object.keys(S.dirty).length ? 'Not saved yet: it will try again.' : 'Your words are saved for you on every computer.';
     return 'The words you mark <b>~ partly know</b> or <b>✕ do not know</b> become your own flashcards in ' +
       '<a href="' + LINK + '" target="_blank" rel="noopener">My words ↗</a>.' +
       (tail ? '<small>' + tail + '</small>' : '');
@@ -182,8 +203,8 @@
     paint();
   }
   addEventListener('pagehide', function () { flush(true); });
-  document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'hidden') flush(true); });
-  if (SI && SI.on) SI.on(function () { asked = ''; var email = me(); if (email) save(claim(load(), email)); paint(); mine(); flush(); });
+  document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'hidden') flush(true); else mine(); });   /* back after a while: asked again if 10 minutes have passed */
+  if (SI && SI.on) SI.on(function () { var email = me(); if (email) save(claim(load(), email)); paint(); mine(); flush(); });
   function start() { hook(); mine(); flush(); }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start); else start();
 })();
