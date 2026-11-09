@@ -674,6 +674,9 @@
       li.classList.toggle('is-open', !!on);
       body.hidden = !on;
       btn.setAttribute('aria-expanded', on ? 'true' : 'false');
+      /* on a phone, a card holding its own picture, tool or animation folds the picture strip away while it is open
+         (PlateFold.auto); not when it was opened by a press on the picture, which the reader is looking at */
+      if (window.PlateFold && window.PlateFold.auto && (!on || !fromPicture)) window.PlateFold.auto(!!on && !!(li.classList.contains('xcard--film') || body.querySelector('.widget, .photo, .media, figure.sph, video, .lp')));
       if (on && window.Learn && window.Learn.relayout) { window.Learn.relayout(body); requestAnimationFrame(function () { window.Learn.relayout(body); }); }
       if (fromPicture || !window.Plate || current === 'keys') return;
       var g0 = on ? (li.getAttribute('data-group') || '').split(' ')[0] : '';
@@ -1367,9 +1370,34 @@
       if (plate && fold) {
         var FOLD_KEY = 'labs.plateFolded', foldedNow = false;
         try { foldedNow = localStorage.getItem(FOLD_KEY) === '1'; } catch (e) {}
-        var paintFold = function () { plate.classList.toggle('is-folded', foldedNow); fold.setAttribute('aria-expanded', foldedNow ? 'false' : 'true'); fold.textContent = (foldedNow ? '▼ Show ' : '▲ Hide ') + fold.getAttribute('data-what'); };
+        /* Three things decide whether the strip is folded: the reader's own choice (remembered), a card that holds its own
+           picture or animation (autoTo: folded while it is open, on a phone), and a drawing arriving in the strip (lentTo:
+           opened for it, whatever the other two say). */
+        var lentTo = false, autoTo = false;
+        var isFolded = function () { return (foldedNow || autoTo) && !lentTo; };
+        var paintFold = function () { var f = isFolded(); plate.classList.toggle('is-folded', f); fold.setAttribute('aria-expanded', f ? 'false' : 'true'); fold.textContent = (f ? '\u25BC Show ' : '\u25B2 Hide ') + fold.getAttribute('data-what'); };
         paintFold();
-        fold.addEventListener('click', function () { foldedNow = !foldedNow; try { localStorage.setItem(FOLD_KEY, foldedNow ? '1' : '0'); } catch (e) {} paintFold(); });
+        /* the button does what it says on it (Hide folds, Show opens), and that choice is the one remembered */
+        fold.addEventListener('click', function () { foldedNow = !isFolded(); lentTo = false; autoTo = false; try { localStorage.setItem(FOLD_KEY, foldedNow ? '1' : '0'); } catch (e) {} paintFold(); });
+        /* A simulation arriving in the strip while the strip is folded away would be invisible,
+           and the reader would never know it was there. So it opens itself — and closes again
+           afterwards, unless the reader has since made the choice themselves, in which case their
+           choice stands and is what gets remembered. */
+        window.PlateFold = {
+          lend: function (on) {
+            if (on) { if (isFolded()) { lentTo = true; paintFold(); } }
+            else if (lentTo) { lentTo = false; paintFold(); }
+          },
+          /* Daniel, 9 Nov 2026 ("Yes, fold it", after the press audit): on a phone the strip covers about 40 % of the screen,
+             so a card's own picture, tool or animation, just above the button pressed, was hidden under it. While a card
+             that holds one is open, the strip folds away; when the card closes, it comes back, unless the reader has pressed
+             Hide or Show meanwhile. Only where the strip is a strip (its fold button can be seen). */
+          auto: function (on) {
+            on = !!on && fold.getClientRects().length > 0;
+            if (on === autoTo) return;
+            autoTo = on; paintFold();
+          }
+        };
       }
       qStat.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); goQuestions(); } });
     }
