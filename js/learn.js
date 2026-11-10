@@ -388,7 +388,7 @@
     if (dr) views.push(drawingView(dr));
     if (dg) {
       var fig = h('figure', 'diag', dg.svg +
-        (/grey label/.test(dg.caption) ? '<p class="diag__key"><b>Green</b> — a word you need for 0610. <i>Grey</i> — not needed; it is there only so the picture makes sense.</p>' : '') +
+        (/purple label/.test(dg.caption) ? '<p class="diag__key"><b>Green</b> — a word you need for 0610. <i>Purple</i> — the 0610 syllabus does not name it; it is there so the picture makes sense.</p>' : '') +
         '<figcaption>' + esc(dg.caption) + '</figcaption>');
       views.push({ key: 'diagram', tab: 'Diagram',
                    hint: 'Drawn for this lab, so nothing is hidden by the angle.', el: fig });
@@ -1437,7 +1437,8 @@
   }
   function both(d, cx) { return '<path d="' + d + '"/><path d="' + mir(d, cx) + '"/>'; }
   function joints(pts, cx) { cx = cx || MX; return pts.map(function (p) { return '<circle cx="' + p[0] + '" cy="' + p[1] + '" r="1.7"/><circle cx="' + (2 * cx - p[0]) + '" cy="' + p[1] + '" r="1.7"/>'; }).join(''); }
-  /* a label the syllabus does not ask a candidate to produce is drawn in grey, and the
+  /* a label the syllabus does not ask a candidate to produce is drawn in the extension purple (--ext; grey until
+     Daniel's "One violet", 10 Nov 2026), and the
      caption says so: the diagram completes the picture without adding to what must be learnt */
   /* A label line on a drawing starts a little way off the structure it names. Touching it
      would leave the reader unable to tell where the drawing ends and the line begins, which
@@ -1454,7 +1455,7 @@
   function segs21() { var s = ''; for (var i = 0; i < 21; i++) s += '<rect class="' + (i % 2 ? 'diag__thorax' : 'diag__abd') + '" x="' + (66 + 13 * i) + '" y="92" width="13" height="26" rx="2"/>'; return s; }
   function legs20() { var s = ''; for (var i = 0; i < 20; i++) { var x = 72.5 + 13 * i; s += '<path d="M' + x + ' 92 L' + (x - 3.5) + ' 76 L' + (x + 4.5) + ' 62"/><path d="M' + x + ' 118 L' + (x - 3.5) + ' 134 L' + (x + 4.5) + ' 148"/>'; } return s; }
   var DIAGRAMS = {
-    prokaryote: { caption: 'A generalised bacterium. No nucleus: the DNA is one circular loop lying free in the cytoplasm, and the small extra rings beside it are plasmids. The grey label, the flagellum, is not needed for 0610; it is here only so the cell makes sense.',
+    prokaryote: { caption: 'A generalised bacterium. No nucleus: the DNA is one circular loop lying free in the cytoplasm, and the small extra rings beside it are plasmids. The purple label, the flagellum, is not named in the 0610 syllabus; it is here so the cell makes sense.',
       svg: '<svg viewBox="0 0 500 250" class="diag__svg" role="img" aria-label="A labelled diagram of a bacterium, showing the cell wall, cell membrane, cytoplasm, ribosomes, one circular loop of DNA and two plasmids">' +
         /* the cell: wall outside, membrane just inside it */
         '<rect class="diag__thorax" x="120" y="70" width="260" height="110" rx="55"/>' +
@@ -1491,7 +1492,7 @@
         lab(186, 8, 300, 12, 'antenna — one pair') + lab(171, 46, 300, 40, 'compound eye') + lab(172, 58, 300, 62, 'head') + lab(172, 68, 300, 90, 'thorax — legs and wings attach here') +
         lab(270, 140, 300, 150, 'forewing') + lab(236, 168, 300, 176, 'hindwing') + lab(216, 166, 300, 210, 'jointed leg — three pairs') + lab(182, 200, 300, 244, 'abdomen') +
         '<text class="diag__title" x="8" y="280">A generalised insect, from above</text></svg>' },
-    arachnid: { caption: 'A spider, from above: two body parts — the cephalothorax and the abdomen — four pairs of jointed legs, simple eyes, and no antennae or wings. The grey labels are there to complete the picture; the 0610 syllabus does not name them.',
+    arachnid: { caption: 'A spider, from above: two body parts — the cephalothorax and the abdomen — four pairs of jointed legs, simple eyes, and no antennae or wings. The purple labels are there to complete the picture; the 0610 syllabus does not name them.',
       svg: '<svg viewBox="0 0 520 290" class="diag__svg" role="img" aria-label="A labelled diagram of a spider from above">' +
         '<g class="diag__legs">' + both('M176 92 L208 64 L240 52 L262 26') + both('M178 104 L214 100 L246 108 L272 96') + both('M178 116 L210 124 L236 144 L250 166') + both('M176 128 L204 152 L222 190 L228 224') +
         joints([[208, 64], [240, 52], [214, 100], [246, 108], [210, 124], [236, 144], [204, 152], [222, 190]]) + '</g>' +
@@ -1503,7 +1504,7 @@
         lab(184, 46, 300, 40, 'pedipalp — a feeler, not a leg', 'extra') + lab(161, 84, 300, 66, 'simple eyes — eight') + lab(170, 134, 300, 130, 'cephalothorax — head and thorax in one') +
         lab(236, 144, 300, 160, 'jointed leg — four pairs') + lab(188, 200, 300, 200, 'abdomen') + lab(154, 254, 300, 250, 'spinnerets', 'extra') +
         '<text class="diag__title" x="8" y="280">A spider, from above</text></svg>' },
-    crustacean: { caption: 'A crab, from above: a hard exoskeleton over a two-part body (the abdomen is folded underneath), five pairs of legs of which the first is a claw, and two pairs of antennae. The grey label is there to complete the picture; the 0610 syllabus does not name it.',
+    crustacean: { caption: 'A crab, from above: a hard exoskeleton over a two-part body (the abdomen is folded underneath), five pairs of legs of which the first is a claw, and two pairs of antennae. The purple label is there to complete the picture; the 0610 syllabus does not name it.',
       svg: '<svg viewBox="0 0 560 290" class="diag__svg" role="img" aria-label="A labelled diagram of a crab from above">' +
         '<g class="diag__legs">' + both('M236 136 L268 130 L292 146 L306 172', 170) + both('M236 152 L270 154 L294 174 L304 202', 170) + both('M234 168 L266 178 L286 204 L292 232', 170) + both('M228 184 L256 200 L270 228 L272 256', 170) +
         joints([[268, 130], [292, 146], [270, 154], [294, 174], [266, 178], [286, 204], [256, 200], [270, 228]], 170) +
@@ -1515,7 +1516,7 @@
         lab(210, 56, 340, 30, 'antennae — two pairs, one short') + lab(196, 58, 340, 52, 'eye on a stalk', 'extra') + lab(326, 84, 340, 96, 'claw — the first pair of legs') +
         lab(220, 100, 340, 124, 'carapace (part of the exoskeleton)') + lab(294, 174, 340, 180, 'walking legs — four more pairs') + lab(170, 206, 340, 232, 'the abdomen is folded under the body') +
         '<text class="diag__title" x="8" y="280">A crab, from above</text></svg>' },
-    virus: { summary: 'What no photograph can show, drawn', caption: 'A virus, drawn: genetic material — DNA or RNA — inside a coat made of protein units, and nothing else. No cytoplasm, no membrane, no cell. Neither feature can be seen in a photograph, which is why this is drawn. The grey label is not in the 0610 syllabus.',
+    virus: { summary: 'What no photograph can show, drawn', caption: 'A virus, drawn: genetic material — DNA or RNA — inside a coat made of protein units, and nothing else. No cytoplasm, no membrane, no cell. Neither feature can be seen in a photograph, which is why this is drawn. The purple label is not in the 0610 syllabus.',
       svg: '<svg viewBox="0 0 520 250" class="diag__svg" role="img" aria-label="A labelled diagram of a virus: genetic material inside a protein coat">' +
         (function () { var s2 = '', i, a, x, y;
           for (i = 0; i < 18; i++) { a = i * 20 * Math.PI / 180; x = 150 + 78 * Math.sin(a); y = 118 - 78 * Math.cos(a);
@@ -1533,7 +1534,7 @@
         '<path class="diag__scale" d="M60 214 H240 M60 208 V220 M240 208 V220"/>' +
         '<text class="diag__scalelab" x="150" y="234" text-anchor="middle">about 100 nm across</text>' +
         '<text class="diag__title" x="8" y="242">A virus, drawn</text></svg>' },
-    myriapod: { caption: 'A centipede, from above: a head with one pair of antennae, then many similar segments with one pair of jointed legs on each (a millipede has two pairs). The grey labels are there to complete the picture; the 0610 syllabus does not name them.',
+    myriapod: { caption: 'A centipede, from above: a head with one pair of antennae, then many similar segments with one pair of jointed legs on each (a millipede has two pairs). The purple labels are there to complete the picture; the 0610 syllabus does not name them.',
       svg: '<svg viewBox="0 0 450 210" class="diag__svg" role="img" aria-label="A labelled diagram of a centipede from above">' +
         '<g class="diag__legs">' + legs20() + '<path d="M332 105 L364 90 L392 96"/><path d="M332 105 L364 120 L392 114"/></g>' +
         '<g class="diag__ant"><path d="M34 99 L18 84 L8 66"/><path d="M34 111 L18 126 L8 144"/><circle cx="18" cy="84" r="1.7"/><circle cx="18" cy="126" r="1.7"/></g>' +
