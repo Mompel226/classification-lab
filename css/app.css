@@ -10,7 +10,8 @@
   --green:#14572B; --green-2:#1E7A3E; --green-tint:#E8F1EA;
   --amber:#A16207; --amber-tint:#FBF3E3;
   --teal:#0F6E8C;  --teal-tint:#E5F0F4;
-  --purple:#6B3FA0;--purple-tint:#F1EBF8;
+  --purple:#3A5F8A;--purple-tint:#EAF0F7;
+  /* --purple keeps its name, but since 11 Nov 2026 it holds the multiple-choice steel blue: violet means extension on every site (Daniel, 10 Nov 2026, "One violet"); he chose this colour on 11 Nov */
   --ext:#7243C0; --ext-tint:#EDE8FA; --ext-wash:#F7F4FD; --ext-rule:#C9BAEE; --ext-on:#FFFFFF;
   /* extension (Daniel, 10 Nov 2026, "One violet"): anything beyond what the reader's own course asks, IB content or beyond the syllabus, in ONE violet; a small word label says which (IB · D3.1.8, Beyond IB, beyond 0610). The summary notes' 7243C0 on EDE8FA; dark: the hub's B388FF, the same hue. Blue is IB only where IB is the reader's own level; grey is Supplement and cross-topic links. --ext-wash: a big box; --ext-tint: a tag or line. The extra pins' list rows double their class (.pins__item.pins__item--extra): the plain .pins__item rules further down painted them green before */
   --red:#B03A2E;   --red-tint:#FAECE9;
@@ -843,8 +844,9 @@ svg.lit .kl--all.is-on{opacity:1}
    carries no meaning in the text. */
 :root{
   --k-char:#0E4D5C;    --k-char-t:#E1EFF2;
-  --k-animals:#A8461F; --k-plants:#3D7A1F; --k-fungi:#8A5A0E; --k-prokaryotes:#5B3FA0; --k-protoctists:#0B6E8C;
-  --k-viruses:#5A6470; --k-naming:#7A2E7A;
+  --k-animals:#A8461F; --k-plants:#3D7A1F; --k-fungi:#8A5A0E; --k-prokaryotes:#1F4E8C; --k-protoctists:#0B6E8C;
+  --k-viruses:#5A6470; --k-naming:#A8325E;
+  /* prokaryotes navy and naming rose since 11 Nov 2026 (violet and plum before): violet means extension on every site (Daniel, 10 Nov 2026, "One violet"); he chose this colour on 11 Nov */
 }
 .t{font-weight:700}
 .t--animals{color:var(--k-animals)} .t--plants{color:var(--k-plants)} .t--fungi{color:var(--k-fungi)}
