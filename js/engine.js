@@ -687,16 +687,60 @@
   }
 
   /* ============================= DRAG ============================= */
+  /* A drag question with `text` shows its sentence, with each box where its {n} stands (slot 0 at {0}, and
+     so on), as a fill-the-gaps question does (12 Nov 2026). Before, the builds left `text` out and only the
+     boxes were drawn, each under its label, so the Immunity Lab's "Complete the sentence" showed no sentence,
+     only boxes named "first" and "second" (Daniel: it "makes no sense"). A box keeps its slot's place in the
+     answer whatever the sentence's order; a slot the sentence does not name is drawn as before, under it.
+     The look is the lab's own: the box is the `.slot` (its colours when marked come from the lab's
+     `.slot.ok`/`.slot.no`), made a pill inside the line by the few rules below, added once. */
+  var inlineCss = false;
+  function dragInlineCss() {
+    if (inlineCss || !document.head) return;
+    inlineCss = true;
+    var st = document.createElement('style');
+    st.textContent =
+      '.slot.slot--in{display:inline-flex;vertical-align:middle;padding:0;margin:2px 3px;min-height:0;gap:0;' +
+        'border-width:1.8px;border-style:dashed;border-radius:999px}' +
+      '.slot.slot--in.ok,.slot.slot--in.no{border-style:solid}' +
+      '.slot.slot--in .slot__well{border:0;width:auto;min-width:7.5em;min-height:32px;background:none;line-height:1.3}' +
+      '.slot.slot--in .slot__well.over{background:var(--teal-tint)}' +
+      '.drag__glue{white-space:nowrap}';
+    document.head.appendChild(st);
+  }
   function drag(a, idx, id) {
     var card = shell(a, idx);
     var pool = h('div', 'tokens');
     var slotsWrap = h('div', 'slots');
-    var wells = (a.slots || []).map(function (s) {
-      var row = h('div', 'slot');
-      row.appendChild(h('span', 'slot__lab', s.label));
-      var well = h('div', 'slot__well', 'drop here');
+    var said = {}, sentence = null;
+    if (a.text) {
+      dragInlineCss();
+      sentence = h('p', 'cloze drag__text');
+      var glue = null;                     /* a box and the comma or full stop after it never part at a line end */
+      String(a.text).split(/(\{\d+\})/).forEach(function (part) {
+        var m = part.match(/^\{(\d+)\}$/);
+        if (m && a.slots && a.slots[+m[1]] && !said[m[1]]) {
+          glue = sentence.appendChild(h('span', 'drag__glue'));
+          said[m[1]] = glue.appendChild(h('span', 'slot slot--in'));
+          return;
+        }
+        var stop = glue && part.match(/^[,.;:!?)\u2019]+/);
+        if (stop) { glue.appendChild(document.createTextNode(stop[0])); part = part.slice(stop[0].length); }
+        glue = null;
+        if (part) sentence.appendChild(document.createTextNode(part));
+      });
+    }
+    var wells = (a.slots || []).map(function (s, i) {
+      var row = said[i];
+      var well = h(row ? 'span' : 'div', 'slot__well', 'drop here');
+      if (row) {
+        well.setAttribute('aria-label', 'Box ' + (i + 1));
+      } else {
+        row = h('div', 'slot');
+        row.appendChild(h('span', 'slot__lab', s.label));
+        slotsWrap.appendChild(row);
+      }
       row.appendChild(well);
-      slotsWrap.appendChild(row);
       return well;
     });
     var zones = wells.concat([pool]);
@@ -733,7 +777,8 @@
     shuffle((a.tokens || []).concat(a.distractors || [])).forEach(function (t) { pool.appendChild(mkTok(t)); });
     dragHint(card);
     card.appendChild(pool);
-    card.appendChild(slotsWrap);
+    if (sentence) card.appendChild(sentence);
+    if (slotsWrap.firstChild) card.appendChild(slotsWrap);
     tidy();
 
     foot(card, function () {
