@@ -2074,7 +2074,7 @@ window.GLOSSARY = [
  },
  {
   "term": "mitosis",
-  "def": "Nuclear division giving rise to genetically identical cells. The exact replication of the chromosomes occurs before mitosis; during mitosis the copies of the chromosomes separate, so the chromosome number is maintained in each daughter cell.",
+  "def": "Nuclear division giving rise to genetically identical cells. The exact replication of the chromosomes occurs before mitosis; during mitosis the copies of the chromosomes (the chromatids) separate, so the chromosome number is maintained in each daughter cell.",
   "sup": true
  },
  {
