@@ -15,7 +15,7 @@
   var E = global.Engine, U = E.util, h = U.h;
 
   /* ============================= GRID ============================= */
-  function grid(a, idx, id) {
+  function grid(a, idx, id, draft) {
     var card = U.shell(a, idx);
     var wrap = h('div', 'gridq');
     var tbl = document.createElement('table');
@@ -59,11 +59,19 @@
     }, function () {
       Array.prototype.forEach.call(tb.children, function (tr) { tr.classList.remove('ok', 'no'); });
     });
+    /* kept through a reload (18 Nov 2026, engine.js keepable; an older engine.js has none): c: the boxes ticked, [row, column] */
+    if (U.keepable) U.keepable(card, function () {
+      var c = [];
+      boxes.forEach(function (row, ri) { row.forEach(function (cb, ci) { if (cb.checked) c.push([ri, ci]); }); });
+      return { c: c };
+    }, function (d) {
+      (Array.isArray(d.c) ? d.c : []).forEach(function (rc) { var cb = rc && boxes[rc[0]] && boxes[rc[0]][rc[1]]; if (cb) cb.checked = true; });
+    }, draft);
     return card;
   }
 
   /* ============================= HOTSPOT ============================= */
-  function hotspot(a, idx, id) {
+  function hotspot(a, idx, id, draft) {
     var card = U.shell(a, idx);
     var stage = h('div', 'hs__stage');
     if (a.svg) {
@@ -81,7 +89,7 @@
       im.src = 'assets/photos/' + a.img;
       stage.appendChild(im);
     }
-    var picked = {};
+    var picked = {}, btnOf = {};
     var count = h('p', 'hs__count');
     function paintCount() {
       var n = Object.keys(picked).length;
@@ -94,6 +102,7 @@
       b.style.width = d + '%';            /* a circle: the stylesheet keeps it square with aspect-ratio */
       b.setAttribute('aria-pressed', 'false');
       b.setAttribute('aria-label', 'Feature ' + r.id);
+      btnOf[r.id] = b;
       b.addEventListener('click', function () {
         if (b.dataset.locked === '1') return;
         if (picked[r.id]) { delete picked[r.id]; b.setAttribute('aria-pressed', 'false'); }
@@ -117,6 +126,15 @@
       Array.prototype.forEach.call(stage.querySelectorAll('.hs__pt'), function (b) { b.setAttribute('aria-pressed', 'false'); b.dataset.locked = ''; });
       paintCount();
     }, 'Not right yet. Check each feature you chose, and how many the question asks for, then try once more.');
+    if (U.keepable) U.keepable(card, function () {                      /* p: the parts chosen */
+      return { p: Object.keys(picked) };
+    }, function (d) {
+      (Array.isArray(d.p) ? d.p : []).forEach(function (rid) {
+        var b = Object.prototype.hasOwnProperty.call(btnOf, rid) ? btnOf[rid] : null;
+        if (b) { picked[rid] = 1; b.setAttribute('aria-pressed', 'true'); }
+      });
+      paintCount();
+    }, draft);
     return card;
   }
 
@@ -127,8 +145,8 @@
 
   /* ---------- what a question shows beside its prompt ---------- */
   var render = E.render;
-  E.render = function (a, idx, id) {
-    var card = render(a, idx, id);
+  E.render = function (a, idx, id, draft) {
+    var card = render(a, idx, id, draft);
     var L = global.Learn;
     var after = card.querySelector('.act__prompt') || card.querySelector('.act__top');
     var shows = [];

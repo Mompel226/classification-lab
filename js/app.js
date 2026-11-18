@@ -195,6 +195,7 @@
 
   function paintPanel() {
     var st = S[current]; if (!st) return;
+    notePractisePlace();                            /* where they were among the kept cards, before the panel empties */
     var host = document.getElementById('panelInner'), sc = stationScore(current);
     host.innerHTML = '';
     if (window.Learn && Learn.reap) Learn.reap();   /* the old station's widgets are detached now */
@@ -240,7 +241,7 @@
     }
     if (tab === 'learn') paintLearn(pane, st); else paintDo(pane, st);
     var sc = panelScroller();
-    if (sc) { var prev = sc.style.scrollBehavior; sc.style.scrollBehavior = 'auto'; sc.scrollTop = 0; sc.style.scrollBehavior = prev || ''; }
+    if (sc) { var prev = sc.style.scrollBehavior; sc.style.scrollBehavior = 'auto'; sc.scrollTop = practiseShown === current ? drawn[current].top || 0 : 0; sc.style.scrollBehavior = prev || ''; }
   }
 
   var WIDGET_CTX = {
@@ -446,6 +447,83 @@
     (st.activities || []).forEach(function (a, i) { if (rec.done && rec.done[i] && !(rec.one && rec.one[i])) out.push(i); });
     return out;
   }
+  /* ---------- the Practise tab keeps what the pupil did (Daniel, 18 Nov 2026) ----------
+     A pupil looked back at Learn in the middle of the questions and came back to every box empty ("everything has been
+     blanked out"). paintPanel empties the panel on every repaint (the Learn and Practise tabs, another station, a
+     glossary toggle, the records arriving at sign-in), and everything a pupil does in a question card (the words typed,
+     the options picked and their letters, the pieces dragged or put in order, the hints opened, the Check verdict) lives
+     only in that card. So each card is drawn once and shown again as the pupil left it, at the place they had scrolled
+     to, until the round changes ("Start this station again", Reset, a newer round from the records) or the page holds
+     other work (another pupil's sign-in, or a copy taken from another tab, gives `progress` a new object). A reload
+     gives them back too, unchecked (below). Proof: labs-shared/practise-kept.mjs. */
+  var drawn = {}, practiseShown = null;   /* station id -> { of: progress, go, cards, top }; the station whose kept cards are on screen */
+  function drawnCards(id) {
+    var go = stationScore(id).go, d = drawn[id];
+    if (!d || d.of !== progress || d.go !== go) d = drawn[id] = { of: progress, go: go, cards: [], top: 0 };
+    return d;
+  }
+  /* "answered correctly earlier" on a question this round already has right, unless its own card says Correct */
+  function earlierTick(card, id, i) {
+    var top = card.querySelector('.act__top');
+    if (!top || !p(id).done[i] || card.classList.contains('is-right') || top.querySelector('.verdict--earlier')) return;
+    var tick = document.createElement('span');
+    tick.className = 'verdict ok verdict--earlier'; tick.textContent = '✓ answered correctly earlier'; tick.style.marginLeft = 'auto';
+    top.appendChild(tick);
+  }
+  /* where the pupil had scrolled to among the kept cards, read before the panel is emptied */
+  function notePractisePlace() {
+    var d = practiseShown && drawn[practiseShown], sc = d && panelScroller();
+    if (sc) d.top = sc.scrollTop;
+    practiseShown = null;
+  }
+  /* ---------- ... and through a reload (Daniel, 18 Nov 2026, the same day: "Yes, build that") ----------
+     What a pupil did in a station's questions is kept in this browser under <lab>.answers, with the round and the
+     station's fingerprint it belongs to, and drawn back the first time the station's questions are drawn in a page
+     (Engine.render's fourth argument; engine.js keepable): only the questions they touched, and never the verdict (a
+     question comes back unchecked, to be checked again). It is written 0.4 s after their last move and when the page is
+     left. A new round, a reworded station, or the browser cleared for another pupil (clearHere, or Reset without
+     sync.js) forgets it. The record is never told anything from it. */
+  function answersKey() { return LAB_ID + '.answers'; }
+  function readAnswers() {
+    try { var o = JSON.parse(localStorage.getItem(answersKey()) || '{}'); return o && typeof o === 'object' && !Array.isArray(o) ? o : {}; }
+    catch (e) { return {}; }
+  }
+  function storeAnswers(all) {
+    try { if (Object.keys(all).length) localStorage.setItem(answersKey(), JSON.stringify(all)); else localStorage.removeItem(answersKey()); } catch (e) {}
+  }
+  function answerFor(st, i) {
+    var all = readAnswers(), a = all[st.id];
+    if (!a) return null;
+    if (a.go !== stationScore(st.id).go || a.sig !== stationSig(st) || !a.q) { delete all[st.id]; storeAnswers(all); return null; }   /* another round, or reworded */
+    return a.q[i] || null;
+  }
+  var answersDue = {};
+  function watchAnswers(card, id) {
+    ['input', 'change', 'click', 'keydown', 'pointerup'].forEach(function (t) {
+      card.addEventListener(t, function () {
+        card.__touched = true;
+        clearTimeout(answersDue[id]);
+        answersDue[id] = setTimeout(function () { delete answersDue[id]; writeAnswers(id); }, 400);
+      });
+    });
+  }
+  function writeAnswers(id) {
+    var d = drawn[id], st = S[id];
+    if (!d || !st || d.of !== progress || d.go !== stationScore(id).go) return;   /* cards of another pupil's work, or of an older round */
+    var q = {}, n = 0, all = readAnswers();
+    d.cards.forEach(function (c, i) { var v = c && c.__touched && c.__draft ? c.__draft() : null; if (v) { q[i] = v; n++; } });
+    if (n) all[id] = { go: d.go, sig: stationSig(st), q: q }; else delete all[id];
+    storeAnswers(all);
+  }
+  function forgetAnswers() {
+    Object.keys(answersDue).forEach(function (id) { clearTimeout(answersDue[id]); });
+    answersDue = {};
+    try { localStorage.removeItem(answersKey()); } catch (e) {}
+  }
+  window.addEventListener('pagehide', function () {
+    Object.keys(answersDue).forEach(function (id) { clearTimeout(answersDue[id]); writeAnswers(id); });
+    answersDue = {};
+  });
   function paintDo(pane, st) {
     /* a redo belongs to one station, one pupil and one round: another station, another account (or none), Reset or a new
        round ends it (the audit, 8 Oct 2026: pupil B saw pupil A's missed question) */
@@ -455,8 +533,13 @@
       return;
     }
     paintGoLine(pane, st);
+    var kept = drawnCards(st.id); practiseShown = st.id;
     (st.activities || []).forEach(function (a, i) {
-      var card = window.Engine.render(a, i, st.id + ':' + i);
+      if (kept.cards[i]) { earlierTick(kept.cards[i], st.id, i); pane.appendChild(kept.cards[i]); return; }   /* as the pupil left it */
+      var was = answerFor(st, i);                                   /* what they had done here before a reload */
+      var card = kept.cards[i] = window.Engine.render(a, i, st.id + ':' + i, was);
+      if (was && card.__draft) card.__touched = true;
+      watchAnswers(card, st.id);
       /* a question on something the syllabus for 2026–2029 does not include says which syllabus it comes from */
       var pq = st.past && st.past.q ? st.past.q[i] : null;
       if (pq != null) {
@@ -464,12 +547,7 @@
         qbox.innerHTML = pastBadge(pq, 'act__old');
         if (qtop && qbox.firstChild) { if (qn) qn.insertAdjacentElement('afterend', qbox.firstChild); else qtop.appendChild(qbox.firstChild); }
       }
-      if (p(st.id).done[i]) {
-        var tick = document.createElement('span');
-        tick.className = 'verdict ok'; tick.textContent = '✓ answered correctly earlier'; tick.style.marginLeft = 'auto';
-        var top = card.querySelector('.act__top');
-        if (top) top.appendChild(tick);
-      }
+      earlierTick(card, st.id, i);
       card.addEventListener('result', function (e) {
         if (!e.detail) return;
         var rec = p(st.id);
@@ -821,7 +899,7 @@
   function markUnsent(on) { try { if (on) localStorage.setItem(UNSENT_KEY, '1'); else localStorage.removeItem(UNSENT_KEY); } catch (e) {} }
   function unsentHere() { try { return !!localStorage.getItem(UNSENT_KEY); } catch (e) { return true; } }
   function clearHere() {
-    progress = {}; markUnsent(false);
+    progress = {}; markUnsent(false); forgetAnswers();
     /* their whole-lab resets go with their work; and "Saved ✓ hh:mm" was theirs, not the next pupil's (7 Oct 2026) */
     if (window.LabSync && window.LabSync.clearResets) window.LabSync.clearResets(LAB_ID);
     else { try { localStorage.removeItem(LAB_ID + '.resets'); } catch (e) {} }
@@ -1413,7 +1491,7 @@
       }
       if (!window.LabSync) {                             /* js/sync.js did not arrive: all this page can do is clear itself */
         if (!confirm('Clear all your answers in this browser?\n\nThis cannot be undone here.')) return;
-        progress = {}; try { localStorage.removeItem(STORE); } catch (e) {}
+        progress = {}; forgetAnswers(); try { localStorage.removeItem(STORE); } catch (e) {}
       } else {
         if (!confirm('Start every station again?\n\nYour answers will be cleared from this page, so you can practise the questions again. Your record keeps everything you have already done.')) return;
         ids.forEach(function (id) { window.LabSync.newGo(progress, id, S); });

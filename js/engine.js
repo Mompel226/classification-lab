@@ -12,6 +12,9 @@
    Marking goes through Marking.check(), which compares hashes. The correct
    answer is never in the page: there is no way to be shown it, only to be
    told which parts are wrong.
+
+   A question's answer survives a reload (18 Nov 2026): card.__draft() and Engine.render's
+   fourth argument, below (keepable). The lab's app.js keeps the drafts in the browser.
    ============================================================ */
 (function (global) {
   'use strict';
@@ -87,6 +90,33 @@
     for (i = r.length - 1; i > 0; i--) { j = Math.floor(Math.random() * (i + 1)); t = r[i]; r[i] = r[j]; r[j] = t; }
     return r;
   }
+
+  /* ---------- a question's answer, kept through a reload (Daniel, 18 Nov 2026) ----------
+     A pupil who reloaded a lab found every question empty again. Each maker now gives its card card.__draft(), which
+     returns what the pupil has done in it as a small plain object (the words in the gaps, the options picked, the order
+     of the steps, where each word or item was put, the pairs, the ticks, the parts chosen, the slider), and draws a draft
+     given to Engine.render (its fourth argument) back into the new card. Never the verdict: a question comes back
+     unchecked, to be checked again. The lab's app.js keeps the drafts in the browser, per station and round. A draft
+     that no longer fits its question (another length, an index out of range) gives back only what still fits, so a bad
+     one can only give back less. A shuffled question drawn from a draft keeps the order the pupil saw, so its letters
+     and places are the ones they chose by. */
+  function keepable(card, get, put, draft) {
+    card.__draft = function () { try { return get(); } catch (e) { return null; } };
+    if (draft && typeof draft === 'object') { try { put(draft); } catch (e) {} }
+  }
+  /* the order a pupil saw, from a draft, when it is a true order of 0 … n-1; otherwise a fresh shuffle */
+  function drawnOrder(o, n) {
+    var fresh = [], seen = {}, k;
+    for (k = 0; k < n; k++) fresh.push(k);
+    if (!Array.isArray(o) || o.length !== n) return shuffle(fresh);
+    for (k = 0; k < n; k++) {
+      var v = o[k];
+      if (typeof v !== 'number' || v < 0 || v >= n || v % 1 || seen[v]) return shuffle(fresh);
+      seen[v] = 1;
+    }
+    return o.slice();
+  }
+  function isIx(v, n) { return typeof v === 'number' && v >= 0 && v < n && v % 1 === 0; }
 
   /* ---------- pointer drag, shared by drag / sort / order ---------- */
   /* Rewritten because it dropped gestures in real use. Three faults:
@@ -340,7 +370,7 @@
   }
 
   /* ============================= BLANK ============================= */
-  function blank(a, idx, id) {
+  function blank(a, idx, id, draft) {
     var card = shell(a, idx);
     var wrap = h('div', 'cloze');
     var inputs = {};
@@ -417,6 +447,13 @@
     }, function () {
       Object.keys(inputs).forEach(function (k) { inputs[k].classList.remove('ok', 'no'); });
     });
+    keepable(card, function () {                                      /* g: gap -> the words in it */
+      var g = {};
+      Object.keys(inputs).forEach(function (k) { if (inputs[k].value) g[k] = inputs[k].value; });
+      return { g: g };
+    }, function (d) {
+      Object.keys(d.g || {}).forEach(function (k) { if (inputs[k] && typeof d.g[k] === 'string') inputs[k].value = d.g[k].slice(0, 300); });
+    }, draft);
     return card;
   }
 
@@ -426,11 +463,11 @@
      master lists it first). The letters A, B, C… follow the screen. Marking still works in the
      master's own numbers, `i` below, because those are what the answer is hashed against: nothing
      published changes, so no station's fingerprint changes and nobody's saved work moves. */
-  function mcq(a, idx, id) {
+  function mcq(a, idx, id, draft) {
     var card = shell(a, idx);
     var box = h('div', 'opts');
     var picked = {};
-    var order = shuffle((a.options || []).map(function (_, i) { return i; }));
+    var order = drawnOrder(draft && draft.p && draft.p.length ? draft.o : null, (a.options || []).length);   /* the letters they chose by, when they had chosen */
     var btns = order.map(function (i, pos) {
       var b = h('button', 'opt');
       b.type = 'button';
@@ -472,6 +509,15 @@
         var w = b.querySelector('.opt__why'); if (w) w.remove();
       });
     });
+    keepable(card, function () {                                      /* o: the options' order on screen; p: the options picked (the master's numbers) */
+      return { o: order.slice(), p: Object.keys(picked).map(Number) };
+    }, function (d) {
+      (Array.isArray(d.p) ? d.p : []).slice(0, a.multi ? 99 : 1).forEach(function (i) {
+        var pos = order.indexOf(i);
+        if (pos < 0) return;
+        picked[i] = 1; btns[pos].setAttribute('aria-pressed', 'true');
+      });
+    }, draft);
     return card;
   }
 
@@ -489,7 +535,7 @@
       if (dy && n.animate) n.animate([{ transform:'translateY(' + dy + 'px)' }, { transform:'none' }], { duration:200, easing:'ease-out' });
     });
   }
-  function order(a, idx, id) {
+  function order(a, idx, id, draft) {
     var card = shell(a, idx);
     var list = h('div', 'order');
     function cards() { return Array.prototype.slice.call(list.querySelectorAll('.oitem')); }
@@ -498,9 +544,9 @@
       n.style.gridRow = String(i + 1);
       list.appendChild(n);
     });
-    shuffle(a.items || []).forEach(function (txt) {
-      var row = h('div', 'oitem');
-      row.dataset.txt = txt;
+    drawnOrder(draft && draft.o, (a.items || []).length).forEach(function (ix) {
+      var txt = a.items[ix], row = h('div', 'oitem');
+      row.dataset.txt = txt; row.dataset.ix = ix;
       row.appendChild(h('span', 'oitem__grip', '⋮⋮'));
       row.appendChild(h('span', null, txt));
       makeDraggable(row, {
@@ -542,18 +588,21 @@
       list.classList.remove('is-ok', 'is-no');
       cards().forEach(function (r) { r.classList.remove('ok', 'no'); });
     }, 'Not right yet. Your answer is kept as you left it \u2014 move only what you want to change, then check again.');
+    keepable(card, function () {                                      /* o: the steps' order now (their numbers in the master) */
+      return { o: cards().map(function (r) { return Number(r.dataset.ix); }) };
+    }, function () {}, draft);                                        /* drawn in that order above */
     return card;
   }
 
   /* ============================= MATCH ============================= */
-  function match(a, idx, id) {
+  function match(a, idx, id, draft) {
     var card = shell(a, idx);
     var grid = h('div', 'match');
     var L = h('div', 'mcol'), R = h('div', 'mcol');
     L.appendChild(h('div', 'mcol__h', a.leftHead || 'Match these…'));
     R.appendChild(h('div', 'mcol__h', a.rightHead || '…to these'));
     var sel = { side:null, i:null }, links = {};
-    var rIndex = shuffle((a.right || []).map(function (_, i) { return i; }));
+    var rIndex = drawnOrder(draft && draft.o, (a.right || []).length);
 
     function repaint() {
       lbtn.forEach(function (b, i) {
@@ -625,11 +674,20 @@
       lbtn.concat(rbtn).forEach(function (b) { b.dataset.locked = ''; b.classList.remove('ok', 'no'); });
       repaint();
     }, 'Not right yet. Your answer is kept as you left it \u2014 move only what you want to change, then check again.');
+    keepable(card, function () {                                      /* o: the right column's order; l: left -> right, the pairs made */
+      var l = {};
+      Object.keys(links).forEach(function (k) { l[k] = links[k]; });
+      return { o: rIndex.slice(), l: l };
+    }, function (d) {
+      var nl = (a.left || []).length, nr = (a.right || []).length;
+      Object.keys(d.l || {}).forEach(function (k) { if (isIx(Number(k), nl) && isIx(d.l[k], nr)) links[Number(k)] = d.l[k]; });
+      repaint();
+    }, draft);
     return card;
   }
 
   /* ============================= SORT ============================= */
-  function sort(a, idx, id) {
+  function sort(a, idx, id, draft) {
     var card = shell(a, idx);
     var pool = h('div', 'tokens');
     var binsWrap = h('div', 'bins');
@@ -661,7 +719,8 @@
       });
       return t;
     }
-    shuffle(a.items || []).forEach(function (t) { pool.appendChild(mkTok(t)); });
+    var toks = (a.items || []).map(function (t) { return mkTok(t); });
+    drawnOrder(draft && draft.o, toks.length).forEach(function (i) { pool.appendChild(toks[i]); });
     dragHint(card);
     card.appendChild(pool);
     card.appendChild(binsWrap);
@@ -683,6 +742,16 @@
       /* tokens stay in the bins the student put them in */
       Array.prototype.forEach.call(card.querySelectorAll('.tok'), function (t) { t.classList.remove('ok', 'no'); });
     }, 'Not right yet. Your answer is kept as you left it \u2014 move only what you want to change, then check again.');
+    keepable(card, function () {                                      /* o: every item in the order it stands; b: item -> its group */
+      var b = {};
+      bins.forEach(function (bin, bi) {
+        Array.prototype.forEach.call(bin.querySelectorAll('.tok'), function (t) { b[toks.indexOf(t)] = bi; });
+      });
+      return { o: Array.prototype.map.call(card.querySelectorAll('.tok'), function (t) { return toks.indexOf(t); }), b: b };
+    }, function (d) {
+      var o = drawnOrder(d.o, toks.length);
+      o.forEach(function (i) { var bi = (d.b || {})[i]; if (isIx(bi, bins.length)) bins[bi].appendChild(toks[i]); });
+    }, draft);
     return card;
   }
 
@@ -708,7 +777,7 @@
       '.drag__glue{white-space:nowrap}';
     document.head.appendChild(st);
   }
-  function drag(a, idx, id) {
+  function drag(a, idx, id, draft) {
     var card = shell(a, idx);
     var pool = h('div', 'tokens');
     var slotsWrap = h('div', 'slots');
@@ -774,7 +843,8 @@
       });
       return t;
     }
-    shuffle((a.tokens || []).concat(a.distractors || [])).forEach(function (t) { pool.appendChild(mkTok(t)); });
+    var toks = (a.tokens || []).concat(a.distractors || []).map(function (t) { return mkTok(t); });
+    drawnOrder(draft && draft.o, toks.length).forEach(function (i) { pool.appendChild(toks[i]); });
     dragHint(card);
     card.appendChild(pool);
     if (sentence) card.appendChild(sentence);
@@ -796,11 +866,22 @@
       wells.forEach(function (w) { w.parentElement.classList.remove('ok', 'no'); });
       tidy();
     }, 'Not right yet. Your answer is kept as you left it \u2014 move only what you want to change, then check again.');
+    keepable(card, function () {                                      /* o: the words in the order they stand; w: box -> the word in it (-1: none) */
+      return { o: Array.prototype.map.call(card.querySelectorAll('.tok'), function (t) { return toks.indexOf(t); }),
+               w: wells.map(function (w) { var t = w.querySelector('.tok'); return t ? toks.indexOf(t) : -1; }) };
+    }, function (d) {
+      var used = {};
+      (Array.isArray(d.w) ? d.w : []).forEach(function (ti, wi) {
+        if (!isIx(ti, toks.length) || !wells[wi] || used[ti]) return;
+        used[ti] = 1; wells[wi].textContent = ''; wells[wi].appendChild(toks[ti]);
+      });
+      tidy();
+    }, draft);
     return card;
   }
 
   /* ============================= pH ============================= */
-  function ph(a, idx, id) {
+  function ph(a, idx, id, draft) {
     var card = shell(a, idx);
     var box = h('div', 'ph');
     var scale = h('div', 'ph__scale');
@@ -847,6 +928,12 @@
       body.setAttribute('d', FIT); body.setAttribute('fill', '#DDEDE2'); body.setAttribute('stroke', '#14572B');
       msg.textContent = '';
     });
+    keepable(card, function () {                                      /* v: where the slider stands */
+      return { v: parseFloat(slider.value) };
+    }, function (d) {
+      var v = Number(d.v);
+      if (isFinite(v) && v >= 0 && v <= 14) { slider.value = String(v); val.textContent = parseFloat(slider.value).toFixed(1); }
+    }, draft);
     return card;
   }
 
@@ -880,17 +967,18 @@
 
   global.LabHelp = LabHelp;
   global.Engine = {
-    render: function (a, idx, id) {
+    render: function (a, idx, id, draft) {                            /* draft: what the pupil had done, to draw back (keepable) */
       var maker = MAKERS[a.type];
       if (!maker) { var e = h('div', 'act'); e.textContent = 'Unknown activity type: ' + a.type; return e; }
-      return maker(a, idx, id);
+      return maker(a, idx, id, draft);
     },
     /* A lab can add an activity type of its own: register(type, maker, "Name shown on the card").
-       The maker gets (a, idx, id) and returns the card; the helpers below build the shell and
+       The maker gets (a, idx, id, draft) and returns the card (util.keepable gives it a draft and draws one back); the helpers below build the shell and
        the Check / Try again foot exactly as the built-in types do. */
     register: function (type, maker, name) { MAKERS[type] = maker; if (name) KIND_NAME[type] = name; },
     redo: redo,
-    util: { h:h, shell:shell, foot:foot, shuffle:shuffle, imgEl:imgEl, makeDraggable:makeDraggable, dropTarget:dropTarget, dragHint:dragHint },
+    util: { h:h, shell:shell, foot:foot, shuffle:shuffle, imgEl:imgEl, makeDraggable:makeDraggable, dropTarget:dropTarget, dragHint:dragHint,
+            keepable:keepable, drawnOrder:drawnOrder },
     KIND_NAME: KIND_NAME
   };
 })(window);
