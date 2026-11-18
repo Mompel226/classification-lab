@@ -90,6 +90,12 @@ rather than making a private copy of it (which would then need fixing twice for 
 *adds* its two new kinds onto the shared machinery when it loads. Any future lab can add its own
 the same way.
 
+**The answers for teachers (since 18 November 2026).** `js/data/answers.lock.json` holds this lab's answers and
+explanations, **locked** (AES-256 encryption). The lab's pages never load it. Only the Biology Hub's teacher page opens it,
+when a teacher presses **Show the answers** on Homework analysis, with a key kept in the labs script's settings and on the
+author's computer, never in this repository. Without that key the file cannot be read. How it works, and what it means for a
+school running its own copy: the Biology Hub's README, *Teacher mode, and the teacher page*.
+
 **What is shared with the other labs.** Drawing a question, handling the dragging, the marking,
 the glossary and the tree are all kept in one place and copied in whenever a lab is rebuilt, so
 a fix reaches every lab at once. What belongs to this lab alone is its content: the 10 stations,
