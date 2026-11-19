@@ -26,6 +26,15 @@
    and Supplement on the right, the statements numbered as the syllabus numbers them. On a
    phone the two columns stack, Core above Supplement, each still headed.
    The lab's own topics come first and open; the rest of the syllabus is there, closed.
+
+   COLOURS (20 Nov 2026; Daniel: in dark mode "the contrast prevents you from seeing a lot of the text"). Every colour
+   below is one of the lab's theme tokens, never a colour of its own: the boxes --card, the words --ink and --grey, the
+   lab's green --accent (the bright-only labs call it --green, hence var(--accent,var(--green))), words on a coloured
+   fill --on-ink (white where a lab has no such token), Your year's pressed button --purple, the notes --amber/--teal and
+   their tints, a Find hit --amber-tint. Supplement is grey, as everywhere (violet means extension only: Daniel, 10 Nov
+   2026). Until then the boxes were white whatever the version, so the dark version's pale words stood on white, and
+   the Cells, Immunity and Inheritance Labs, which have no --green, showed the pressed version button white on white.
+   Proof: node tools/panel-contrast.mjs (every panel, both versions, WCAG AA).
    ============================================================ */
 (function (global) {
   'use strict';
@@ -37,51 +46,52 @@
     '.syl__sub{margin:0;font-size:13px;color:var(--grey)}' +
     '.syl__bar{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;margin-top:10px}' +
     '.syl__vers{display:flex;gap:6px;flex-wrap:wrap}' +
-    '.syl__ver{font:inherit;font-size:13px;font-weight:600;border:1.5px solid var(--edge);border-radius:999px;background:#fff;padding:5px 12px;cursor:pointer;color:var(--ink)}' +
-    '.syl__ver[aria-pressed="true"]{background:var(--green);border-color:var(--green);color:#fff}' +
-    '.syl__find{flex:1 1 220px;min-width:160px;font:inherit;font-size:14px;padding:7px 11px;border:1px solid var(--edge);border-radius:999px;background:var(--card-2)}' +
-    '.syl__find:focus{outline:2px solid var(--green);outline-offset:1px;background:#fff}' +
+    '.syl__ver{font:inherit;font-size:13px;font-weight:600;border:1.5px solid var(--edge);border-radius:999px;background:var(--card);padding:5px 12px;cursor:pointer;color:var(--ink)}' +
+    '.syl__ver[aria-pressed="true"]{background:var(--accent,var(--green));border-color:var(--accent,var(--green));color:var(--on-ink,#fff)}' +
+    '.syl__find{flex:1 1 220px;min-width:160px;font:inherit;font-size:14px;padding:7px 11px;border:1px solid var(--edge);border-radius:999px;background:var(--card-2);color:var(--ink)}' +
+    '.syl__find::placeholder{color:var(--grey);opacity:1}' +
+    '.syl__find:focus{outline:2px solid var(--accent,var(--green));outline-offset:1px;background:var(--card)}' +
     '.syl__body{overflow:auto;padding:6px 20px 24px;-webkit-overflow-scrolling:touch}' +
-    '.syl__group{margin:14px 0 6px;font-size:11.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--green)}' +
-    '.syl__topic{border:1px solid var(--edge);border-radius:var(--r);background:#fff;margin:8px 0}' +
+    '.syl__group{margin:14px 0 6px;font-size:11.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent,var(--green))}' +
+    '.syl__topic{border:1px solid var(--edge);border-radius:var(--r);background:var(--card);margin:8px 0}' +
     '.syl__topic > summary{cursor:pointer;padding:10px 14px;font-weight:700;font-size:15px;list-style:none;display:flex;gap:10px;align-items:baseline}' +
     '.syl__topic > summary::-webkit-details-marker{display:none}' +
-    '.syl__topic > summary::before{content:"▸";color:var(--green);font-size:13px;transition:transform .15s}' +
+    '.syl__topic > summary::before{content:"▸";color:var(--accent,var(--green));font-size:13px;transition:transform .15s}' +
     '.syl__topic[open] > summary::before{transform:rotate(90deg)}' +
     '.syl__topic > summary small{font-weight:500;color:var(--grey);font-size:12.5px}' +
     '.syl__sec{padding:2px 14px 14px}' +
     '.syl__sec h4{margin:12px 0 6px;font-size:15px;color:var(--ink)}' +
     '.syl__t{width:100%;border-collapse:collapse;table-layout:fixed;font-size:14px;line-height:1.45}' +
     '.syl__t th{text-align:left;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--grey);padding:6px 10px 4px;border-bottom:2px solid var(--edge)}' +
-    '.syl__t th.syl__s{color:#5A3D8A}' +
+    '.syl__t th.syl__s{color:var(--grey)}' +
     '.syl__t td{vertical-align:top;padding:8px 10px 10px;border-bottom:1px solid var(--edge)}' +
-    '.syl__t td.syl__s{background:#F4F0FA}' +
+    '.syl__t td.syl__s{background:var(--card-2)}' +
     '.syl__t ol{margin:0;padding:0;list-style:none}' +
     '.syl__t li{display:grid;grid-template-columns:2em 1fr;gap:0 4px;margin:0 0 8px}' +
-    '.syl__t li > b{font-weight:700;color:var(--green)}' +
-    '.syl__t li.syl__hit > span{background:#FFF3B0}' +
+    '.syl__t li > b{font-weight:700;color:var(--accent,var(--green))}' +
+    '.syl__t li.syl__hit > span{background:var(--amber-tint);color:var(--ink)}' +
     '.syl__t li.syl__no{display:none}' +
     '.syl__t .syl__ab{display:block;padding-left:1.6em;text-indent:-1.6em;margin-top:2px}' +
-    '.syl__t td:empty::after{content:"—";color:#B8B8B8}' +
+    '.syl__t td:empty::after{content:"—";color:var(--grey)}' +
     '.syl__foot{font-size:12px;color:var(--grey);margin:18px 0 0}' +
-    '.syl__foot a{color:var(--green)}' +
+    '.syl__foot a{color:var(--accent,var(--green))}' +
     '.syl__none{padding:20px 0;color:var(--grey)}' +
     '.syl__oldlab{font-size:12.5px;color:var(--grey);align-self:center;margin:0 0 0 6px}' +
     '.syl__ver.syl__vold{font-weight:500}' +
-    '.syl__note{margin:12px 0 4px;padding:10px 12px;border-radius:8px;background:#FBF1E2;border:1px solid #DDBB85;color:#5E4212;font-size:14px;line-height:1.45}' +
+    '.syl__note{margin:12px 0 4px;padding:10px 12px;border-radius:8px;background:var(--amber-tint);border:1px solid var(--amber);color:var(--ink);font-size:14px;line-height:1.45}' +
     '.syl__sec--head h4{margin-bottom:0}' +
     '.syl__you{display:flex;flex-wrap:wrap;align-items:center;gap:6px 8px;margin-top:10px;font-size:13.5px}' +
     '.syl__youlab{font-weight:700;color:var(--ink);margin-right:2px}' +
-    '.syl__yr{font:inherit;font-size:13px;font-weight:600;border:1.5px solid var(--edge);border-radius:999px;background:#fff;padding:4px 11px;cursor:pointer;color:var(--ink)}' +
-    '.syl__yr[aria-pressed="true"]{background:#1F4E79;border-color:#1F4E79;color:#fff}' +
+    '.syl__yr{font:inherit;font-size:13px;font-weight:600;border:1.5px solid var(--edge);border-radius:999px;background:var(--card);padding:4px 11px;cursor:pointer;color:var(--ink)}' +
+    '.syl__yr[aria-pressed="true"]{background:var(--purple);border-color:var(--purple);color:var(--on-ink,#fff)}' +
     '.syl__youline{flex:1 1 260px;color:var(--ink);line-height:1.4}' +
-    '.syl__note--same{background:#EEF4FA;border-color:#B7CDE3;color:#1F3B57}' +
+    '.syl__note--same{background:var(--teal-tint);border-color:var(--teal);color:var(--ink)}' +
     '@media (max-width:700px){' +
     '  .syl__t,.syl__t thead,.syl__t tbody,.syl__t tr,.syl__t td{display:block}' +
     '  .syl__t thead{display:none}' +
     '  .syl__t td{border:0;padding:6px 8px 8px}' +
     '  .syl__t td::before{content:"Core";display:block;font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--grey);margin-bottom:4px}' +
-    '  .syl__t td.syl__s::before{content:"Supplement";color:#5A3D8A}' +
+    '  .syl__t td.syl__s::before{content:"Supplement";color:var(--grey)}' +
     '  .syl__t td:empty{display:none}' +
     '  .syl__box{max-height:100dvh;border-radius:0}' +
     '  .modal.syl{padding:0}' +

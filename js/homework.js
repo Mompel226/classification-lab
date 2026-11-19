@@ -209,31 +209,35 @@
     return todo.length > 0;
   }
 
-  /* ---------- how it looks: one small style block, the same in every lab ---------- */
+  /* ---------- how it looks: one small style block, the same in every lab ----------
+     Every colour is one of the lab's theme tokens (--card, --ink, --grey, --bad, --amber, --ok and their tints), so the
+     dark version of a lab paints the note and the row dark too (20 Nov 2026: the note's buttons were white with the dark
+     version's pale words on them; tools/panel-contrast.mjs keeps it). A fallback after a comma is for a token a lab
+     may not have (--accent: the bright-only labs call their green --green; --on-ink: words on a coloured fill). */
   function css() {
     if (typeof document === 'undefined' || !document.head || document.getElementById('hw-style')) return;
     var st = document.createElement('style');
     st.id = 'hw-style';
     st.textContent =
-      '.rstep.hw--none{border-color:#C0392B;background:#FDECEA;box-shadow:inset 0 0 0 1px #C0392B}' +
-      '.rstep.hw--partly{border-color:#B45309;background:#FDF1E4;box-shadow:inset 0 0 0 1px #B45309}' +
-      '.rstep.hw--done{border-color:#1E7A3E;background:#E8F5EC;box-shadow:inset 0 0 0 1px #1E7A3E}' +
-      '.rstep.hw[aria-current="true"]{background:var(--green,#14572B);color:#fff}' +
-      '.rstep.hw--none .rstep__n{background:#C0392B;color:#fff}' +
-      '.rstep.hw--partly .rstep__n{background:#B45309;color:#fff}' +
-      '.rstep.hw--done .rstep__n{background:#1E7A3E;color:#fff}' +
+      '.rstep.hw--none{border-color:var(--bad);background:var(--bad-tint);box-shadow:inset 0 0 0 1px var(--bad)}' +
+      '.rstep.hw--partly{border-color:var(--amber);background:var(--amber-tint);box-shadow:inset 0 0 0 1px var(--amber)}' +
+      '.rstep.hw--done{border-color:var(--ok);background:var(--ok-tint);box-shadow:inset 0 0 0 1px var(--ok)}' +
+      '.rstep.hw[aria-current="true"]{background:var(--accent,var(--green));color:var(--on-ink,#fff)}' +
+      '.rstep.hw--none .rstep__n{background:var(--bad);color:var(--on-ink,#fff)}' +
+      '.rstep.hw--partly .rstep__n{background:var(--amber);color:var(--on-ink,#fff)}' +
+      '.rstep.hw--done .rstep__n{background:var(--ok);color:var(--on-ink,#fff)}' +
       '.hw__sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}' +
       '.hwdot{display:inline-block;width:12px;height:12px;border-radius:50%;flex:none;vertical-align:-1px}' +
-      '.hwdot--none{background:#C0392B}.hwdot--partly{background:#B45309}.hwdot--done{background:#1E7A3E}' +
+      '.hwdot--none{background:var(--bad)}.hwdot--partly{background:var(--amber)}.hwdot--done{background:var(--ok)}' +
       '.hwpop__lead{margin:8px 0 0;font-size:15px}' +
       '.hwpop__hw{margin:12px 0 4px;font-size:14.5px}' +
       '.hwpop__list{list-style:none;padding:0;margin:4px 0 6px}' +
       '.hwpop__list li{margin:0 0 5px}' +
-      '.hwpop__st{display:flex;align-items:center;gap:9px;width:100%;text-align:left;border:1px solid var(--edge,#E7DFD1);' +
-        'background:#fff;border-radius:10px;padding:9px 12px;font:inherit;font-size:14.5px;color:inherit;cursor:pointer}' +
-      '.hwpop__st:hover,.hwpop__st:focus-visible{border-color:var(--green-2,#1E7A3E)}' +
-      '.hwpop__st small{margin-left:auto;color:#5B5B5B;font-size:12.5px;white-space:nowrap;padding-left:8px}' +
-      '.hwpop__key{font-size:13px;line-height:1.7;color:#4A4A4A;margin:12px 0 0}';
+      '.hwpop__st{display:flex;align-items:center;gap:9px;width:100%;text-align:left;border:1px solid var(--edge);' +
+        'background:var(--card);border-radius:10px;padding:9px 12px;font:inherit;font-size:14.5px;color:var(--ink);cursor:pointer}' +
+      '.hwpop__st:hover,.hwpop__st:focus-visible{border-color:var(--accent,var(--green))}' +
+      '.hwpop__st small{margin-left:auto;color:var(--grey);font-size:12.5px;white-space:nowrap;padding-left:8px}' +
+      '.hwpop__key{font-size:13px;line-height:1.7;color:var(--grey);margin:12px 0 0}';
     document.head.appendChild(st);
   }
 
