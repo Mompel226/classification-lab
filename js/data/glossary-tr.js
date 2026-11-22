@@ -459,4 +459,12 @@ window.GLOSSARY_TR = {"abdomen":{"ko":"배","zh":"腹部","ja":"腹部"},
 "depth of breathing":{"ko":"호흡의 깊이","zh":"呼吸深度","ja":"呼吸の深さ"},
 "limewater":{"ko":"석회수","zh":"石灰水","ja":"石灰水"},
 "goblet cell":{"ko":"술잔세포","zh":"杯状细胞","ja":"杯細胞"},
-"cilia":{"ko":"섬모","zh":"纤毛","ja":"繊毛"}};
+"cilia":{"ko":"섬모","zh":"纤毛","ja":"繊毛"},
+"element":{"ko":"원소","zh":"元素","ja":"元素"},
+"fatty acid":{"ko":"지방산","zh":"脂肪酸","ja":"脂肪酸"},
+"glycerol":{"ko":"글리세롤","zh":"甘油","ja":"グリセロール"},
+"double helix":{"ko":"이중 나선","zh":"双螺旋","ja":"二重らせん"},
+"benedict’s solution":{"ko":"베네딕트 용액","zh":"本尼迪克特溶液","ja":"ベネジクト液"},
+"biuret solution":{"ko":"뷰렛 용액","zh":"双缩脲试剂","ja":"ビウレット試薬"},
+"emulsion":{"ko":"유화액","zh":"乳浊液","ja":"乳濁液"},
+"dcpip":{"ko":"DCPIP","zh":"DCPIP","ja":"DCPIP"}};
