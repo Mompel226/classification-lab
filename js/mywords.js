@@ -103,7 +103,21 @@
     '.mw-g{display:grid;grid-template-columns:1fr 1fr 1.4fr;gap:5px}' +
     '#glossList .mw-g .gloss__got,#glossList .mw-g__b{font-size:0;padding:7px 2px;text-align:center}' +
     '#glossList .mw-g .gloss__got::before,#glossList .mw-g .gloss__got:not(.is-known)::before{content:"✓ I know";font-size:12.5px}' +
-    '#glossList .mw-g__b[data-mw="r"]::before{content:"~ Partly";font-size:12.5px}#glossList .mw-g__b[data-mw="n"]::before{content:"✕ Do not know";font-size:12.5px}}';
+    '#glossList .mw-g__b[data-mw="r"]::before{content:"~ Partly";font-size:12.5px}#glossList .mw-g__b[data-mw="n"]::before{content:"✕ Do not know";font-size:12.5px}' +
+    /* a word tapped in the text, on a phone (22 Nov 2026; Daniel's check QZ.3): the word, its definition and the three answers
+       on the first screen, for every word. The title, the search and × share one row; the match count and the section's band
+       fold; the word's card loses its inner margins, so its text is wider and shorter; and on a phone shorter still the
+       answers stay in view at the foot of the box, with the text scrolling behind them */
+    '#glossDlg.mw-tap .modal__box{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:8px;align-items:center;max-height:calc(100dvh - 20px);padding:10px 10px 0}' +
+    '#glossDlg.mw-tap #glossClose{grid-column:3;grid-row:1/span 2;align-self:start;margin-top:4px}' +
+    '#glossDlg.mw-tap .modal__box h2{grid-column:1;grid-row:1;margin:0;font-size:19px;line-height:1.2}' +
+    '#glossDlg.mw-tap .mw-tools{grid-column:2;grid-row:1;margin:0}#glossDlg.mw-tap .mw-tools .gloss__find{flex:1 1 0;min-width:0}' +
+    '#glossDlg.mw-tap .mw-meta,#glossDlg.mw-tap .mw-sec--tap .gloss__h{display:none}' +
+    '#glossDlg.mw-tap .mw-body{grid-column:1/-1;grid-row:2;min-width:0;margin:0 0 10px}#glossDlg.mw-tap .mw-nav{padding-top:2px}' +
+    '#glossDlg.mw-tap .mw-sec--tap{margin-top:8px}#glossDlg.mw-tap.mw-one .mw-sec--tap{margin-top:0}#glossDlg.mw-tap .mw-sec--tap .gloss__dl{padding:0}' +
+    '#glossDlg.mw-tap .mw-sec--tap .gloss__row{margin:0;padding-bottom:3px;border-width:0 0 0 5px;border-radius:8px}' +
+    '#glossDlg.mw-tap .mw-sec--tap dd{background:inherit}' +
+    '#glossDlg.mw-tap .mw-sec--tap .mw-g{position:sticky;bottom:0;z-index:2;margin-top:5px;padding:4px 0 6px;background:inherit}}';
   if (!document.getElementById('mw-g-css')) { var st = document.createElement('style'); st.id = 'mw-g-css'; st.textContent = CSS; (document.head || document.documentElement).appendChild(st); }
 
   /* ---------- the pupil's words, in this browser ---------- */
@@ -246,6 +260,7 @@
 
   /* ---------- the sections: a list to move between them, and what each one holds ---------- */
   var held = -1;   /* the section just chosen stays lit while it is in view, even if it is too short to reach the top */
+  var typed = false;   /* the pupil has typed in the search since the lab last drew the list (each opening draws it) */
   function scrollerOf(list) { return getComputedStyle(list).overflowY === 'auto' ? list : list.closest('.modal__box'); }
   function shape(list) {
     if (document.getElementById('mwNav')) return;
@@ -274,7 +289,7 @@
     list.addEventListener('scroll', spy, { passive: true });
     var box = list.closest('.modal__box'); if (box) box.addEventListener('scroll', spy, { passive: true });
     /* the lab's filter runs on the same event: read the rows after it */
-    if (find) find.addEventListener('input', function () { setTimeout(function () { list.scrollTop = 0; held = -1; syncNav(); spy(); }, 0); });
+    if (find) find.addEventListener('input', function (e) { if (e.isTrusted) typed = true; setTimeout(function () { list.scrollTop = 0; held = -1; syncNav(); spy(); }, 0); });
   }
   function syncNav() {
     var list = document.getElementById('glossList'), nav = document.getElementById('mwNav'); if (!list || !nav) return;
@@ -303,6 +318,10 @@
     var seen = Array.prototype.filter.call(groups, function (g) { return !g.hidden; });
     dlg.classList.toggle('mw-focus', !!(find && find.value.trim()));
     dlg.classList.toggle('mw-one', seen.length === 1 && seen[0].classList.contains('mw-sec--tap'));
+    /* the word tapped is still what the search holds, and the pupil has not typed since it opened (typing, or See also,
+       gives the ordinary search, even if they type the same word again) */
+    var tapped = seen[0] && seen[0].classList.contains('mw-sec--tap') && seen[0].querySelector('.gloss__got');
+    dlg.classList.toggle('mw-tap', !typed && !!(tapped && find && find.value.trim().toLowerCase() === tapped.getAttribute('data-got').toLowerCase()));
   }
   /* lights the section being read, and keeps its button in view in the list */
   function spy() {
@@ -324,7 +343,7 @@
     var list = document.getElementById('glossList'); if (!list) return;
     shape(list);
     /* the lab redraws the whole list each time the glossary opens: it opens at the top */
-    new MutationObserver(function () { list.scrollTop = 0; held = -1; paint(); spy(); }).observe(list, { childList: true });
+    new MutationObserver(function () { typed = false; list.scrollTop = 0; held = -1; paint(); spy(); }).observe(list, { childList: true });
     list.addEventListener('click', function (e) {
       if (e.target.closest && e.target.closest('.gloss__see')) { list.scrollTop = 0; held = -1; syncNav(); spy(); return; }   /* See also: the lab has filtered the list */
       var got = e.target.closest && e.target.closest('.gloss__got');
