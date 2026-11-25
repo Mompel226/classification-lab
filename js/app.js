@@ -693,6 +693,14 @@
       setTimeout(function () { if (card.isConnected && Math.abs(sc0.scrollTop - mine) <= 2) place(false); }, 260);
     }, 420);
   }
+  /* The panel drawn again because the records arrived (work from another computer), not because the pupil moved: the
+     pupil stays where they were reading. Until 25 Nov 2026 the arrival threw them back to the top of the station (Daniel). */
+  function keepPlace(paint) {
+    var sc = panelScroller(), top = sc ? sc.scrollTop : 0, y = window.scrollY;
+    paint();
+    if (sc) { var prev = sc.style.scrollBehavior; sc.style.scrollBehavior = 'auto'; sc.scrollTop = top; sc.style.scrollBehavior = prev || ''; }
+    window.scrollTo(0, y);
+  }
   function panelScroller() {
     var inner = document.getElementById('panelInner');
     return inner ? scrollerFor(inner) : (document.scrollingElement || document.documentElement);
@@ -1000,7 +1008,7 @@
                /* every round and its checks (7 Oct 2026): after merge(), which moves a station on to the records' round */
                (mine.rounds && L.mergeRounds ? L.mergeRounds(progress, mine.rounds, S, stationSig) : 0);
     if (mine.resets && L.resets) L.resets(LAB_ID, false, mine.resets);
-    if (res.added || res.newer || more) { save(); reconcile(); paintHeader(); paintRail(); paintPanel(); refreshTabCount(); }
+    if (res.added || res.newer || more) { save(); reconcile(); paintHeader(); paintRail(); keepPlace(paintPanel); refreshTabCount(); }
     if (!quiet || res.added || res.newer) toast(L.say(res));
   }
   function pull(then) {
