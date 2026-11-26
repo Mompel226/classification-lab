@@ -892,7 +892,6 @@
   var CID = (window.LAB_CONFIG || {}).googleClientId || '';
   var signIn = SI ? SI.who() : null;
   var LAB_ID = LAB;
-  var afterSignIn = null;
   /* ---------- a shared computer ----------
      This browser's work belongs to the account it was last saved for. Another account signing in must not have
      it pushed into THEIR record — it is safe in its owner's already — so it leaves this browser first. Work done
@@ -952,7 +951,7 @@
   }
   /* The sign-in changed — in this page, or in another tab of the site. A sign-in that was not
      there before brings their records back, then sends what was done here. */
-  function onSignIn(v, here) {
+  function onSignIn(v) {
     var was = signIn && signIn.email;
     /* signed out (here, or in another tab of the site), or another account signed in: what is still waiting
        goes first, with the sign-in it belongs to, while that still works. Once it is gone it cannot be sent. */
@@ -967,7 +966,6 @@
     if (dlg && !dlg.hidden) fillSaveDialog();
     if (v && SI.fresh(v) && v.email !== was) { claimFor(v.email); pullThenPush(); }
     else if (again) pullThenPush();
-    if (v && here && afterSignIn && SI.fresh(v)) { var next = afterSignIn; afterSignIn = null; next(); }
   }
   if (SI) SI.on(onSignIn);
 
@@ -981,18 +979,6 @@
      own records. Only ever the pass made for the account signed in HERE, so another account's never goes with this work. */
   function passFor(v) { var p = SI && SI.pass ? SI.pass() : null; return (p && v && p.email === v.email) ? p.pass : ''; }
   function canSend() { return haveToken() || !!passFor(signIn); }
-
-  /* Ask Google for a sign-in — for the same account, when one is remembered — then come back
-     and finish. One Tap can be refused by the browser; `failed` hears why. */
-  function signInThen(fn, failed) {
-    afterSignIn = fn;
-    if (!CID || !SI) { if (failed) failed('unavailable'); return; }
-    SI.renew(CID, function (v, why) {
-      if (v) { if (afterSignIn === fn) { signIn = v; afterSignIn = null; fn(); } return; }
-      if (why === 'signed out') return;
-      if (failed) failed(why);
-    });
-  }
 
   /* ---------- bringing work back ----------
      What the records hold for this lab, folded in. js/sync.js only ever adds: a question right
