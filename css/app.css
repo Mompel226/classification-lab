@@ -1488,13 +1488,13 @@ svg.lit .kl--all.is-on{opacity:1}
    never cut; the IGCSE 0610 badge wraps to start the second row, beside the counts (14 Oct 2026) */
 @media (max-width:370px){ .hbtn--back + .hdr__mark{flex:1 1 calc(100% - 140px)} .hdr__stats{flex:1 1 0;min-width:0} .hbtn--back ~ .badge{align-self:flex-start;margin-top:8px} }
 
-/* a tablet held flat (1024px) and every narrower screen: no subtitle, and a smaller name up to 1000px, so the name is never cut short */
-@media (max-width:1100px){ .hdr__sub{display:none} }
+/* no topic line up to 1790px (it fits whole only above that), and a smaller name up to 1000px, so the name is never cut short */
+@media (max-width:1790px){ .hdr__sub{display:none} }   /* 1100px until 28 Nov 2026: from 1441 to 1771px the topic line showed cut short ("…") */
 @media (max-width:1000px){ .hdr__title{font-size:16px} }
 
-/* the compact header up to 1100px — a tablet held flat included — with the byline allowed onto a second line, so the name is never cut short.
+/* the compact header up to 1220px — a tablet held flat included — with the byline allowed onto a second line, so the name is never cut short.
    Last in the file on purpose: the base rule that hides the short labels would otherwise win. */
-@media (max-width:1100px){
+@media (max-width:1220px){   /* 1100px until 28 Nov 2026: from 1101 to 1201px the full header cut the lab's name and the byline */
   .badge{padding:1px 7px;font-size:10px;letter-spacing:.06em} .stat__lbl{display:none} .stat{padding:4px 10px 4px 5px} .stat--stations{display:none}
   .hbtn{padding:6px 11px} #btnHelp{width:32px;padding:0;display:grid;place-items:center;height:30px}
   .hbtn__long{display:none} .hbtn__short{display:inline;font-size:15px;font-weight:700}
@@ -1554,3 +1554,13 @@ svg.lit .kl--all.is-on{opacity:1}
 /* a widget, photo or table inside a card sits inside it: the list's bullet margin (-26px above) does not apply here */
 .exam-list li.xcard .widget,.exam-list li.xcard .media,.exam-list li.xcard .photo,.exam-list li.xcard .ctable{margin-left:0;margin-right:0;max-width:100%}
 @media (prefers-reduced-motion: reduce){ .xcard__a{transition:none} }
+
+/* ---------- the picture is the priority (Daniel, 27 Nov 2026, the Membrane Lab; every lab, 28 Nov 2026) ----------
+   The tree is a scene that fills the column and reframes itself to it; the caption under it is one line on a laptop: the
+   station named, then what is lit, on the same line (two only when the window is too narrow). Proof: tools/picture-space.mjs. */
+@media (min-width:1001px){
+  .said{white-space:normal;padding:4px 16px 9px;line-height:1.3}
+  .said__name,.said__note{display:inline}
+  .said__note{margin-top:0}
+  .said__note:not(:empty)::before{content:"";display:inline-block;width:4px;height:4px;border-radius:50%;background:var(--c,#EDF4F8);margin:0 9px;vertical-align:middle}
+}
