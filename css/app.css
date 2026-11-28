@@ -763,7 +763,9 @@ picture{display:block;line-height:0}
    so a student arriving from the hub sees the same picture. The colours are the hub's
    glows, one per kingdom; on the paper side the same kingdoms wear darker inks. */
 :root{
-  --c-animals:#FF9F80;--c-plants:#8EE6A2;--c-fungi:#F6C77A;--c-protoctists:#8AD8FF;--c-prokaryotes:#C9B3FF;
+  --c-animals:#FF9F80;--c-plants:#8EE6A2;--c-fungi:#F6C77A;--c-protoctists:#8AD8FF;--c-prokaryotes:#8FA8FF;
+  /* prokaryotes glow a pale navy since 28 Nov 2026 (lavender #C9B3FF before: a violet, and violet means extension; and the
+     Classification Lab prints prokaryote words in navy #1F4E8C, so the tree and the words now share one hue) */
   --c-story:#FFD48A;--c-viruses:#C7D3DA;--c-tree:#BFE9F0;
   --sea-teal:#5EEAD4;
   --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
