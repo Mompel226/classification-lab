@@ -72,7 +72,7 @@
   function helpStyle() {
     if (!global.document || document.getElementById('helpbox-css')) return;
     var st = document.createElement('style'); st.id = 'helpbox-css';
-    st.textContent = '.helpbox{margin-top:10px;padding:9px 11px;border-left:3px solid rgba(30,79,168,.6);background:rgba(30,79,168,.07);border-radius:0 6px 6px 0;line-height:1.5}' +
+    st.textContent = '.helpbox{margin-top:10px;padding:9px 11px;border-left:3px solid var(--help-edge,rgba(30,79,168,.6));background:var(--help-wash,rgba(30,79,168,.07));border-radius:0 6px 6px 0;line-height:1.5}' +
       '.helpbox__h{margin:0 0 4px;font-weight:600;font-size:.72rem;letter-spacing:.09em;text-transform:uppercase;opacity:.8}.helpbox__l{margin:4px 0 0}' +
       '.goline--redo{flex-wrap:wrap}';
     document.head.appendChild(st);

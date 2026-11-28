@@ -56,15 +56,15 @@
     '.mw-nav__b{flex:none;display:flex;align-items:center;gap:6px;font:inherit;font-size:13px;line-height:1.25;text-align:left;color:var(--ink);background:var(--card-2);border:1px solid var(--edge);border-radius:var(--r-sm,6px);padding:5px 9px;cursor:pointer}' +
     '.mw-nav__b[hidden]{display:none}.mw-nav__b:hover{border-color:var(--ink)}' +
     '.mw-nav__b:focus-visible{outline:2px solid var(--accent,var(--green));outline-offset:1px}' +
-    '.mw-nav__b[aria-current="true"]{font-weight:600;color:var(--card);background:var(--ink);border-color:var(--ink)}' +
+    '.mw-nav__b[aria-current="true"]{font-weight:600;color:var(--band-ink,var(--card));background:var(--band,var(--ink));border-color:var(--band,var(--ink))}' +
     '.mw-nav__c{display:inline-flex;flex:none;gap:3px;font-size:11px;font-weight:700}' +
     '.mw-nav__c span{padding:0 5px;border-radius:var(--r-pill,999px)}' +
     '.mw-c--y{color:var(--card);background:var(--ok)}.mw-c--r{color:var(--card);background:var(--amber)}.mw-c--n{color:var(--card);background:var(--bad)}' +
     /* each section: a dark band, then its words */
     '#glossList .gloss__grp{margin:14px 0 0;border:1px solid var(--edge);border-radius:10px;background:var(--card-2)}' +
     '#glossList .mw-sec--tap{border:2px solid var(--ink)}' +
-    '#glossList .gloss__h{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0;padding:8px 13px;font-size:15px;font-weight:700;letter-spacing:0;text-transform:none;color:var(--card);background:var(--ink);border:none;border-radius:8px 8px 0 0}' +
-    '#glossList .gloss__grp.gl-flash .gloss__h{background:var(--ink);box-shadow:0 0 0 3px var(--accent,var(--green))}' +
+    '#glossList .gloss__h{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0;padding:8px 13px;font-size:15px;font-weight:700;letter-spacing:0;text-transform:none;color:var(--band-ink,var(--card));background:var(--band,var(--ink));border:none;border-radius:8px 8px 0 0}' +
+    '#glossList .gloss__grp.gl-flash .gloss__h{background:var(--band,var(--ink));box-shadow:0 0 0 3px var(--accent,var(--green))}' +
     '.mw-h__n{flex:none;font-size:12.5px;font-weight:600}' +
     '#glossList .gloss__dl{margin:0;padding:8px}' +
     /* each word: its colour says how well the pupil knows it */
